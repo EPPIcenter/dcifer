@@ -72,6 +72,9 @@ IBDpair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
       logr <- logReval(reval, nm = nm, neval = neval)
     }
   }
+  if (is.null(neval)) {
+    neval <- length(logr[[3]])
+  }
 
   if (!freqlog) {
     afreq <- lapply(afreq, log)
