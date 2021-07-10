@@ -2,14 +2,11 @@
 % Please edit documentation in R/probUxUy.R
 \name{probUxUy}
 \alias{probUxUy}
-\alias{probUxUyEqr}
 \title{Calculate likelihood for a pair
 \ifelse{html}{\out{U<sub>x</sub>}}{\eqn{U_x}},
 \ifelse{html}{\out{U<sub>y</sub>}}{\eqn{U_y}}}
 \usage{
-probUxUy(Ux, Uy, nx, ny, probs, logr, nm, neval)
-
-probUxUyEqr(Ux, Uy, nx, ny, probs, logr, nm, neval)
+probUxUy(Ux, Uy, nx, ny, probs, logr, nm, neval, equalr = FALSE)
 }
 \arguments{
 \item{Ux, Uy}{sets of unique alleles for two samples at a given locus. Vectors
@@ -23,21 +20,18 @@ given locus. It is not checked if frequencies on a regular scale sum to
 
 \item{logr}{a list of length \eqn{5} as returned by \code{logReval()}.}
 
-\item{nm}{the number of related strains.}
+\item{nm}{the number of related pairs of strains.}
 
 \item{neval}{the number of relatedness values/combinations to evaluate over.}
+
+\item{equalr}{a logical value. If \code{TRUE}, the same values of \eqn{r} are
+assumed for all \code{nm} pairs of related strains.}
 }
 \value{
-A vector of log-likelihood values for each evaluated \eqn{{r}}
-combination (or a value for \code{probUxUyEqr}.
+A vector of log-likelihood values for each \eqn{{r}}, i.e. for each
+column of \code{reval} matrix (or each element of \code{rval} vector if
+\code{equalr} is \code{TRUE}).
 }
 \description{
 Calculates log-likelihood for a pair of samples at a single locus.
-}
-\details{
-\code{probUxUyEqr} is used for a special case when all pairs of
-strains are assumed to be related with the same parameter \eqn{r}. For that
-case, fast calculations are performed, and the results are equivalent to
-the general case with each value of \code{rval} is repeated \code{nm}
-times.
 }
