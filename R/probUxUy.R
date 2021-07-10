@@ -32,13 +32,6 @@ probUxUy <- function(Ux, Uy, nx, ny, probs, logr, nm, neval) {
   iyx <- which(Uy %in% Ux)
   logj   <- log(1:max(nx, ny))         # starts with 1
   factj  <- lgamma(0:max(nx, ny) + 1)  # starts with 0
-  #*** temp, out once debugged
-  if (!is.loaded("../dcifer/src/pUxUy")) dyn.load("../dcifer/src/pUxUy.so")
-  b <- .Call("llik", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-        as.integer(iyx), as.integer(nx), as.integer(ny),
-        as.double(probs), as.double(logj), as.double(factj),
-        as.integer(nm), logr, as.integer(neval))
-  #*** end temp
   return(.Call("llik", as.integer(Ux), as.integer(Uy), as.integer(ixy),
                as.integer(iyx), as.integer(nx), as.integer(ny),
                as.double(probs), as.double(logj), as.double(factj),
