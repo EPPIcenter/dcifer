@@ -15,22 +15,25 @@
 /* mmax = min(|Sxy|, nm) [mmax <- min(sum(vxy), nm)], r[i] = 0 for i > nm     */
 /* sprob is on log scale, so only non-zero ones, can't go beyond mmax */
 // prob is sum1r
+
 double probSxSy(double *logr, double *log1r, double prob, double *sprob,
 		int nm, int mmax, int nmid, int m1) 
 {
+  if (mmax < m1) {  // number of r = 1 is greater than number of shared alleles
+    return 0;
+  }
+  if (nmid == 0) {
+    return exp(prob + sprob[m1]);
+  }
+
   int i;
   double sum;
   int ibd[nmid], ibdmax[nmid];
 
-  if (mmax < m1) {  // number of r = 1 is greater than number of shared alleles
-    return 0;
-  }
-
   for (i = 0; i < nmid; i++) {
     ibd[i] = 0;
   }
-
-  /* in line with MIRSA algorithm */
+  /* MIRSA */
   for (i = 0; i < nmid; i++) {
     ibdmax[i] = 1;
   }
@@ -75,7 +78,7 @@ double probSxSyEqr(double logr, double log1r, double *sprob, double *sproblog,
     if (mmax < nm) {            /* r = 1 and not enough shared alleles */
       return 0;
     }
-    return sprob[mmax];    /* r = 1 */
+    return sprob[mmax];         /* r = 1 */
   }
 
   /* 0 < r < 1 */

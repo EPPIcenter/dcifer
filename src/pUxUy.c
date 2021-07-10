@@ -158,21 +158,20 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
       comby += factj[ny]; 
 
       /* calculate conditional probabilities P(Sx, Sy | m) */
-      probSxSyCond(vx, vy, logpxy, logj, factj, nx, ny, nux, nuy, nuxy, ixy, iyx,
-		   combx, comby, sprob, &mmax, nm);
+      probSxSyCond(vx, vy, logpxy, logj, factj, nx, ny, nux, nuy, nuxy,
+		   ixy, iyx, combx, comby, sprob, &mmax, nm);
       for (i = 0; i <= mmax; i++) {
 	sprob[i] = log(sprob[i]);
       }
 
-      // to have flexibility to specify some r = 0 (unrelated pairs)
       mmax = MIN(mmax, nm);  
       //*** maybe have a vector of nm (to evaluate over different nm's) 
       /* calculate likelihood for each vector of r */
       shift = 0;
       for (i = 0; i < neval; i++) {
-	lik[i] += probSxSy(logr + shift, log1r + shift, sum1r[shift], sprob, nm,
-			   mmax, nmid[shift], m1[shift]);
-	shift += nm;	
+	lik[i] += probSxSy(logr + shift, log1r + shift, sum1r[i], sprob, nm,
+			   mmax, nmid[i], m1[i]);
+        shift += nm;	
       }
     }
   }

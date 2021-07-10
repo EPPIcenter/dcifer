@@ -55,25 +55,29 @@ IBDpair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
+  if (is.null(nloc)) {
+    nloc <- length(afreq)
+  }
   if (is.null(logr)) {
-    if (( equalr && is.null(rval)) ||
-        (!equalr && is.null(reval) && is.null(rval))) {
+    if (is.null(rval) && is.null(reval)) {
       rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
     }
-    if (!equalr && is.null(reval)) {
-      reval <- generateReval(nm, rval)
+    if (is.null(reval)) {
+      reval <- generateReval(ifelse(equalr, 1, nm), rval = rval)
+    }
+    neval <- ncol(reval)
+    logr <- logReval(reval, nm = ifelse(equalr, 1, nm), neval = neval)
+  } else {
+    if (is.null(reval)) {
+      if (equalr && !is.null(rval)) {
+        reval <- generateReval(1, rval = rval)
+      } else {
+        stop("Please provide reval")  # if equalr is TRUE, can provide rval
+      }
     }
     if (is.null(neval)) {
-      neval <- ifelse(equalr, length(rval), ncol(reval))
+      neval <- length(logr[[3]])
     }
-    if (equalr) {
-      logr <- logReval(rval, nm = 1, neval = neval)
-    } else {
-      logr <- logReval(reval, nm = nm, neval = neval)
-    }
-  }
-  if (is.null(neval)) {
-    neval <- length(logr[[3]])
   }
 
   if (!freqlog) {
@@ -104,12 +108,7 @@ IBDpair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
     return(llik)
   }
   imax <- which(llik == max(llik))
-  if (equalr) {
-    est <- mean(rval[imax])  # [1] first only; reval[imax] - all; mean()
-  } else {
-    est <- rowMeans(reval[, imax, drop = FALSE])
-    # reval[, imax[1]]
-  }
+  est <- rowMeans(reval[, imax, drop = FALSE])  # or reval[, imax[1]] for 1st
   if (tolower(out == "mle")) {
     return(est)
   }
@@ -118,11 +117,7 @@ IBDpair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
   cutoff  <- max(llik) - qchi/2
   itop    <- llik >= cutoff
   proptop <- sum(itop)/neval
-  if (equalr) {
-    rtop <- rval[itop]
-  } else {
-    rtop <- reval[, itop, drop = FALSE]
-  }
+  rtop <- reval[, itop, drop = equalr]
   return(list(mle = est, llik = llik, maxllik = llik[imax[1]], rtop = rtop,
               proptop = proptop))
 }
