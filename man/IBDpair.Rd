@@ -6,8 +6,8 @@
 \usage{
 ibdPair(
   pair,
-  afreq,
   coi,
+  afreq,
   nr = 100,
   nm = min(coi),
   rval = NULL,
@@ -24,10 +24,10 @@ ibdPair(
 \arguments{
 \item{pair}{a list of length two containing two samples.}
 
+\item{coi}{a vector indicating complexity of infection for each sample.}
+
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
-
-\item{coi}{a vector indicating complexity of infection for each sample.}
 
 \item{nr}{an integer value for the resolution of the grid (\eqn{nr - 1}
 values between 0 and 1), over which the likelihood will be calculated.

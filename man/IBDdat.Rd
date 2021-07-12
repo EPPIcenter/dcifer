@@ -6,8 +6,8 @@
 \usage{
 ibdDat(
   dat,
-  afreq,
   coi,
+  afreq,
   nmmax,
   nr = 100,
   rval = NULL,
@@ -21,10 +21,10 @@ ibdDat(
 \arguments{
 \item{dat}{data containing sample genotypes. Various formats allowed.}
 
+\item{coi}{a vector indicating complexity of infection for each sample.}
+
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
-
-\item{coi}{a vector indicating complexity of infection for each sample.}
 
 \item{nmmax}{the maximum number of related strains in a pair of samples.}
 

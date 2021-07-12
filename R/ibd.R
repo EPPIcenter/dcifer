@@ -7,9 +7,9 @@
 #'   genotyping errors where estimated COI is less than |Ux|, various options
 #'   are offered.
 #' @param pair   a list of length two containing two samples.
+#' @param coi    a vector indicating complexity of infection for each sample.
 #' @param afreq  a list of allele frequencies. Each element of the list
 #'   corresponds to a locus.
-#' @param coi    a vector indicating complexity of infection for each sample.
 #' @param nr     an integer value for the resolution of the grid (\eqn{nr - 1}
 #'   values between 0 and 1), over which the likelihood will be calculated.
 #'   Ignored if non-null \code{reval} is provided.
@@ -49,7 +49,7 @@
 #' @export
 #' @useDynLib dcifer
 
-ibdPair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
+ibdPair <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
                     reval = NULL, logr = NULL, equalr = FALSE, out = "mle",
                     alpha = 0.05, freqlog = FALSE, neval = NULL, nloc = NULL) {
   if (is.null(nloc)) {
@@ -127,7 +127,7 @@ ibdPair <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
 # #' @export
 #'
 
-ibdPair2 <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
+ibdPair2 <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
                    reval = NULL, logr = NULL, equalr = FALSE, out = "mle") {
   nloc <- length(afreq)
 
@@ -218,7 +218,7 @@ ibdPair2 <- function(pair, afreq, coi, nr = 1e2, nm = min(coi), rval = NULL,
 #'   with an option of returning log-likelihood.
 #' @export
 
-ibdDat <- function(dat, afreq, coi, nmmax, nr = 1e2, rval = NULL, reval = NULL,
+ibdDat <- function(dat, coi, afreq, nmmax, nr = 1e2, rval = NULL, reval = NULL,
                    FUNnm = NULL, equalr = FALSE,
                    split = "[[:space:][:punct:]]+", ...) {
   if (inherits(dat, "matrix")) {
