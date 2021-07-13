@@ -18,7 +18,8 @@ ibdPair(
   alpha = 0.05,
   freqlog = FALSE,
   neval = NULL,
-  nloc = NULL
+  nloc = NULL,
+  upcoi = TRUE
 )
 }
 \arguments{
@@ -61,6 +62,8 @@ scale.}
 \item{neval}{the number of relatedness values/combinations to evaluate over.}
 
 \item{nloc}{the number of loci.}
+
+\item{upcoi}{method to handle cases when \eqn{COI < |Ux|} (see @details).}
 }
 \value{
 \itemize{
@@ -81,6 +84,16 @@ parameter \eqn{{r}} and provides an estimate for a pair of samples along
 with confidence regions based on a likelihood ratio test. For data with
 genotyping errors where estimated COI is less than |Ux|, various options
 are offered.
+}
+\details{
+Handling of irregular cases: - Allele with population frequency of
+\eqn{0} is present: locus is skipped (does not contribute any information).
+\itemize{
+\item Number of unique alleles at a locus is greater than COI: if \code{upcoi =
+  TRUE}, COI will be increased for that locus only; otherwise likelihoods for
+all the subsets of cardinality COI are calculated and geometric mean is
+taken.
+}
 }
 \seealso{
 \code{\link{ibdDat}} for processing multi-sample data in various

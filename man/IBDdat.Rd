@@ -2,7 +2,7 @@
 % Please edit documentation in R/ibd.R
 \name{ibdDat}
 \alias{ibdDat}
-\title{Genetic Distance}
+\title{Pairwise Genetic Distance}
 \usage{
 ibdDat(
   dat,

@@ -6,6 +6,14 @@
 #'   with confidence regions based on a likelihood ratio test. For data with
 #'   genotyping errors where estimated COI is less than |Ux|, various options
 #'   are offered.
+#'
+#' @details Handling of irregular cases: - Allele with population frequency of
+#'   \eqn{0} is present: locus is skipped (does not contribute any information).
+#'   - Number of unique alleles at a locus is greater than COI: if \code{upcoi =
+#'   TRUE}, COI will be increased for that locus only; otherwise likelihoods for
+#'   all the subsets of cardinality COI are calculated and geometric mean is
+#'   taken.
+#'
 #' @param pair   a list of length two containing two samples.
 #' @param coi    a vector indicating complexity of infection for each sample.
 #' @param afreq  a list of allele frequencies. Each element of the list
@@ -32,6 +40,7 @@
 #'   scale.
 #' @param neval the number of relatedness values/combinations to evaluate over.
 #' @param nloc  the number of loci.
+#' @param upcoi method to handle cases when \eqn{COI < |Ux|} (see @details).
 #'
 #' @return
 #'   * If \code{out = "mle"}: a vector of length 1 if \code{equalr = TRUE}
@@ -51,10 +60,8 @@
 
 ibdPair <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
                     reval = NULL, logr = NULL, equalr = FALSE, out = "mle",
-                    alpha = 0.05, freqlog = FALSE, neval = NULL, nloc = NULL) {
-  if (is.null(nloc)) {
-    nloc <- length(afreq)
-  }
+                    alpha = 0.05, freqlog = FALSE, neval = NULL, nloc = NULL,
+                    upcoi = TRUE) {
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -89,14 +96,33 @@ ibdPair <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
     Ux <- which(as.logical(pair[[1]][[t]]))  # in case of integer vector
     Uy <- which(as.logical(pair[[2]][[t]]))
 
-    if (length(Ux) == 0 ||                   # NA or all 0's
-        length(Uy) == 0 ||                   # NA or all 0's
-        any(afreq[[t]][unique(c(Ux, Uy))] == 0)) {  # likelihood = 0
-      next                                   # likelihood = 0 or no data
+    if (length(Ux) == 0 ||                             # NA or all 0's
+        length(Uy) == 0 ||                             # NA or all 0's
+        any(afreq[[t]][unique(c(Ux, Uy))] == -Inf)) {  # likelihood = 0
+      next
     }
-    coix <- max(coi[1], length(Ux))
-    coiy <- max(coi[2], length(Uy))
-    llikt <- probUxUy(Ux, Uy, coix, coiy, afreq[[t]], logr, nm, neval, equalr)
+
+    if (upcoi) {
+      coix <- max(coi[1], length(Ux))
+      coiy <- max(coi[2], length(Uy))
+      llikt <- probUxUy(Ux, Uy, coix, coiy, afreq[[t]], logr, nm, neval, equalr)
+    } else {
+      Uxcomb <- getComb(Ux, coi[1])
+      Uycomb <- getComb(Uy, coi[2])
+      ncx <- ncol(Uxcomb)
+      ncy <- ncol(Uycomb)
+      llikt <- matrix(0, ncx*ncy, neval)
+      icomb <- 1
+      for (icx in 1:ncx) {
+        for (icy in 1:ncy) {
+          llikt[icomb, ] <- probUxUy(Uxcomb[, icx], Uycomb[, icy], coi[1],
+                                     coi[2], afreq[[t]], logr, nm, neval,
+                                     equalr)
+          icomb <- icomb + 1
+        }
+      }
+      llikt <- colMeans(llikt, na.rm = TRUE)  # or FALSE?
+    }
     llik <- llik + llikt
   }
 
@@ -118,81 +144,7 @@ ibdPair <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
               proptop = proptop))
 }
 
-#' Genetic distance for data with genotyping errors
-#'
-#' @description Distance when estimated COI is less than |Ux|: likelihoods for
-#'   all subsets of size = COI of Ux are calculated; geometric mean taken.
-#'
-#' @inherit ibdPair return params
-# #' @export
-#'
-
-ibdPair2 <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
-                   reval = NULL, logr = NULL, equalr = FALSE, out = "mle") {
-  nloc <- length(afreq)
-
-  if (is.null(rval)) {
-    rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
-  }
-  if (equalr) {
-    neval <- length(rval)
-  } else {
-    if (is.null(reval)) {
-      reval <- generateReval(nm, rval)
-    }
-    neval <- ncol(reval)
-  }
-
-  llik <- rep(0, neval)
-  for (t in 1:nloc) {
-    Ux <- which(as.logical(pair[[1]][[t]]))  # in case of integer vector
-    Uy <- which(as.logical(pair[[2]][[t]]))  # sorted
-    if (length(Ux) == 0 ||                   # NA or all 0's
-        length(Uy) == 0 ||                   # NA or all 0's
-        any(afreq[[t]][unique(c(Ux, Uy))] <= 0)) {  #*** < check 0 separately?
-      next                                   # likelihood = 0 or no data
-    }
-    Uxcomb <- getComb(Ux, coi[1])
-    Uycomb <- getComb(Uy, coi[2])
-    ncx <- ncol(Uxcomb)
-    ncy <- ncol(Uycomb)
-    llikt <- matrix(0, ncx*ncy, neval)
-    icomb <- 1
-    for (icx in 1:ncx) {
-      for (icy in 1:ncy) {
-        llikt[icomb, ] <- probUxUy(Uxcomb[, icx], Uycomb[, icy], coi[1], coi[2],
-                                   afreq[[t]], logr, nm, neval, equalr)
-        icomb <- icomb + 1
-      }
-    }
-    llikt <- colMeans(llikt, na.rm = TRUE)  # or FALSE?
-    if (llikt[1] == -Inf) {
-      if (all(llikt == -Inf)) {
-        next
-      } else {
-        iinf <- which(llikt == -Inf)
-        writeLines(paste("\n0 prob for r combinations",  # not added if 1st!!
-                         paste(iinf, collapse = " ")))
-      }
-    } else {
-      llik <- llik + llikt
-    }
-  }
-
-  if (out == "llik") {
-    return(llik)
-  } else {
-    imax <- which(llik == max(llik))
-    if (equalr) {
-      return(mean(rval[imax]))  # [1] first only; reval[imax] - all; mean()
-    } else {
-      return(rowMeans(reval[, imax, drop = FALSE]))
-      # reval[, imax[1]]
-    }
-  }
-}
-
-#' Genetic Distance
+#' Pairwise Genetic Distance
 #'
 #' @description Pairwise estimation of relatedness parameters for polyclonal
 #'   multiallelic samples.
