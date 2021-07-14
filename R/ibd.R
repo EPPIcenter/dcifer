@@ -18,10 +18,10 @@
 #' @param coi    a vector indicating complexity of infection for each sample.
 #' @param afreq  a list of allele frequencies. Each element of the list
 #'   corresponds to a locus.
+#' @param nm     the number of related pairs of strains.
 #' @param nr     an integer value for the resolution of the grid (\eqn{nr - 1}
 #'   values between 0 and 1), over which the likelihood will be calculated.
 #'   Ignored if non-null \code{reval} is provided.
-#' @param nm     the number of related pairs of strains.
 #' @param rval  \eqn{{r}} values for the grid or for evaluation when
 #'   \code{equalr} is \code{TRUE}. If \code{NULL}, will be evenly spaced between
 #'   0 and 1 and interval \eqn{1/nr}.
@@ -58,10 +58,9 @@
 #' @export
 #' @useDynLib dcifer
 
-ibdPair <- function(pair, coi, afreq, nr = 1e2, nm = min(coi), rval = NULL,
-                    reval = NULL, logr = NULL, equalr = FALSE, out = "mle",
-                    alpha = 0.05, freqlog = FALSE, neval = NULL, nloc = NULL,
-                    upcoi = TRUE) {
+ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
+                    logr = NULL, equalr = FALSE, out = "mle", alpha = 0.05,
+                    freqlog = FALSE, neval = NULL, nloc = NULL, upcoi = TRUE) {
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }

@@ -8,8 +8,8 @@ ibdPair(
   pair,
   coi,
   afreq,
+  nm,
   nr = 100,
-  nm = min(coi),
   rval = NULL,
   reval = NULL,
   logr = NULL,
@@ -30,11 +30,11 @@ ibdPair(
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
 
+\item{nm}{the number of related pairs of strains.}
+
 \item{nr}{an integer value for the resolution of the grid (\eqn{nr - 1}
 values between 0 and 1), over which the likelihood will be calculated.
 Ignored if non-null \code{reval} is provided.}
-
-\item{nm}{the number of related pairs of strains.}
 
 \item{rval}{\eqn{{r}} values for the grid or for evaluation when
 \code{equalr} is \code{TRUE}. If \code{NULL}, will be evenly spaced between
