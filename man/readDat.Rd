@@ -23,6 +23,9 @@ allele/haplotype, and population allele frequency.}
 
 \item{...}{additional arguments for \code{read.csv()}.}
 }
+\value{
+A list with samples and population allele frequencies.
+}
 \description{
 Read and Reformat Data
 }

@@ -5,6 +5,8 @@
 #' @param svar,lvar,avar,fvar variable names for sample ID, marker/locus,
 #'   allele/haplotype, and population allele frequency.
 #' @param ... additional arguments for \code{read.csv()}.
+#' @return A list with samples and population allele frequencies.
+#' @export
 
 readDat <- function(sfile, afile = NULL, svar = "SampleID", lvar = "MarkerID",
                     avar = "Haplotype", fvar = "frequency", ...) {
@@ -46,6 +48,7 @@ readDat <- function(sfile, afile = NULL, svar = "SampleID", lvar = "MarkerID",
 #' @param rmrare a logical value. If \code{TRUE}, rare alleles will be removed from both \code{afreq} and \code{dsmp}; if \code{FALSE}, their frequencies will be increased to \code{lbound}.
 #' @param lbound a bound for considering an allele "rare".
 #' @return a list with updated and rescaled \code{afreq} and \code{dsmp} (updated if \code{rmrare = TRUE}).
+#' @export
 #'
 rescaleFreq <- function(afreq, dsmp = NULL, rmrare = FALSE, lbound = 0.01) {
   ismall <- lapply(afreq, function(x) which(x < lbound))
