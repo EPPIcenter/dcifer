@@ -8,6 +8,9 @@ Author@R:
            email = "innager@berkeley.edu", 
            comment = c(ORCID = "0000-0002-7772-7473"))
 Description: Estimation of IBD for unphased polyclonal infections and multiallelic genetic data. 
+Imports:
+    stats,
+    utils
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

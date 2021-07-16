@@ -5,28 +5,26 @@
 \title{Pairwise Genetic Distance}
 \usage{
 ibdDat(
-  dat,
+  dsmp,
   coi,
   afreq,
-  nmmax,
   nr = 100,
   rval = NULL,
   reval = NULL,
-  FUNnm = NULL,
   equalr = FALSE,
-  split = "[[:space:][:punct:]]+",
+  out = "all",
+  rnull = 0,
+  alpha = 0.05,
   ...
 )
 }
 \arguments{
-\item{dat}{data containing sample genotypes. Various formats allowed.}
+\item{dsmp}{a list containing sample genotypes.}
 
 \item{coi}{a vector indicating complexity of infection for each sample.}
 
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
-
-\item{nmmax}{the maximum number of related strains in a pair of samples.}
 
 \item{nr}{an integer value for the resolution of the grid (\eqn{nr - 1}
 values between 0 and 1), over which the likelihood will be calculated.
@@ -40,30 +38,30 @@ Ignored if non-null \code{reval} is provided.}
 will be calculated. A matrix where each column represents a single
 combination.}
 
-\item{FUNnm}{potentially a function to select \code{nm} for each pair of
-samples.}
-
 \item{equalr}{a logical value. If \code{TRUE}, the same values of \eqn{r} are
 assumed for all \code{nm} pairs of related strains.}
 
-\item{split}{the allele separator character string if genotypes are provided
-as character strings.}
+\item{out}{a character string for the type of results to be returned. If
+\code{"mle"}, an estimate is returned, if \code{"llik"} - a vector of
+log-likelihood for each combination.}
 
-\item{...}{additional arguments for FUNnm. #*** take out if FUNnm is out}
+\item{rnull}{null value for the relatedness parameter.}
+
+\item{alpha}{significance level.}
+
+\item{...}{additional arguments for \code{ibdPair}.}
 }
 \value{
-A lower triangular distance/relatedness matrix in a type of shaped
-list. Each pairwise distance contains a scalar, a vector, or a matrix of
-\eqn{{r}} estimates. Simple matrix (of type \code{double}) can be returned
-if all the elements are of length 1.
+A relatedness lower triangular matrix or 3-dimensional array, which
+in addition to MLE provides confidence intervals and a p-value for a
+specified null.
 }
 \description{
-Pairwise estimation of relatedness parameters for polyclonal
+Pairwise estimation of a relatedness parameter for polyclonal
 multiallelic samples.
 }
 \details{
-To be added: data formats that can be processed, formats to be
-returned.
+To be added
 }
 \seealso{
 \code{\link{ibdPair}} for genetic relatedness between two samples

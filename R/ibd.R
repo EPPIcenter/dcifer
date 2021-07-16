@@ -145,111 +145,60 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
 
 #' Pairwise Genetic Distance
 #'
-#' @description Pairwise estimation of relatedness parameters for polyclonal
+#' @description Pairwise estimation of a relatedness parameter for polyclonal
 #'   multiallelic samples.
 #'
-#' @details To be added: data formats that can be processed, formats to be
-#'   returned.
+#' @details To be added
 #'
-#' @param dat data containing sample genotypes. Various formats allowed.
-#' @param nmmax the maximum number of related strains in a pair of samples.
-#' @param split the allele separator character string if genotypes are provided
-#'   as character strings.
-#' @param FUNnm potentially a function to select \code{nm} for each pair of
-#'   samples.
-#' @param ...   additional arguments for FUNnm. #*** take out if FUNnm is out
+#' @param dsmp a list containing sample genotypes.
+#' @param rnull null value for the relatedness parameter.
+#' @param ... additional arguments for \code{ibdPair}.
 #' @inheritParams ibdPair
 #'
-#' @return A lower triangular distance/relatedness matrix in a type of shaped
-#'   list. Each pairwise distance contains a scalar, a vector, or a matrix of
-#'   \eqn{{r}} estimates. Simple matrix (of type \code{double}) can be returned
-#'   if all the elements are of length 1.
+#' @return A relatedness lower triangular matrix or 3-dimensional array, which
+#'   in addition to MLE provides confidence intervals and a p-value for a
+#'   specified null.
 #'
 #' @seealso \code{\link{ibdPair}} for genetic relatedness between two samples
 #'   with an option of returning log-likelihood.
 #' @export
 
-ibdDat <- function(dat, coi, afreq, nmmax, nr = 1e2, rval = NULL, reval = NULL,
-                   FUNnm = NULL, equalr = FALSE,
-                   split = "[[:space:][:punct:]]+", ...) {
-  if (inherits(dat, "matrix")) {
-    nsmp <- nrow(dat)
-    nloc <- ncol(dat)
-    if (typeof(dat) == "list") {
-      format <- "matlist"
-    } else {
-      format <- "matstr"
-    }
-  } else {
-    nsmp <- length(dat)
-    nloc <- length(dat[[1]])
-    format <- "listlist"
-  }
-
-  if (is.null(rval)) {
+ibdDat <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
+                   equalr = FALSE, out = "all", rnull = 0, alpha = 0.05, ...) {
+  if (is.null(rval) && is.null(reval)) {
     rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
   }
-  if (equalr) {
-    neval <- length(rval)
-  } else {
-    if (is.null(reval)) {
-      reval <- generateRevalList(1:nmmax, rval)
-      logr  <- mapply(logReval, reval, 1:nmmax)
-    }
+  if (is.null(reval)) {
+    reval <- generateReval(1, rval = rval)
   }
-  res  <- matrix(list(NA), nsmp, nsmp)
+  logr  <- logReval(reval, nm = 1)
+  neval <- length(rval)
+  inull <- which.min(abs(rval - rnull))
+  afreq <- lapply(afreq, log)
+  nloc  <- length(afreq)
+  nsmp  <- length(dsmp)
 
-  for (ix in 1:nsmp) {
-    for (iy in 1:(ix)) {
-      nm <- min(coi[ix], coi[iy], nmmax)       # or FUNnm() - or AFTER ix == iy
-      if (ix == iy) {                          # diagonal
-        res[[ix, ix]] <- rep(1, ifelse(equalr, 1, min(coi[ix], nmmax)))
-        next
-      }
-      llik <- rep(0, ifelse(equalr, neval, ncol(reval[[nm]])))
-      for (t in 1:nloc) {
-        if (format == "matstr") {
-          alleles <- names(afreq[[t]])
-          if (is.null(alleles))
-            stop("Please provide names for allele frequencies")
-          Ux  <- unlist(strsplit(dat[ix, t], split = split))
-          Ux  <- sort(match(Ux, alleles))
-          Uy  <- unlist(strsplit(dat[iy, t], split = split))
-          Uy  <- sort(match(Uy, alleles))
-        } else if (format == "matlist") {
-          Ux <- which(as.logical(dat[[ix, t]]))
-          Uy <- which(as.logical(dat[[iy, t]]))
-        } else if (format == "listlist") {
-          Ux <- which(as.logical(dat[[ix]][[t]]))
-          Uy <- which(as.logical(dat[[iy]][[t]]))
-        }
-        if (length(Ux) == 0 || is.na(Ux[1]) ||   # NA or all 0's
-            length(Uy) == 0 || is.na(Uy[1]) ||   # NA or all 0's
-            any(afreq[[t]][unique(c(Ux, Uy))] <= 0)) {  #*** < check 0 separately?
-          next                                   # likelihood = 0 or no data
-        }
-        llikt <- probUxUy(Ux, Uy, coi[ix], coi[iy], afreq[[t]], logr[[nm]],
-                          nm, neval, equalr)
-        if (any(llikt == -Inf)) {
-          writeLines(paste("samples", ix, "and", iy, "- 0 prob for some r
-                           combinations at locus", t))
-          if (all(llikt == -Inf)) {       # -Inf is added otherwise
-            next
-          }
-          llik <- llik + llikt            # lik = 0 if -Inf at any locus
-        }
-      }
-      imax <- which(llik == max(llik))
-      if (equalr) {
-        res[[ix, iy]] <- mean(rval[imax])  # [1] first; rval[imax] all; mean()
+  if (out == "mle") {
+    res <- matrix(NA, nsmp, nsmp, dimnames = list(names(dsmp), names(dsmp)))
+  } else {
+    res <- array(NA, dim = c(nsmp, nsmp, 4),
+                 dimnames = list(names(dsmp), names(dsmp),
+                                 c("MLE", "CI lower", "CI upper", "p-value")))
+  }
+  for (ix in 2:nsmp) {
+    for (iy in 1:(ix - 1)) {
+      rxy <- ibdPair(dsmp[c(ix, iy)], coi[c(ix, iy)], afreq, nm = 1,
+                     reval = reval, logr = logr, out = out, alpha = alpha,
+                     freqlog = TRUE, neval = neval, nloc = nloc)#, ...)
+      if (out == "mle") {
+        res[ix, iy] <- rxy
       } else {
-        res[[ix, iy]] <- rowMeans(reval[[nm]][, imax, drop = FALSE])
-        # reval[[nm]][, imax[1]] first
+        res[ix, iy, 1] <- rxy$mle
+        res[ix, iy, 2:3] <- range(rxy$rtop)
+        res[ix, iy, 4] <- 1 - stats::pchisq(2*(rxy$maxllik - rxy$llik[inull]),
+                                            df = 1)
       }
     }
-  }
-  if (all(sapply(res, length) == 1)) {
-    res <- matrix(unlist(res), nrow(res), ncol(res))  # return simple matrix
   }
   return(res)
 }
@@ -281,6 +230,7 @@ generateReval <- function(M, rval = NA, nr = NA) {
   return(t(unique(reval)))
 }
 
+#*** will be useful for upcoming estM() function
 #' Generate a grid of parameter values for multiple values of \code{M}
 #'
 #' @param Ms an integer vector.
