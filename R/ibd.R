@@ -68,12 +68,15 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
     if (is.null(rval) && is.null(reval)) {
       rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
     }
+    nrmat <- ifelse(equalr, 1, nm)
     if (is.null(reval)) {
-      reval <- generateReval(ifelse(equalr, 1, nm), rval = rval)
+      reval <- generateReval(nrmat, rval = rval)
+    } else if (nrow(reval) != nrmat) {
+      stop("reval doesn't match nm")
     }
     neval <- ncol(reval)
-    logr <- logReval(reval, nm = ifelse(equalr, 1, nm), neval = neval)
-  } else {
+    logr <- logReval(reval, nm = nrmat, neval = neval)
+  } else {                            # logr has to match reval
     if (is.null(reval)) {
       if (equalr && !is.null(rval)) {
         reval <- generateReval(1, rval = rval)
@@ -137,10 +140,8 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
   qchi <- stats::qchisq(1 - alpha, df = ifelse(equalr, 1, nrow(reval)))
   cutoff  <- max(llik) - qchi/2
   itop    <- llik >= cutoff
-  proptop <- sum(itop)/neval
   rtop <- reval[, itop, drop = equalr]
-  return(list(mle = est, llik = llik, maxllik = llik[imax[1]], rtop = rtop,
-              proptop = proptop))
+  return(list(mle = est, llik = llik, maxllik = llik[imax[1]], rtop = rtop))
 }
 
 #' Pairwise Genetic Distance
