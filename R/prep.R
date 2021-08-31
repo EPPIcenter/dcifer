@@ -1,6 +1,6 @@
 #' Read and Reformat Data
 #'
-#' @param sfile,afile name of the files containing sample data and, optionally,
+#' @param sfile,afile names of the files containing sample data and, optionally,
 #'   population allele frequencies.
 #' @param svar,lvar,avar,fvar variable names for sample ID, marker/locus,
 #'   allele/haplotype, and population allele frequency.
@@ -40,27 +40,37 @@ readDat <- function(sfile, afile = NULL, svar = "SampleID", lvar = "MarkerID",
   return(list(dsmp = dsmp, afreq = afreq))
 }
 
-#' Rescale Allele Frequency
-#' @description Handles small values of estimated population allele frequencies to protect against potential false positives driving the result.
+#' Generate a grid of parameter values to evaluate over
 #'
-#' @param afreq a list with population allele frequencies.
-#' @param dsmp  a list of lists with samples as top level elements.
-#' @param rmrare a logical value. If \code{TRUE}, rare alleles will be removed from both \code{afreq} and \code{dsmp}; if \code{FALSE}, their frequencies will be increased to \code{lbound}.
-#' @param lbound a bound for considering an allele "rare".
-#' @return a list with updated and rescaled \code{afreq} and \code{dsmp} (updated if \code{rmrare = TRUE}).
+#' @param M an integer.
+#' @param rval \eqn{{r}} values for the grid. Takes precedence over \code{nr}.
+#' @param nr an integer. If \code{rval} is not provided, it will be generated
+#'   using \code{0}, \code{1}, and \code{nr - 1} values between them.
+#' @return A a matrix with \code{M} rows and \code{nr + 1} or
+#'   \code{length(rval)} columns.
 #' @export
 #'
-rescaleFreq <- function(afreq, dsmp = NULL, rmrare = FALSE, lbound = 0.01) {
-  ismall <- lapply(afreq, function(x) which(x < lbound))
-  if (rmrare) {
-    afreq <- mapply(function(x, i) {x <- x[-i]; x/sum(x)}, afreq, ismall)
-    for (ismp in 1:length(dsmp)) {
-      dsmp[[ismp]] <- mapply(function(smp, i) smp[-i], dsmp[[ismp]], ismall)
+generateReval <- function(M, rval = NULL, nr = NULL) {
+  if (is.null(rval)) {
+    if (is.null(nr)) {
+      return(NA)
     }
-  } else {
-    afreq <- mapply(function(x, i, lbound) {x[i] <- lbound; x/sum(x)},
-                    afreq, ismall, lbound = lbound)
+    rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
   }
-  return(list(afreq = afreq, dsmp = dsmp))
+  if (M == 1) {
+    return(matrix(rval, 1))
+  }
+  reval <- as.matrix(expand.grid(rep(list(rval), M)))
+  for (k in 1:nrow(reval)) {         # faster than apply()
+    reval[k, ] <- sort(reval[k, ])
+  }
+  return(t(unique(reval)))
 }
 
+# get combinations of alleles when length(Ux) > coix and upcoi = FALSE
+getComb <- function(Ux, coix) {
+  if (length(Ux) <= coix) {
+    return(matrix(Ux, ncol = 1))
+  }
+  return(utils::combn(Ux, coix))
+}

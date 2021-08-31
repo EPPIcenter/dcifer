@@ -65,5 +65,6 @@ To be added
 }
 \seealso{
 \code{\link{ibdPair}} for genetic relatedness between two samples
-with an option of returning log-likelihood.
+with an option of returning log-likelihood and \code{\link{ibdEstM}} for
+estimating the number of related pairs of strains.
 }

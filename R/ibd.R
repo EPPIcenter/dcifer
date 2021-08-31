@@ -49,12 +49,11 @@
 #'   * If \code{out = "llike"}, a vector of log-likelihood values for each
 #'   evaluated combination.
 #'   * If \code{out = "all"}, a list containing an estimate, log-likelihood,
-#'   maximum log-likelihood, \eqn{{r}} values corresponding to the acceptance
-#'   region determined by the significance level, and the size of that region
-#'   (as a proportion of all evaluated).
+#'   maximum log-likelihood, and \eqn{{r}} values corresponding to the
+#'   acceptance region determined by the significance level.
 #'
-#' @seealso \code{\link{ibdDat}} for processing multi-sample data in various
-#'   formats and estimating pairwise relatedness.
+#' @seealso \code{\link{ibdEstM}} for estimating the number of related pairs of
+#'   strains and \code{\link{ibdDat}} for processing multi-sample data.
 #' @export
 #' @useDynLib dcifer
 
@@ -161,15 +160,16 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
 #'   specified null.
 #'
 #' @seealso \code{\link{ibdPair}} for genetic relatedness between two samples
-#'   with an option of returning log-likelihood.
+#'   with an option of returning log-likelihood and \code{\link{ibdEstM}} for
+#'   estimating the number of related pairs of strains.
 #' @export
 
 ibdDat <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
                    equalr = FALSE, out = "all", rnull = 0, alpha = 0.05, ...) {
-  if (is.null(rval) && is.null(reval)) {
-    rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
-  }
   if (is.null(reval)) {
+    if (is.null(rval)) {
+      rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
+    }
     reval <- generateReval(1, rval = rval)
   }
   logr  <- logReval(reval, nm = 1)
@@ -204,66 +204,88 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
   return(res)
 }
 
-#' Generate a grid of parameter values to evaluate over
+#' Estimate Relatedness and Number of Related Strains
 #'
-#' @param M an integer.
-#' @param rval \eqn{{r}} values for the grid. Takes precedence over \code{nr}.
-#' @param nr an integer. If \code{rval} is not provided, it will be generated
-#'   using \code{0}, \code{1}, and \code{nr - 1} values between them.
-#' @return A a matrix with \code{M} rows and \code{nr + 1} or
-#'   \code{length(rval)} columns.
+#' @description Estimates multiple relatedness parameters when the number $M$ of
+#'   related pairs of strains between two samples is unknown.
+#'
+#' @inheritParams ibdPair
+#' @param nmmax maximum number of related pairs of strains to evaluate over.
+#' @param nrs   an integer vector of values for grid resolution, one value for
+#'   each \code{M} (or a single value when \code{equalr = TRUE}).
+#' @param revals a list where each element is an \code{reval} matrix for a
+#'   corresponding \code{M}.
+#' @param logrs a list where each element is a \code{logr} list for a
+#'   corresponding \code{M}.
+#' @param tol tolerance value to decide if a parameter estimate is close enough
+#'   to zero.
+#' @return
+#'   * If \code{out = "mle"}: a vector containing estimated \eqn{{r}}; the
+#'   length of the vector is equal to estimated number of related pairs of
+#'   strains between the two samples.
+#'   * If \code{out = "llike"}, a vector of log-likelihood values for each
+#'   evaluated combination.
+#'   * If \code{out = "all"}, a list containing an estimate, log-likelihood,
+#'   maximum log-likelihood, and \eqn{{r}} values corresponding to the
+#'   acceptance region determined by the significance level.
+#'
+#' @seealso \code{\link{ibdPair}} for genetic relatedness between two samples
+#'   with an option of returning log-likelihood and \code{\link{ibdDat}} for
+#'   processing multi-sample data
 #' @export
-#'
-generateReval <- function(M, rval = NA, nr = NA) {
-  if (is.na(rval[1])) {
-    if (is.na(nr)) {
-      return(NA)
+
+ibdEstM <- function(pair, coi, afreq, nmmax = 6,
+                    nrs = c(1e3, 1e2, 32, 16, 12, 10), rval = NULL,
+                    revals = NULL, logrs = NULL, equalr = FALSE,
+                    out = "mle", alpha = 0.05, freqlog = FALSE, nloc = NULL,
+                    upcoi = TRUE, tol = 1e-9) {
+  nmmax <- min(coi, nmmax)
+  if (is.null(nloc)) {
+    nloc <- length(afreq)
+  }
+  if (!freqlog) {
+    afreq <- lapply(afreq, log)
+  }
+
+  if (equalr) {
+    if (is.null(revals)) {
+      reval <- generateReval(1, rval = rval, nr = nrs[1])
+    } else {
+      reval <- revals[[1]]
     }
-    rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
+    resall  <- list()
+    llikall <- numeric(nmmax)
+    for (M in 1:nmmax) {
+      res <- ibdPair(pair, coi, afreq, M, reval = reval, logr = logrs[[1]],
+                     equalr = TRUE, out = "all", alpha = alpha, freqlog = TRUE,
+                     nloc = nloc, upcoi = upcoi)
+      resall[[M]] <- res
+      llikall[M]  <- res$maxllik
+    }
+    imax   <- which.max(llikall)
+    resmax <- resall[[imax]]
+    res <- switch(tolower(out), "mle" = resmax["mle"], "llik" = resmax["llik"],
+                  "all" = resmax)
+    res$mle <- rep(resmax$mle, imax)
+  } else {
+    M <- 0
+    mle <- 1
+    while(all(mle > tol) && M < nmmax) {
+      M <- M + 1
+      if (is.null(revals)) {
+        reval <- generateReval(M, nr = nrs[M])
+      } else {
+        reval <- revals[[M]]
+      }
+      res <- ibdPair(pair, coi, afreq, M, reval = reval, logr = logrs[[M]],
+                     equalr = FALSE, out = out, alpha = alpha, freqlog = TRUE,
+                     nloc = nloc, upcoi = upcoi)
+      if (inherits(res, "list")) {
+        mle <- res$mle
+      } else {
+        mle <- res
+      }
+    }
   }
-  if (M == 1) {
-    return(matrix(rval, 1))
-  }
-  reval <- as.matrix(expand.grid(rep(list(rval), M)))
-  for (k in 1:nrow(reval)) {         # faster than apply()
-    reval[k, ] <- sort(reval[k, ])
-  }
-  return(t(unique(reval)))
+  return(res)
 }
-
-#*** will be useful for upcoming estM() function
-#' Generate a grid of parameter values for multiple values of \code{M}
-#'
-#' @param Ms an integer vector.
-#' @param rvals a list of the length \code{max(Mv)}. Can also be a vector like
-#'   \code{rval}; in that case the same vector will be used for all the values
-#'   of \code{Mv}.
-#' @param nrs an integer vector of the length \code{max(Mv)}.
-#' @return A list of the length \code{max(Mv)} with elements corresponding to
-#'   the values of \code{Mv}. Each element is a matrix with \code{M} rows and
-#'   \code{nr + 1} or \code{length(rval)} columns.
-#' @export
-#' @rdname generateReval
-#'
-generateRevalList <- function(Ms, rvals = NA, nrs = NA) {
-  Mmax <- max(Ms)
-  revals <- as.list(rep(NA, Mmax))
-  if (is.na(rvals[1]))          rvals <- rep(list(NA   ), Mmax)
-  if (!inherits(rvals, "list")) rvals <- rep(list(rvals), Mmax)
-  if (is.na(nrs[1]))            nrs   <- rep(NA, Mmax)
-  for (M in Ms) {
-    revals[[M]] <- generateReval(M, rvals[[M]], nrs[M])
-  }
-  return(revals)
-}
-
-# get combinations of alleles when length(Ux) > coix (used in ibdPair2)
-getComb <- function(Ux, coix) {
-  if (length(Ux) <= coix) {
-    return(matrix(Ux, ncol = 1))
-  }
-  return(utils::combn(Ux, coix))
-}
-
-
-

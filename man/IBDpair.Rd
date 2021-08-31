@@ -73,9 +73,8 @@ or of length \code{nm} otherwise, containing estimated \eqn{{r}} (or vector
 \item If \code{out = "llike"}, a vector of log-likelihood values for each
 evaluated combination.
 \item If \code{out = "all"}, a list containing an estimate, log-likelihood,
-maximum log-likelihood, \eqn{{r}} values corresponding to the acceptance
-region determined by the significance level, and the size of that region
-(as a proportion of all evaluated).
+maximum log-likelihood, and \eqn{{r}} values corresponding to the
+acceptance region determined by the significance level.
 }
 }
 \description{
@@ -96,6 +95,6 @@ taken.
 }
 }
 \seealso{
-\code{\link{ibdDat}} for processing multi-sample data in various
-formats and estimating pairwise relatedness.
+\code{\link{ibdEstM}} for estimating the number of related pairs of
+strains and \code{\link{ibdDat}} for processing multi-sample data.
 }
