@@ -263,10 +263,8 @@ ibdEstM <- function(pair, coi, afreq, nmmax = 6,
       llikall[M]  <- res$maxllik
     }
     imax   <- which.max(llikall)
-    resmax <- resall[[imax]]
-    res <- switch(tolower(out), "mle" = resmax["mle"], "llik" = resmax["llik"],
-                  "all" = resmax)
-    res$mle <- rep(resmax$mle, imax)
+    res <- switch(tolower(out), "mle" = rep(resall[[imax]]$mle, imax),
+                  "llik" = res[[imax]]$llik, "all" = resall[[imax]])
   } else {
     M <- 0
     mle <- 1
