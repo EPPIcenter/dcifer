@@ -137,9 +137,9 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
   }
 
   qchi <- stats::qchisq(1 - alpha, df = ifelse(equalr, 1, nrow(reval)))
-  cutoff  <- max(llik) - qchi/2
-  itop    <- llik >= cutoff
-  rtop <- reval[, itop, drop = equalr]
+  cutoff<- max(llik) - qchi/2
+  itop  <- llik >= cutoff
+  rtop  <- reval[, itop, drop = equalr]
   return(list(mle = est, llik = llik, maxllik = llik[imax[1]], rtop = rtop))
 }
 
@@ -197,8 +197,8 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
         res[ix, iy, 1] <- rxy$mle
         res[ix, iy, 2:3] <- range(rxy$rtop)
         adj <- (rnull %in% c(0, 1)) + 1  # adjustment for one-sided test
-        res[ix, iy, 4] <- 1 - stats::pchisq(2*(rxy$maxllik - rxy$llik[inull]),
-                                            df = 1)/adj
+        res[ix, iy, 4] <- (1 - stats::pchisq(2*(rxy$maxllik - rxy$llik[inull]),
+                                             df = 1))/adj
       }
     }
   }
