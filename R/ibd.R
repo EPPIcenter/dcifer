@@ -190,14 +190,15 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
     for (iy in 1:(ix - 1)) {
       rxy <- ibdPair(dsmp[c(ix, iy)], coi[c(ix, iy)], afreq, nm = 1,
                      reval = reval, logr = logr, out = out, alpha = alpha,
-                     freqlog = TRUE, neval = neval, nloc = nloc)#, ...)
+                     freqlog = TRUE, neval = neval, nloc = nloc, ...)
       if (out == "mle") {
         res[ix, iy] <- rxy
       } else {
         res[ix, iy, 1] <- rxy$mle
         res[ix, iy, 2:3] <- range(rxy$rtop)
+        adj <- (rnull %in% c(0, 1)) + 1  # adjustment for one-sided test
         res[ix, iy, 4] <- 1 - stats::pchisq(2*(rxy$maxllik - rxy$llik[inull]),
-                                            df = 1)
+                                            df = 1)/adj
       }
     }
   }
