@@ -22,7 +22,10 @@
 #' @param nr     an integer value for the resolution of the grid (\eqn{nr - 1}
 #'   values between 0 and 1), over which the likelihood will be calculated.
 #'   Ignored if non-null \code{reval} is provided.
-#' @param reval  a grid of \eqn{{r}} combinations, over which the likelihood
+#' @param rval  \eqn{{r}} values for the grid or for evaluation when
+#'   \code{equalr} is \code{TRUE}. If \code{NULL}, will be evenly spaced between
+#'   0 and 1 and interval \eqn{1/nr}.
+#' @param reval  the grid of \eqn{{r}} combinations, over which the likelihood
 #'   will be calculated. A matrix where each column represents a single
 #' combination.
 #' @param logr a list as returned by \code{logReval} with logs of \code{reval}
@@ -41,10 +44,10 @@
 #'
 #' @return
 #'   * If \code{out = "mle"}: a vector of length 1 if \code{equalr = TRUE}
-#'   or of length \code{nm} otherwise, containing the relatedness estimate.
-#'   * If \code{out = "llik"}, a vector of log-likelihood values for each
+#'   or of length \code{nm} otherwise, containing estimated \eqn{{r}} (or vector
+#'   /matrix if not just first).
+#'   * If \code{out = "llike"}, a vector of log-likelihood values for each
 #'   evaluated combination.
-#'   * If \code{out = "pval"}, a list of the estimate and the p-value.
 #'   * If \code{out = "all"}, a list containing an estimate, log-likelihood,
 #'   maximum log-likelihood, and \eqn{{r}} values corresponding to the
 #'   acceptance region determined by the significance level.
@@ -52,54 +55,44 @@
 #' @seealso \code{\link{ibdEstM}} for estimating the number of related pairs of
 #'   strains and \code{\link{ibdDat}} for processing multi-sample data.
 #' @export
-#' @useDynLib dcifer
+# @useDynLib dcifer #*** removed
 
-ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
-                    equalr = FALSE, out = "mle", rnull = 0, inull = NULL,
-                    alpha = 0.05, freqlog = FALSE, neval = NULL, nloc = NULL,
-                    upcoi = TRUE, mnewton = TRUE, tol = 1e-3) {
-                    #*** mnewton/tol is temp!!
+ibdPairOld <- function(pair, coi, afreq, nm, nr = 1e2, rval = NULL, reval = NULL,
+                    logr = NULL, equalr = FALSE, out = "mle", alpha = 0.05,
+                    freqlog = FALSE, neval = NULL, nloc = NULL, upcoi = TRUE) {
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
+  if (is.null(logr)) {
+    if (is.null(rval) && is.null(reval)) {
+      rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
+    }
+    nrmat <- ifelse(equalr, 1, nm)
+    if (is.null(reval)) {
+      reval <- generateReval(nrmat, rval = rval)
+    } else if (nrow(reval) != nrmat) {
+      stop("reval doesn't match nm")
+    }
+    neval <- ncol(reval)
+    logr <- logReval(reval, nm = nrmat, neval = neval)
+  } else {                            # logr has to match reval
+    if (is.null(reval)) {
+      if (equalr && !is.null(rval)) {
+        reval <- generateReval(1, rval = rval)
+      } else {
+        stop("Please provide reval")  # if equalr is TRUE, can provide rval
+      }
+    }
+    if (is.null(neval)) {
+      neval <- length(logr[[3]])
+    }
+  }
+
   if (!freqlog) {
     afreq <- lapply(afreq, log)
   }
-  logj   <- log(1:max(coi))            # starts with 1
-  factj  <- lgamma(0:max(coi) + 1)     # starts with 0
-  if (FALSE) {                         #*** uncomment for final version
-  mnewton <- FALSE
-  if (nm == 1 && out %in% c("mle", "pval")) {
-    mnewton <- TRUE
-  } }
 
-  if (!mnewton) {
-    npar <- ifelse(equalr, 1, nm)
-    if (is.null(reval)) {
-      rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
-      reval <- generateReval(npar, rval = rval)
-    } else if (!equalr && nm > 1 && nrow(reval) != nm) {
-      stop("reval doesn't match nm")
-    }
-    if (is.null(neval)) {
-      if (inherits(reval, "matrix")) {
-        neval <- ncol(reval)
-      } else {
-        neval <- length(reval)
-      }
-    }
-    if (nm > 1) {
-      if (is.null(logr)) {
-        logReval(reval, nm = npar, neval = neval)
-      }
-    }
-  }
-
-  if (mnewton) {
-    p01 <- matrix(0, 2, nloc)
-  } else {
-    llik <- rep(0, neval)
-  }
+  llik <- rep(0, neval)
   for (t in 1:nloc) {
     Ux <- which(as.logical(pair[[1]][[t]]))  # in case of integer vector
     Uy <- which(as.logical(pair[[2]][[t]]))
@@ -113,72 +106,41 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
     if (upcoi) {
       coix <- max(coi[1], length(Ux))
       coiy <- max(coi[2], length(Uy))
-      rt <- probUxUy(Ux, Uy, coix, coiy, afreq[[t]], nm, logj, factj, logr,
-                     reval, neval, mnewton, equalr)
-    } else {  #*** remove later? Means for llikt or p01 not exactly justified
+      llikt <- probUxUyOld(Ux, Uy, coix, coiy, afreq[[t]], logr, nm, neval, equalr)
+    } else {
       Uxcomb <- getComb(Ux, coi[1])
       Uycomb <- getComb(Uy, coi[2])
       ncx <- ncol(Uxcomb)
       ncy <- ncol(Uycomb)
-      rt <- matrix(0, ncx*ncy, neval)
+      llikt <- matrix(0, ncx*ncy, neval)
       icomb <- 1
       for (icx in 1:ncx) {
         for (icy in 1:ncy) {
-          rt[icomb, ] <- probUxUy(Uxcomb[, icx], Uycomb[, icy], coi[1], coi[2],
-                                  afreq[[t]], nm, logj, factj, logr, reval,
-                                  neval, mnewton, equalr)
+          llikt[icomb, ] <- probUxUyOld(Uxcomb[, icx], Uycomb[, icy], coi[1],
+                                     coi[2], afreq[[t]], logr, nm, neval,
+                                     equalr)
           icomb <- icomb + 1
         }
       }
-      rt <- colMeans(rt, na.rm = TRUE)
+      llikt <- colMeans(llikt, na.rm = TRUE)  # or FALSE?
     }
-    if (mnewton) {
-      llik <- llik + rt
-    } else {
-      p01[, t] <- rt
-    }
+    llik <- llik + llikt
   }
 
   if (tolower(out) == "llik") {
     return(llik)
   }
-
-  if (mnewton) {
-    C <- p01[2, ]/p01[1, ] - 1
-    rhat <- mleNewton(C, tol = tol)        #*** for later make tol = 1/nr
-  } else {
-    imax <- which.max(llik == max(llik))  #  which(llik == max(llik))
-    rhat <- reval[, imax]                # rowMeans(reval[, imax, drop = FALSE])
-  }
-  if (tolower(out) == "mle") {
-    return(rhat)
+  imax <- which(llik == max(llik))
+  est <- rowMeans(reval[, imax, drop = FALSE])  # or reval[, imax[1]] for 1st
+  if (tolower(out == "mle")) {
+    return(est)
   }
 
-  if (mnewton) {
-    lrs <- lrsP01(rhat, rnull, p01)
-  } else {
-    if (is.null(inull)) {
-      if (equalr) {
-        inull <- which.min(abs(reval - rnull))
-      } else {      #*** needed? Probably won't be used much
-        inull <- which.min(colSums(abs(reval - sort(rnull))))
-      }
-    }
-    lrs <- 2*(llik[imax] - llik[inull])
-  }
-  adj  <- (rnull %in% c(0, 1)) + 1     # adjustment for one-sided test
-  pval <- (1 - stats::pchisq(lrs, df = npar))/adj
-  #*** BTW in the paper didn't address df for chisq when equalr = TRUE
-  if (mnewton || tolower(out) == "pval") {
-    return(list(mle = rhat, pval = pval))
-  }
-
-  qchi   <- stats::qchisq(1 - alpha, df = npar)
-  cutoff <- max(llik) - qchi/2
-  itop   <- llik >= cutoff
-  rtop   <- reval[, itop, drop = equalr]
-  return(list(mle = rhat, pval = pval, llik = llik, maxllik = llik[imax],
-              rtop = rtop))
+  qchi <- stats::qchisq(1 - alpha, df = ifelse(equalr, 1, nrow(reval)))
+  cutoff<- max(llik) - qchi/2
+  itop  <- llik >= cutoff
+  rtop  <- reval[, itop, drop = equalr]
+  return(list(mle = est, llik = llik, maxllik = llik[imax[1]], rtop = rtop))
 }
 
 #' Pairwise Genetic Distance
@@ -202,32 +164,23 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
 #'   estimating the number of related pairs of strains.
 #' @export
 
-ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
-                   rnull = 0, alpha = 0.05, ...) {
-  if (FALSE) {                     #*** uncomment later
-  mnewton <- TRUE
-  if (tolower(out) == "all") {
-    mnewton <- FALSE
-  } }                               #*** end uncomment
-
-  if (!mnewton) {
-    if (is.null(reval)) {
-      reval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
+ibdDatOld <- function(dsmp, coi, afreq, nr = 1e2, rval = NULL, reval = NULL,
+                   equalr = FALSE, out = "all", rnull = 0, alpha = 0.05, ...) {
+  if (is.null(reval)) {
+    if (is.null(rval)) {
+      rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
     }
-    neval <- length(reval)
-    inull <- which.min(abs(reval - rnull))
-  } else {
-    inull <- neval <- NULL
+    reval <- generateReval(1, rval = rval)
   }
+  logr  <- logReval(reval, nm = 1)
+  neval <- length(rval)
+  inull <- which.min(abs(rval - rnull))
   afreq <- lapply(afreq, log)
-  nsmp  <- length(dsmp)
   nloc  <- length(afreq)
+  nsmp  <- length(dsmp)
 
-  if (tolower(out) == "mle") {
+  if (out == "mle") {
     res <- matrix(NA, nsmp, nsmp, dimnames = list(names(dsmp), names(dsmp)))
-  } else if (tolower(out) == "pval") {
-    res <- array(NA, dim = c(nsmp, nsmp, 2),
-                 dimnames = list(names(dsmp), names(dsmp), c("MLE", "p-value")))
   } else {
     res <- array(NA, dim = c(nsmp, nsmp, 4),
                  dimnames = list(names(dsmp), names(dsmp),
@@ -235,17 +188,17 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
   }
   for (ix in 2:nsmp) {
     for (iy in 1:(ix - 1)) {
-      rxy <- ibdPair(dsmp[c(ix, iy)], coi[c(ix, iy)], afreq, nm = 1,
-                     reval = reval, out = out, rnull = rnull, inull = inull,
-                     alpha = alpha, freqlog = TRUE, neval = neval, nloc = nloc,
-                     ...)
-      if (tolower(out) == "mle") {
+      rxy <- ibdPairOld(dsmp[c(ix, iy)], coi[c(ix, iy)], afreq, nm = 1,
+                     reval = reval, logr = logr, out = out, alpha = alpha,
+                     freqlog = TRUE, neval = neval, nloc = nloc, ...)
+      if (out == "mle") {
         res[ix, iy] <- rxy
       } else {
-        res[ix, iy, c("MLE", "p-value")] <- c(rxy$mle, rxy$pval)
-        if (tolower(out) == "all") {
-          res[ix, iy, c("CI lower", "CI upper")] <- range(rxy$rtop)
-        }
+        res[ix, iy, 1] <- rxy$mle
+        res[ix, iy, 2:3] <- range(rxy$rtop)
+        adj <- (rnull %in% c(0, 1)) + 1  # adjustment for one-sided test
+        res[ix, iy, 4] <- (1 - stats::pchisq(2*(rxy$maxllik - rxy$llik[inull]),
+                                             df = 1))/adj
       }
     }
   }
@@ -265,7 +218,7 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
 #'   corresponding \code{M}.
 #' @param logrs a list where each element is a \code{logr} list for a
 #'   corresponding \code{M}.
-#' @param tol0 tolerance value to decide if a parameter estimate is close enough
+#' @param tol tolerance value to decide if a parameter estimate is close enough
 #'   to zero.
 #' @return
 #'   * If \code{out = "mle"}: a vector containing estimated \eqn{{r}}; the
@@ -282,11 +235,11 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
 #'   processing multi-sample data
 #' @export
 
-ibdEstM <- function(pair, coi, afreq, nmmax = 6,
-                    nrs = c(1e3, 1e2, 32, 16, 12, 10), revals = NULL,
-                    logrs = NULL, equalr = FALSE, out = "mle", rnull = 0,
-                    alpha = 0.05, freqlog = FALSE, nloc = NULL, upcoi = TRUE,
-                    tol0 = 1e-9, v2 = FALSE) {  #*** tol0 for rhat = 0, v2 temp
+ibdEstMOld <- function(pair, coi, afreq, nmmax = 6,
+                    nrs = c(1e3, 1e2, 32, 16, 12, 10), rval = NULL,
+                    revals = NULL, logrs = NULL, equalr = FALSE,
+                    out = "mle", alpha = 0.05, freqlog = FALSE, nloc = NULL,
+                    upcoi = TRUE, tol = 1e-9) {
   nmmax <- min(coi, nmmax)
   if (is.null(nloc)) {
     nloc <- length(afreq)
@@ -297,61 +250,35 @@ ibdEstM <- function(pair, coi, afreq, nmmax = 6,
 
   if (equalr) {
     if (is.null(revals)) {
-      reval <- generateReval(1, nr = nrs[1])
+      reval <- generateReval(1, rval = rval, nr = nrs[1])
     } else {
       reval <- revals[[1]]
     }
-    neval <- length(reval)
-    if (is.null(logrs)) {
-      logrs <- list(logReval(reval, nm = 1, neval = neval))
-    }
-    if (!v2) {                  #*** temp: which method is faster
     resall  <- list()
     llikall <- numeric(nmmax)
     for (M in 1:nmmax) {
-      res <- ibdPair(pair, coi, afreq, M, reval = reval, logr = logrs[[1]],
-                     equalr = TRUE, out = "all", rnull = rnull, alpha = alpha,
-                     freqlog = TRUE, neval = neval, nloc = nloc, upcoi = upcoi,
-                     mnewton = FALSE) #*** mnewt out
-      #*** might be faster to return llik, then recalculate at M' - check
+      res <- ibdPairOld(pair, coi, afreq, M, reval = reval, logr = logrs[[1]],
+                     equalr = TRUE, out = "all", alpha = alpha, freqlog = TRUE,
+                     nloc = nloc, upcoi = upcoi)
       resall[[M]] <- res
       llikall[M]  <- res$maxllik
     }
     imax   <- which.max(llikall)
     res <- switch(tolower(out), "mle" = rep(resall[[imax]]$mle, imax),
                   "llik" = res[[imax]]$llik, "all" = resall[[imax]])
-    } else {
-      llikall <- numeric(nmmax)
-      for (M in 1:nmmax) {
-        res <- ibdPair(pair, coi, afreq, M, reval = reval, logr = logrs[[1]],
-                       equalr = TRUE, out = "llik", rnull = rnull, alpha = alpha,
-                       freqlog = TRUE, neval = neval, nloc = nloc, upcoi = upcoi,
-                       mnewton = FALSE) #*** mnewt out
-        llikall[M]  <- max(res)
-      }
-      imax   <- which.max(llikall)
-      res <- ibdPair(pair, coi, afreq, imax, reval = reval, logr = logrs[[1]],
-                     equalr = TRUE, out = out, rnull = rnull, alpha = alpha,
-                     freqlog = TRUE, neval = neval, nloc = nloc, upcoi = upcoi,
-                     mnewton = FALSE) #*** mnewt out
-    }
   } else {
     M <- 0
     mle <- 1
-    while(all(mle > tol0) && M < nmmax) {
+    while(all(mle > tol) && M < nmmax) {
       M <- M + 1
       if (is.null(revals)) {
         reval <- generateReval(M, nr = nrs[M])
       } else {
         reval <- revals[[M]]
       }
-      if (is.null(logrs)) {
-        logrs[[M]] <- logReval(reval, nm = M)
-      }
-      res <- ibdPair(pair, coi, afreq, M, reval = reval, logr = logrs[[M]],
-                     equalr = FALSE, out = out, rnull = rnull, alpha = alpha,
-                     freqlog = TRUE, nloc = nloc, upcoi = upcoi,
-                     mnewton = FALSE) #*** mnewt out
+      res <- ibdPairOld(pair, coi, afreq, M, reval = reval, logr = logrs[[M]],
+                     equalr = FALSE, out = out, alpha = alpha, freqlog = TRUE,
+                     nloc = nloc, upcoi = upcoi)
       if (inherits(res, "list")) {
         mle <- res$mle
       } else {

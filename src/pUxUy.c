@@ -164,8 +164,7 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 	sprob[i] = log(sprob[i]);
       }
 
-      mmax = MIN(mmax, nm);  
-      //*** maybe have a vector of nm (to evaluate over different nm's) 
+      //***      mmax = MIN(mmax, nm);  
       /* calculate likelihood for each vector of r */
       shift = 0;
       for (i = 0; i < neval; i++) {

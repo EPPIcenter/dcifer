@@ -68,9 +68,47 @@ generateReval <- function(M, rval = NULL, nr = NULL) {
 }
 
 # get combinations of alleles when length(Ux) > coix and upcoi = FALSE
+#*** out if that option in ibdPair() is out
 getComb <- function(Ux, coix) {
   if (length(Ux) <= coix) {
     return(matrix(Ux, ncol = 1))
   }
   return(utils::combn(Ux, coix))
+}
+
+drv1 <- function(r, C) sum(C/(C*r + 1))
+#drv2 <- function(r, C) -sum((C/(C*r + 1))^2)
+#llik <- function(r, p01) sum(log(r*(p01[2, ] - p01[1, ]) + p01[1, ]))
+
+# If outside bounds, check 1st deriv at bound, then start there
+mleNewton <- function(C, rstart = 0.5, tol = 1e-3, upper = 0.99) {
+  rold <- 2
+  rnew <- rstart
+  counter <- 0
+  while(abs(rnew - rold) > tol) {
+    rold <- rnew
+    sc <- drv1(rold, C)
+    scdrv <- -sum((C/(C*rold + 1))^2)
+    rnew <- rold - sc/scdrv
+    counter <- counter + 1
+    if (rnew < 0) {
+      if (drv1(0, C) < 0) {
+        return(c(0, counter))
+      }
+      rnew <- 0
+    } else if (rnew >= 1) {
+      if (drv1(1, C) > 0) {
+        return(c(1, counter))
+      }
+      rnew <- upper
+    }
+  }
+  return(c(rnew, counter))
+}
+
+lrsP01 <- function(rhat, rnull, p01) {
+  p1mp0 <- p01[2, ] - p01[1, ]
+  lnull <- sum(log(rnull*p1mp0 + p01[1, ]))
+  lhat  <- sum(log(rhat *p1mp0 + p01[1, ]))
+  return(2*(lhat - lnull))
 }

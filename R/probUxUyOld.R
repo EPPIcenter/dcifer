@@ -11,60 +11,34 @@
 #'   given locus. It is not checked if frequencies on a regular scale sum to
 #'   \eqn{1}.
 #' @param logr a list of length \eqn{5} as returned by \code{logReval()}.
-#' @param logj,factj numeric vectors, precalculated values based on \code{COI}.
 #' @inheritParams ibdPair
 #'
 #' @return A vector of log-likelihood values for each \eqn{{r}}, i.e. for each
-#'   column of \code{reval} matrix (or each element of \code{reval} vector if
+#'   column of \code{reval} matrix (or each element of \code{rval} vector if
 #'   \code{equalr} is \code{TRUE}).
 #'
 #' @export
-probUxUy <- function(Ux, Uy, nx, ny, probs, nm, logj, factj, logr = NULL,
-                     reval = NULL, neval = NULL, mnewton = TRUE,
-                     equalr = FALSE) {
+
+probUxUyOld <- function(Ux, Uy, nx, ny, probs, logr, nm, neval, equalr = FALSE) {
   if (nm > (min(nx, ny))) {
     stop("number of related strains greater than min(nx, ny)")
   }
   ixy <- which(Ux %in% Uy)
   iyx <- which(Uy %in% Ux)
-  if (nm == 1) {
-    if (mnewton) {
-      return(.Call("p0p1", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                   as.integer(iyx), as.integer(nx),  as.integer(ny),
-                   as.double(probs), as.double(logj), as.double(factj),
-                   PACKAGE = "dcifer"))
-    } else {
-      return(.Call("llikM1", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                   as.integer(iyx), as.integer(nx),  as.integer(ny),
-                   as.double(probs), as.double(logj), as.double(factj),
-                   as.double(reval), as.integer(neval), PACKAGE = "dcifer"))
-    }
-  }
+  logj   <- log(1:max(nx, ny))         # starts with 1
+  factj  <- lgamma(0:max(nx, ny) + 1)  # starts with 0
   if (equalr) {
-    return(.Call("llikEqr", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                 as.integer(iyx), as.integer(nx),  as.integer(ny),
+    return(.Call("llikEqr", as.integer(Ux), as.integer(Uy),
+                 as.integer(ixy), as.integer(iyx),
+                 as.integer(nx),  as.integer(ny),
                  as.double(probs), as.double(logj), as.double(factj),
                  as.integer(nm), logr, as.integer(neval), PACKAGE = "dcifer"))
   }
-  return(.Call("llik", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-               as.integer(iyx), as.integer(nx), as.integer(ny),
+  return(.Call("llik", as.integer(Ux), as.integer(Uy),
+               as.integer(ixy), as.integer(iyx),
+               as.integer(nx), as.integer(ny),
                as.double(probs), as.double(logj), as.double(factj),
                as.integer(nm), logr, as.integer(neval), PACKAGE = "dcifer"))
-}
-
-#***** actually, combine with previous
-#' Calculate likelihood for a pair
-#' \ifelse{html}{\out{U<sub>x</sub>}}{\eqn{U_x}},
-#' \ifelse{html}{\out{U<sub>y</sub>}}{\eqn{U_y}} when
-#' \ifelse{html}{\out{M = 1}}{\eqn{M = 1}}
-probUxUyM1 <- function(Ux, Uy, nx, ny, probs, reval, neval, logj, factj) {
-  ixy <- which(Ux %in% Uy)
-  iyx <- which(Uy %in% Ux)
-  return(.Call("llikM1", as.integer(Ux), as.integer(Uy),
-               as.integer(ixy), as.integer(iyx),
-               as.integer(nx),  as.integer(ny),
-               as.double(probs), as.double(logj), as.double(factj),
-               as.double(reval), as.integer(neval)))
 }
 
 #' Calculate logs for reval and associated quantities

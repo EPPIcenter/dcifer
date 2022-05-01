@@ -2,9 +2,13 @@
 
 export(generateReval)
 export(ibdDat)
+export(ibdDatOld)
 export(ibdEstM)
+export(ibdEstMOld)
 export(ibdPair)
+export(ibdPairOld)
 export(logReval)
 export(probUxUy)
+export(probUxUyOld)
 export(readDat)
 useDynLib(dcifer)

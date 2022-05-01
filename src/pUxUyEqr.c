@@ -170,7 +170,7 @@ SEXP llikEqr(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 	sproblog[i] = log(sprob[i]);
       }
 
-      mmax = MIN(mmax, nm);  // e.g. when nm < min(nx, ny)
+      //***      mmax = MIN(mmax, nm);  // e.g. when nm < min(nx, ny) 
       /* calculate likelihood for each value of r */
       for (i = 0; i < neval; i++) {
         lik[i] += probSxSyEqr(logr[i], log1r[i], sprob, sproblog, nm, mmax, cbinom,
