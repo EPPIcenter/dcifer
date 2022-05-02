@@ -6,7 +6,7 @@
 
 /******************************************************************************/
 /*                                                                            */ 
-/*                                    M = 1                                   */
+/*                                   M = 1                                   */
 /*                      likelihood for a pair of samples                      */
 /*   fix probs for X; subsets of Sxy: subtract from Y update multinom coefs   */
 /*                                                                            */ 
@@ -17,7 +17,6 @@
 SEXP llikM1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 	    SEXP Rlogp, SEXP Rlogj, SEXP Rfactj, SEXP Rr, SEXP Rneval)
 {
-  //*** also: find how to allocate a list (should be somewhere)
   int nux, nuy, nuxy, nx, ny, ax, ay, bx, by, i, ix, iy, mmax, neval;
   int *ux1, *uy1, *ixy1, *iyx1;  // to not rewrite R obj  
   double combx, comby, sump0, sump1;

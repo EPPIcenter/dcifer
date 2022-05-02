@@ -73,33 +73,30 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
     mnewton <- TRUE
   } }
 
+  npar <- ifelse(equalr, 1, nm)
   if (!mnewton) {
-    npar <- ifelse(equalr, 1, nm)
     if (is.null(reval)) {
-      rval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
-      reval <- generateReval(npar, rval = rval)
-    } else if (!equalr && nm > 1 && nrow(reval) != nm) {
+      reval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
+    }
+    if (!inherits(reval, "matrix")) {
+      reval <- generateReval(npar, rval = reval)
+    }
+    if (!equalr && nm > 1 && nrow(reval) != nm) {
       stop("reval doesn't match nm")
     }
     if (is.null(neval)) {
-      if (inherits(reval, "matrix")) {
-        neval <- ncol(reval)
-      } else {
-        neval <- length(reval)
-      }
+      neval <- ncol(reval)
     }
     if (nm > 1) {
       if (is.null(logr)) {
         logReval(reval, nm = npar, neval = neval)
       }
     }
+    llik <- rep(0, neval)
+  } else {
+    p01 <- matrix(0, 2, nloc)
   }
 
-  if (mnewton) {
-    p01 <- matrix(0, 2, nloc)
-  } else {
-    llik <- rep(0, neval)
-  }
   for (t in 1:nloc) {
     Ux <- which(as.logical(pair[[1]][[t]]))  # in case of integer vector
     Uy <- which(as.logical(pair[[2]][[t]]))
@@ -133,9 +130,9 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
       rt <- colMeans(rt, na.rm = TRUE)
     }
     if (mnewton) {
-      llik <- llik + rt
-    } else {
       p01[, t] <- rt
+    } else {
+      llik <- llik + rt
     }
   }
 
@@ -145,9 +142,9 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
 
   if (mnewton) {
     C <- p01[2, ]/p01[1, ] - 1
-    rhat <- mleNewton(C, tol = tol)        #*** for later make tol = 1/nr
+    rhat <- mleNewton(C, tol = tol)[1]  #*** for later make tol = 1/nr, rm [1]
   } else {
-    imax <- which.max(llik == max(llik))  #  which(llik == max(llik))
+    imax <- which.max(llik)              # which(llik == max(llik))
     rhat <- reval[, imax]                # rowMeans(reval[, imax, drop = FALSE])
   }
   if (tolower(out) == "mle") {
@@ -173,12 +170,15 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
     return(list(mle = rhat, pval = pval))
   }
 
+  #*** for ibdDat don't need this calculation to repeat, but not a big deal
+  #*       (7.5 sec for 1e6)
   qchi   <- stats::qchisq(1 - alpha, df = npar)
   cutoff <- max(llik) - qchi/2
   itop   <- llik >= cutoff
   rtop   <- reval[, itop, drop = equalr]
   return(list(mle = rhat, pval = pval, llik = llik, maxllik = llik[imax],
               rtop = rtop))
+  #*** note will have to get maxllik differently for mnewton = TRUE!!!
 }
 
 #' Pairwise Genetic Distance
@@ -203,8 +203,8 @@ ibdPair <- function(pair, coi, afreq, nm, nr = 1e2, reval = NULL, logr = NULL,
 #' @export
 
 ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
-                   rnull = 0, alpha = 0.05, ...) {
-  if (FALSE) {                     #*** uncomment later
+                   rnull = 0, alpha = 0.05, mnewton = TRUE, ...) {
+  if (FALSE) {                     #*** uncomment later, rm mnewton from above
   mnewton <- TRUE
   if (tolower(out) == "all") {
     mnewton <- FALSE
@@ -238,12 +238,12 @@ ibdDat <- function(dsmp, coi, afreq, nr = 1e3, reval = NULL, out = "all",
       rxy <- ibdPair(dsmp[c(ix, iy)], coi[c(ix, iy)], afreq, nm = 1,
                      reval = reval, out = out, rnull = rnull, inull = inull,
                      alpha = alpha, freqlog = TRUE, neval = neval, nloc = nloc,
-                     ...)
+                     mnewton = mnewton, ...) #*** rm mnewton later???
       if (tolower(out) == "mle") {
         res[ix, iy] <- rxy
       } else {
         res[ix, iy, c("MLE", "p-value")] <- c(rxy$mle, rxy$pval)
-        if (tolower(out) == "all") {
+        if (tolower(out) == "all" && !mnewton) {
           res[ix, iy, c("CI lower", "CI upper")] <- range(rxy$rtop)
         }
       }

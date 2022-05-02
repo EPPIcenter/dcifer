@@ -103,7 +103,7 @@ mleNewton <- function(C, rstart = 0.5, tol = 1e-3, upper = 0.99) {
       rnew <- upper
     }
   }
-  return(c(rnew, counter))
+  return(c(rnew, counter))            #*** remove counter later
 }
 
 lrsP01 <- function(rhat, rnull, p01) {

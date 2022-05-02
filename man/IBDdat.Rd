@@ -13,6 +13,7 @@ ibdDat(
   out = "all",
   rnull = 0,
   alpha = 0.05,
+  mnewton = TRUE,
   ...
 )
 }
