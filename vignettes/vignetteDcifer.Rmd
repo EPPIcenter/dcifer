@@ -32,7 +32,7 @@ Dcifer relatedness estimation requires sample data in a specific format and esti
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 # optionally, extract location information
 meta <- unique(read.csv(sfile)[c("sampleID", "province")])
-dsmp  <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
+dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
 ```
 
@@ -84,13 +84,13 @@ dres[9, 5, ]
 
 ## Visualize the results
 
-When pairwise relatedness is calculated within a single dataset, `ibdDat` returns triangular matrices. For plotting, we can make it symmetric. Then significantly related pairs can be outlined in either or both triangles. 
+When pairwise relatedness is calculated within a single dataset, `ibdDat` returns triangular matrices. For plotting, we can make them symmetric. Then significantly related pairs can be outlined in either or both triangles. 
 
 Display the results with sample ID's written on the margins. Label colors correspond to locations (health facilities): 
 
 ```{r, fig.width = 6, fig.height = 6}
 par(mar = c(3, 3, 1, 1))
-nsmp <- length(dsmp)
+nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
 
 # create symmetric matrix
@@ -101,7 +101,6 @@ dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]
 alpha <- 0.05                          # significance level                    
 isig <- which(dres[, , "p_value"] <= alpha, arr.ind = TRUE)
 col_id <- rep(c("plum4", "lightblue4"), nsite)
-#*** maybe only do upper triangle
 plotRel(dmat, isig = isig[, 2:1], draw_diag = TRUE, alpha = alpha, idlab = TRUE,
         col_id = col_id)
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)

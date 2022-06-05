@@ -17,13 +17,14 @@ You can install dcifer from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("innager/dcifer") # build_vignettes = TRUE
+remotes::install_github("innager/dcifer", build_vignettes = TRUE)
 ```
 
 ``` r
 library(dcifer)
 help(package = "dcifer")
-#vignette(package = "dcifer") #vignetteDcifer)
+vignette(package = "dcifer", "vignetteDcifer")
+#> Warning: vignette 'vignetteDcifer' not found
 pardef <- par(no.readonly = TRUE)
 ```
 
@@ -40,7 +41,7 @@ reads and reformats the data:
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 # optionally, extract location information
 meta <- unique(read.csv(sfile)[c("sampleID", "province")])
-dsmp  <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
+dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
 #> List of 52
 #>  $ 8025874217:List of 87
@@ -145,7 +146,7 @@ dres <- ibdDat(dsmp,  coi, afreq, nr = 1e3)
 ## Visualize the results
 
 When pairwise relatedness is calculated within a single dataset,
-`ibdDat` returns triangular matrices. For plotting, we can make it
+`ibdDat` returns triangular matrices. For plotting, we can make them
 symmetric. Then significantly related pairs can be outlined in either or
 both triangles.
 
@@ -170,11 +171,11 @@ For the sorted samples:
 
 ``` r
 par(mar = c(1, 3, 3, 1))
-nsmp <- length(dsmp)
+nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
-dmat <- dres[, , "estimate"]
+isig  <- which(dres[, , "p_value"] <= alpha, arr.ind = TRUE)
+dmat  <- dres[, , "estimate"]
 dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))] 
-isig <- which(dres[, , "p_value"] <= alpha, arr.ind = TRUE)
 col_id <- rep(c("plum4", "lightblue4"), nsite)
 plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
         idlab = TRUE, side_id = c(2, 3), col_id = col_id, srt_id = c(25, 65))
@@ -371,7 +372,7 @@ arrows(CI[1], yCI, CI[2], yCI, angle = 20, length = 0.1, code = 3,
 arrows(0.15, res2$llik[1], 0.15, max(res2$llik), angle = 20, length = 0.1, 
        code = 3, col = cols[3])
 text(0.165, yLR, adj = 0, "0.5 LR statistic", col = cols[3])
-text(mean(CI), yCI + 0.03*diff(llrng), "confidence interval", col = cols[3])
+text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
