@@ -2,83 +2,129 @@
 % Please edit documentation in R/ibd.R
 \name{ibdEstM}
 \alias{ibdEstM}
-\title{Estimate Relatedness and Number of Related Strains}
+\title{Estimate Relatedness and a Number of Related Strains}
 \usage{
 ibdEstM(
   pair,
   coi,
   afreq,
-  nmmax = 6,
-  nrs = c(1000, 100, 32, 16, 12, 10),
-  revals = NULL,
-  logrs = NULL,
-  equalr = FALSE,
-  out = "mle",
+  Mmax = 6,
+  pval = FALSE,
+  confreg = FALSE,
+  llik = FALSE,
   rnull = 0,
   alpha = 0.05,
+  equalr = FALSE,
   freqlog = FALSE,
-  nloc = NULL,
-  upcoi = TRUE,
+  nrs = c(1000, 100, 32, 16, 12, 10),
+  revals = NULL,
   tol0 = 1e-09,
-  v2 = FALSE
+  logrs = NULL,
+  nevals = NULL,
+  nloc = NULL
 )
 }
 \arguments{
-\item{pair}{a list of length two containing two samples.}
+\item{pair}{a list of length two containing data for a pair of samples.}
 
-\item{coi}{a vector indicating complexity of infection for each sample.}
+\item{coi}{a vector containing complexity of infection for each sample.}
 
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
 
-\item{nmmax}{maximum number of related pairs of strains to evaluate over.}
+\item{Mmax}{a maximum number of related pairs of strains to evaluate over.
+If greater than \code{min(coi)}, will be set to \code{min(coi)}.}
 
-\item{nrs}{an integer vector of values for grid resolution, one value for
-each \code{M} (or a single value when \code{equalr = TRUE}).}
+\item{pval}{logical values specifying if
+relatedness estimate, p-value, confidence region, log-likelihood for a
+range of \eqn{r} values, and maximum log-likelihood should be returned.}
 
-\item{revals}{a list where each element is an \code{reval} matrix for a
-corresponding \code{M}.}
+\item{confreg}{logical values specifying if
+relatedness estimate, p-value, confidence region, log-likelihood for a
+range of \eqn{r} values, and maximum log-likelihood should be returned.}
 
-\item{logrs}{a list where each element is a \code{logr} list for a
-corresponding \code{M}.}
+\item{llik}{logical values specifying if
+relatedness estimate, p-value, confidence region, log-likelihood for a
+range of \eqn{r} values, and maximum log-likelihood should be returned.}
 
-\item{equalr}{a logical value. If \code{TRUE}, the same values of \eqn{r} are
-assumed for all \code{nm} pairs of related strains.}
+\item{rnull}{a null value of relatedness parameter for hypothesis testing
+(needed if \code{pval = TRUE}).}
 
-\item{out}{a character string for the type of results to be returned. If
-\code{"mle"}, an estimate is returned, if \code{"llik"} - a vector of
-log-likelihood for each combination.}
+\item{alpha}{significance level for a \ifelse{html}{\out{1 -
+&alpha;}}{\eqn{1 - \alpha}} confidence region.}
 
-\item{alpha}{significance level.}
+\item{equalr}{a logical value. If \code{TRUE}, the same level of relatedness
+is assumed for M pairs of strains
+(\ifelse{html}{\out{r<sub>1</sub>}}{\eqn{r_1}} = ... =
+\ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).}
 
 \item{freqlog}{a logical value indicating if \code{afreq} is on the log
 scale.}
 
+\item{nrs}{an integer vector where \code{i}'th element correspons to
+\ifelse{html}{\out{M = i}}{\eqn{M = i}} and indicates precision of the
+estimate (resolution of a grid of parameter values). Ignored if non-null
+\code{revals} is provided.}
+
+\item{revals}{a list where \code{i}'th element corresponds to
+\ifelse{html}{\out{M = i}}{\eqn{M = i}} and is a matrix representing a grid
+of parameter values (a matrix where each column represents a single
+\ifelse{html}{\out{(r<sub>1</sub>, ..., r<sub>M</sub>)}}{\eqn{(r_1, ...,
+  r_M)}} combination).}
+
+\item{tol0}{a tolerance value for an estimate to be considered zero.}
+
+\item{logrs}{a list where \code{i}'th element corresponds to
+\ifelse{html}{\out{M = i}}{\eqn{M = i}} and is a list as returned by
+\code{\link{logReval}}.}
+
+\item{nevals}{a vector where \code{i}'th element corresponds to
+\ifelse{html}{\out{M = i}}{\eqn{M = i}} and provides the number of
+relatedness values/combinations to evaluate over.}
+
 \item{nloc}{the number of loci.}
-
-\item{upcoi}{method to handle cases when \eqn{COI < |Ux|} (see @details).}
-
-\item{tol0}{tolerance value to decide if a parameter estimate is close enough
-to zero.}
 }
 \value{
+A named list if multiple output logical values are \code{TRUE} - or a
+vector if only \code{rhat = TRUE}. The output includes:
 \itemize{
-\item If \code{out = "mle"}: a vector containing estimated \eqn{{r}}; the
-length of the vector is equal to estimated number of related pairs of
-strains between the two samples.
-\item If \code{out = "llike"}, a vector of log-likelihood values for each
-evaluated combination.
-\item If \code{out = "all"}, a list containing an estimate, log-likelihood,
-maximum log-likelihood, and \eqn{{r}} values corresponding to the
-acceptance region determined by the significance level.
+\item a relatedness estimate (numeric vector of length corresponding to the
+estimated number of related pairs);
+\item a p-value if \code{pval = TRUE};
+\item parameter values from the grid in \code{revals} that are within the
+confidence region if \code{confreg = TRUE};
+\item log-likelihood values for the parameter grid in \code{revals} if
+\code{llik = TRUE}.
 }
 }
 \description{
-Estimates multiple relatedness parameters when the number $M$ of
-related pairs of strains between two samples is unknown.
+Estimates the number of related pairs of strains between two
+infections along with corresponding relatedness estimates and optional
+inference.
+}
+\examples{
+coi   <- getCOI(dsmp, lrank = 2)           # estimate COI
+afreq <- calcAfreq(dsmp, coi, tol = 1e-5)  # estimate allele frequencies
+
+# two samples
+ipair <- c(21, 17)
+# for higher COI: c(33, 5): COI = 5-6; c(37, 20): 4-3, c(41, 50): 5-4
+
+Mmax  <- min(coi[ipair])
+# choose resolution of the grid for different M
+nrs   <- c(1e3, 1e2, 32, 16, 12, 10)[1:Mmax]
+revals <- mapply(generateReval, 1:Mmax, nr = nrs)
+
+(res1 <- ibdEstM(dsmp[ipair], coi[ipair], afreq, Mmax = Mmax, equalr = FALSE,
+                 reval = revals))
+(res2 <- ibdEstM(dsmp[ipair], coi[ipair], afreq, Mmax = Mmax, equalr = TRUE))
+# number of related pairs of strains (M')
+sum(res1 > 0)
+sum(res2 > 0)  # can be 0's
+
 }
 \seealso{
-\code{\link{ibdPair}} for genetic relatedness between two samples
-with an option of returning log-likelihood and \code{\link{ibdDat}} for
-processing multi-sample data
+\code{\link{ibdPair}} for estimates of relatedness between two
+samples and \code{\link{ibdDat}} for pairwise relatedness estimates within
+a dataset or between two datasets.
 }

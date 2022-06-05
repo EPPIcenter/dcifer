@@ -2,7 +2,7 @@
 % Please edit documentation in R/probUxUy.R
 \name{probUxUy}
 \alias{probUxUy}
-\title{Calculate likelihood for a pair
+\title{Likelihood for
 \ifelse{html}{\out{U<sub>x</sub>}}{\eqn{U_x}},
 \ifelse{html}{\out{U<sub>y</sub>}}{\eqn{U_y}}}
 \usage{
@@ -12,14 +12,14 @@ probUxUy(
   nx,
   ny,
   probs,
-  nm,
+  M,
   logj,
   factj,
-  logr = NULL,
-  reval = NULL,
-  neval = NULL,
+  equalr = FALSE,
   mnewton = TRUE,
-  equalr = FALSE
+  reval = NULL,
+  logr = NULL,
+  neval = NULL
 )
 }
 \arguments{
@@ -29,29 +29,71 @@ of indices corresponding to ordered probabilities in \code{probs}.}
 \item{nx, ny}{complexity of infection for two samples. Vectors of length 1.}
 
 \item{probs}{a vector of population allele frequencies (on a log scale) at a
-given locus. It is not checked if frequencies on a regular scale sum to
-\eqn{1}.}
+given locus. It is not checked if frequencies on a regular scale sum to 1.}
 
-\item{nm}{the number of related pairs of strains.}
+\item{M}{the number of related pairs of strains.}
 
-\item{logj, factj}{numeric vectors, precalculated values based on \code{COI}.}
+\item{logj, factj}{numeric vectors containing precalculated logarithms and
+factorials.}
 
-\item{logr}{a list of length \eqn{5} as returned by \code{logReval()}.}
+\item{equalr}{a logical value. If \code{TRUE}, the same level of relatedness
+is assumed for M pairs of strains
+(\ifelse{html}{\out{r<sub>1</sub>}}{\eqn{r_1}} = ... =
+\ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).}
 
-\item{reval}{a grid of \eqn{{r}} combinations, over which the likelihood
-will be calculated. A matrix where each column represents a single
-combination.}
+\item{mnewton}{a logical value. If \code{TRUE}, the coefficients for using
+Newton's method will be calculated.}
+
+\item{reval}{a matrix representing a grid of
+\ifelse{html}{\out{(r<sub>1</sub>, ..., r<sub>M</sub>)}}{\eqn{(r_1, ...,
+  r_M)}} combinations, over which the likelihood will be calculated. Each
+column is a single combination.}
+
+\item{logr}{a list of length 5 as returned by \code{\link{logReval}}.}
 
 \item{neval}{the number of relatedness values/combinations to evaluate over.}
-
-\item{equalr}{a logical value. If \code{TRUE}, the same values of \eqn{r} are
-assumed for all \code{nm} pairs of related strains.}
 }
 \value{
-A vector of log-likelihood values for each \eqn{{r}}, i.e. for each
-column of \code{reval} matrix (or each element of \code{reval} vector if
-\code{equalr} is \code{TRUE}).
+\itemize{
+\item If \code{mnewton = TRUE}, a vector of length 2 containing
+coefficients for fast likelihood calculation;
+\item If \code{mnewton = FALSE}, a vector of length \code{neval} containing
+log-likelihoods for a range of parameter values.
+}
 }
 \description{
 Calculates log-likelihood for a pair of samples at a single locus.
+}
+\examples{
+Ux <- c(1, 3, 7)                       # detected alleles at locus t
+Uy <- c(2, 7)
+coi <- c(5, 6)
+aft <- runif(7)                        # allele frequencies for locus t
+aft <- log(aft/sum(aft))
+
+logj  <- log(1:max(coi))
+factj <- lgamma(0:max(coi) + 1)
+
+# M = 2, equalr = FALSE
+M <- 2
+reval <- generateReval(M, nr = 1e2)
+logr  <- logReval(reval, M = M)
+llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
+                  equalr = FALSE, logr = logr, neval = ncol(reval))
+length(llikt)
+
+# M = 2, equalr = TRUE
+reval <- matrix(seq(0, 1, 0.001), 1)
+logr  <- logReval(reval, M = 1)
+llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
+                  equalr = TRUE, logr = logr, neval = ncol(reval))
+
+# M = 1, mnewton = FALSE
+M <- 1
+llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
+                  mnewton = FALSE, reval = seq(0, 1, 1e-3), neval = 1e3 + 1)
+
+# M = 1, mnewton = TRUE
+probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj, mnewton = TRUE)
+
 }

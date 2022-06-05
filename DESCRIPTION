@@ -1,16 +1,18 @@
 Package: dcifer
 Type: Package
-Title: Distance for Complex Infections: Fast Estimation of Relatedness
-Version: 0.1.0
+Title: Relatedness Between Polyclonal Infections
+Version: 0.2.0
 Author@R: 
     person("Inna", "Gerlovina", 
            role = c("aut", "cre"),
            email = "innager@berkeley.edu", 
            comment = c(ORCID = "0000-0002-7772-7473"))
-Description: Estimation of IBD for unphased polyclonal infections and multiallelic genetic data. 
+Description: An IBD-based method to calculate genetic distance between polyclonal infections by estimating relatedness from biallelic and multiallelic data.  
 Imports:
     stats,
-    utils
+    utils,
+    graphics,
+    grDevices
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -18,3 +20,9 @@ RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Author: Inna Gerlovina <innager@berkeley.edu>
 Maintainer: Inna Gerlovina <innager@berkeley.edu>
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5.0)

@@ -19,7 +19,7 @@ SEXP llikM1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 {
   int nux, nuy, nuxy, nx, ny, ax, ay, bx, by, i, ix, iy, mmax, neval;
   int *ux1, *uy1, *ixy1, *iyx1;  // to not rewrite R obj  
-  double combx, comby, sump0, sump1;
+  double combx, comby, sump0, sump1, dif10;
   double *logp, *logj, *factj, *r, *lik;
   SEXP Rlik; 
 
@@ -165,7 +165,8 @@ SEXP llikM1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   }
 
   for (i = 0; i < neval; i++) {
-    lik[i] = log((1 - r[i])*sump0 + r[i]*sump1);
+    dif10 = sump1 - sump0;
+    lik[i] = log(r[i]*dif10 + sump0); 
   }
 
   UNPROTECT(1);
@@ -185,7 +186,7 @@ SEXP p0p1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 {
   int nux, nuy, nuxy, nx, ny, ax, ay, bx, by, i, ix, iy, mmax;
   int *ux1, *uy1, *ixy1, *iyx1;  // to not rewrite R obj  
-  double combx, comby, sp0, sp1;
+  double combx, comby, sump0, sump1;
   double *logp, *logj, *factj, *res;
   SEXP Rres;
 
@@ -205,9 +206,6 @@ SEXP p0p1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   Rres  = PROTECT(allocVector(REALSXP, 2));
   res   = REAL(Rres);
   
-  sp0 = 0;
-  sp1 = 0;  
-
   ax = nux - 1;  /* can     be 0 */
   ay = nuy - 1;
   bx = nx - ax;  /* can not be 0 */
@@ -217,7 +215,9 @@ SEXP p0p1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
     vmaxx[nux], vmaxy[nuy];  
   double logpx[nux], logpy[nuy], logpxy[nuxy], ppx[ax], ppy[ay], pplastx[bx],
     pplasty[by], sprob[2];
-
+  
+  sump0 = 0;
+  sump1 = 0;  
   sprob[1] = 0;  /* in case nuxy = 0 */
 
   /* ux, uy, ixy, and iyx: zero-based indices for convenience (optional) */
@@ -320,13 +320,13 @@ SEXP p0p1(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
       /* calculate conditional probabilities P(Sx, Sy | m) */
       probSxSyCond(vx, vy, logpxy, logj, factj, nx, ny, nux, nuy, nuxy, ixy, iyx,
 		   combx, comby, sprob, &mmax, 1);
-      sp0 += sprob[0];
-      sp1 += sprob[1];
+      sump0 += sprob[0]; 
+      sump1 += sprob[1];
     }
   }
 
-  res[0] = sp0;
-  res[1] = sp1;
+  res[0] = sump0;
+  res[1] = sump1;
   UNPROTECT(1);
   return Rres;
 }

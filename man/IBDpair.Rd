@@ -2,96 +2,168 @@
 % Please edit documentation in R/ibd.R
 \name{ibdPair}
 \alias{ibdPair}
-\title{Genetic Distance for a Pair of Samples}
+\title{Relatedness Between Two Samples}
 \usage{
 ibdPair(
   pair,
   coi,
   afreq,
-  nm,
-  nr = 100,
-  reval = NULL,
-  logr = NULL,
-  equalr = FALSE,
-  out = "mle",
+  M,
+  rhat = TRUE,
+  pval = FALSE,
+  confreg = FALSE,
+  llik = FALSE,
+  maxllik = FALSE,
   rnull = 0,
-  inull = NULL,
   alpha = 0.05,
+  equalr = FALSE,
+  mnewton = NULL,
   freqlog = FALSE,
+  nr = 1000,
+  reval = NULL,
+  tol = NULL,
+  logr = NULL,
   neval = NULL,
-  nloc = NULL,
-  upcoi = TRUE,
-  mnewton = TRUE,
-  tol = 0.001
+  inull = NULL,
+  nloc = NULL
 )
 }
 \arguments{
-\item{pair}{a list of length two containing two samples.}
+\item{pair}{a list of length two containing data for a pair of samples.}
 
-\item{coi}{a vector indicating complexity of infection for each sample.}
+\item{coi}{a vector containing complexity of infection for each sample.}
 
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
 
-\item{nm}{the number of related pairs of strains.}
+\item{M}{the number of related pairs of strains.}
 
-\item{nr}{an integer value for the resolution of the grid (\eqn{nr - 1}
-values between 0 and 1), over which the likelihood will be calculated.
-Ignored if non-null \code{reval} is provided.}
+\item{rhat, pval, confreg, llik, maxllik}{logical values specifying if
+relatedness estimate, p-value, confidence region, log-likelihood for a
+range of \eqn{r} values, and maximum log-likelihood should be returned.}
 
-\item{reval}{a grid of \eqn{{r}} combinations, over which the likelihood
-will be calculated. A matrix where each column represents a single
-combination.}
+\item{rnull}{a null value of relatedness parameter for hypothesis testing
+(needed if \code{pval = TRUE}).}
 
-\item{logr}{a list as returned by \code{logReval} with logs of \code{reval}
-and other quantities.}
+\item{alpha}{significance level for a \ifelse{html}{\out{1 -
+&alpha;}}{\eqn{1 - \alpha}} confidence region.}
 
-\item{equalr}{a logical value. If \code{TRUE}, the same values of \eqn{r} are
-assumed for all \code{nm} pairs of related strains.}
+\item{equalr}{a logical value. If \code{TRUE}, the same level of relatedness
+is assumed for M pairs of strains
+(\ifelse{html}{\out{r<sub>1</sub>}}{\eqn{r_1}} = ... =
+\ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).}
 
-\item{out}{a character string for the type of results to be returned. If
-\code{"mle"}, an estimate is returned, if \code{"llik"} - a vector of
-log-likelihood for each combination.}
-
-\item{alpha}{significance level.}
+\item{mnewton}{a logical value. If \code{TRUE}, Newton's method, adapted for
+a bounded parameter space, will be used to find MLE. If \code{mnewton} is
+not specified, it will be set to \code{TRUE} if \code{M = 1}, \code{confreg
+  = FALSE}, and \code{llik = FALSE}.}
 
 \item{freqlog}{a logical value indicating if \code{afreq} is on the log
 scale.}
 
+\item{nr}{an integer specifying precision of the estimate: resolution of
+a grid of parameter values (\ifelse{html}{\out{[0, 1]}}{\eqn{[0, 1]}}
+divided into \code{nr} equal intervals), over which the likelihood will be
+calculated. Ignored if non-null \code{reval} is provided.}
+
+\item{reval}{a matrix representing a grid of
+\ifelse{html}{\out{(r<sub>1</sub>, ..., r<sub>M</sub>)}}{\eqn{(r_1, ...,
+  r_M)}} combinations, over which the likelihood will be calculated. Each
+column is a single combination.}
+
+\item{tol}{tolerance for calculating an estimate if \code{mnewton = TRUE}.
+Set to \code{1/nr} if not provided.}
+
+\item{logr}{a list as returned by \code{logReval} with logs of \code{reval}
+and other quantities.}
+
 \item{neval}{the number of relatedness values/combinations to evaluate over.}
 
-\item{nloc}{the number of loci.}
+\item{inull}{an index of the value/column of \code{reval} that is closest to
+\code{rnull}.}
 
-\item{upcoi}{method to handle cases when \eqn{COI < |Ux|} (see @details).}
+\item{nloc}{the number of loci.}
 }
 \value{
+A named list if multiple output logical values are \code{TRUE} - or a
+vector if only \code{rhat = TRUE} or \code{llik = TRUE}. Depending on
+these logical values, the following quantities are included:
 \itemize{
-\item If \code{out = "mle"}: a vector of length 1 if \code{equalr = TRUE}
-or of length \code{nm} otherwise, containing the relatedness estimate.
-\item If \code{out = "llik"}, a vector of log-likelihood values for each
-evaluated combination.
-\item If \code{out = "pval"}, a list of the estimate and the p-value.
-\item If \code{out = "all"}, a list containing an estimate, log-likelihood,
-maximum log-likelihood, and \eqn{{r}} values corresponding to the
-acceptance region determined by the significance level.
+\item If \code{rhat = TRUE}, a relatedness estimate (a vector of length 1 if
+\code{equalr = TRUE} or of length M if \code{equalr = FALSE});
+\item If \code{pval = TRUE}, a p-value;
+\item If \code{confreg = TRUE}, relatedness parameter values from the grid
+\code{reval} that are within \ifelse{html}{\out{1 - &alpha;}}{\eqn{1 -
+    \alpha}} confidence region;
+\item If \code{llik = TRUE}, log-likelihood values for relatedness parameter
+grid (provided in \code{reval} or determined by \code{nr});
+\item If \code{maxllik = TRUE}, maximum log-likelihood.
 }
 }
 \description{
-Calculates likelihood over a range of values for relatedness
-parameter \eqn{{r}} and provides an estimate for a pair of samples along
-with confidence regions based on a likelihood ratio test. For data with
-genotyping errors where estimated COI is less than |Ux|, various options
-are offered.
+Provides estimates of relatedness between a pair of samples
+along with an optional support curve and inference.
 }
 \details{
-Handling of irregular cases: - Allele with population frequency of
-\eqn{0} is present: locus is skipped (does not contribute any information).
+Handling of irregular cases:
 \itemize{
-\item Number of unique alleles at a locus is greater than COI: if \code{upcoi =
-  TRUE}, COI will be increased for that locus only; otherwise likelihoods for
-all the subsets of cardinality COI are calculated and geometric mean is
-taken.
+\item Allele with population frequency of 0 is present: locus is skipped
+(does not contribute any information).
+\item Number of unique alleles at a locus is greater than COI: COI will be
+increased for that locus only.
 }
+}
+\examples{
+coi   <- getCOI(dsmp, lrank = 2)
+afreq <- calcAfreq(dsmp, coi, tol = 1e-5)
+
+# two samples
+ipair <- c(21, 17)
+pair <- dsmp[ipair]
+coip <-  coi[ipair]
+M    <- 2
+
+res1 <- ibdPair(pair, coip, afreq, M = M, confreg = TRUE, alpha = 0.05,
+                equalr = FALSE, reval = revals[[M]])
+res2 <- ibdPair(pair, coip, afreq, M = M, llik = TRUE,
+                equalr = TRUE, reval = revals[[1]])
+res1$rhat
+rep(res2$rhat, M)
+
+# plot confidence region
+creg <- cbind(res1$confreg, res1$confreg[2:1, ])
+plot(creg[1, ], creg[2, ], xlim = c(0, 1), ylim = c(0, 1), pch = 15,
+     cex = 0.6, col = "cadetblue3", xlab = expression(hat(r)[1]),
+     ylab = expression(hat(r)[2]))
+points(res1$rhat, rev(res1$rhat), pch = 16)
+
+# plot log-likelihood
+plot(revals[[1]], res2$llik, type = "l", xlab = "r", ylab = "log-likelihood")
+
+ipair <- c(41, 50)
+pair <- dsmp[ipair]
+coip <-  coi[ipair]
+
+# rtotal at different values of M with and without equality constraint
+Mmax <- min(coip)
+for (M in 1:Mmax) {
+  print(paste0("M = ", M))
+  print(c(sum(ibdPair(pair, coip, afreq, M = M, pval = FALSE,
+                      equalr = FALSE, reval = revals[[M]])),
+          ibdPair(pair, coip, afreq, M = M, pval = FALSE, equalr = TRUE)*M))
+  cat("\n")
+}
+
+# M = 1
+# log-likelihood for specific r values
+ibdPair(pair, coip, afreq, M = 1, rhat = FALSE, pval = FALSE, llik = TRUE,
+        reval = c(0, 0.15, 0.38, 1))
+# grid vs Newton's method
+system.time(
+  ibdPair(pair, coip, afreq, M = 1, mnewton = TRUE,  tol = 1e-5))
+system.time(
+  ibdPair(pair, coip, afreq, M = 1, mnewton = FALSE, nr  = 1e5))
+
 }
 \seealso{
 \code{\link{ibdEstM}} for estimating the number of related pairs of
