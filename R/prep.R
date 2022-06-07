@@ -185,12 +185,12 @@ calcAfreq <- function(dsmp, coi, tol = 1e-4, qstart = 0.5) {
   nloc  <- length(K)
   dloc <- unlist(dsmp, recursive = FALSE)
   dloc <- apply(matrix(dloc, nloc), 1, as.list)
-  off  <- 10^(-ceiling(log(length(dsmp), 10)))
+  off  <- 10^(-ceiling(log(sum(coi), 10)))
   for (iloc in 1:nloc) {
     b <- do.call(rbind, dloc[[iloc]])
     for (iall in 1:K[iloc]) {
-      alist[[iloc]][iall] <- qNewton(b[, iall], coi, tol = tol, qstart = qstart,
-                                     off = off)
+      q <- qNewton(b[, iall], coi, tol = tol, qstart = qstart, off = off)
+      alist[[iloc]][iall] <- 1 - q
     }
   }
   sumaf <- sapply(alist, sum)
@@ -219,7 +219,7 @@ qNewton <- function(b, coi, qstart = 0.5, tol = 1e-4, off = 1e-3) {
       qnew <- 1 - off
     }
   }
-  return(1 - qnew)
+  return(qnew)
 }
 
 qDrvs <- function(q, n1, sum0, drv2 = FALSE) {

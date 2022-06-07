@@ -193,7 +193,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   if (mnewton) {
     p01 <- p01[, !is.na(p01[1, ])]
     C   <- p01[2, ]/p01[1, ] - 1
-    rhat <- rNewton(C, tol = tol)
+    rhat <- rNewton(C, tol = tol, off = tol)
   } else {
     imax <- which.max(llikr)           # which(llikr == max(llikr))
     rhat <- reval[, imax]              # rowMeans(reval[, imax, drop = FALSE])
@@ -490,7 +490,7 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
 }
 
 # If outside bounds, check 1st deriv at bound, then start next iter at bound
-rNewton <- function(C, rstart = 0.5, tol = 1e-3, upper = 0.99) {
+rNewton <- function(C, rstart = 0.5, tol = 1e-3, off = 1e-3) {
   rold <- 2
   rnew <- rstart
   while(abs(rnew - rold) > tol) {
@@ -507,7 +507,7 @@ rNewton <- function(C, rstart = 0.5, tol = 1e-3, upper = 0.99) {
       if (drv1(1, C) > 0) {
         return(1)
       }
-      rnew <- upper
+      rnew <- 1 - off
     }
   }
   return(rnew)
