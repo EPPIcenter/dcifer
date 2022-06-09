@@ -197,13 +197,15 @@ calcAfreq <- function(dsmp, coi, tol = 1e-4, qstart = 0.5) {
   return(mapply(function(v, sum) v/sum, alist, sumaf, SIMPLIFY = FALSE))
 }
 
-qNewton <- function(b, coi, qstart = 0.5, tol = 1e-4, off = 1e-3) {
+qNewton <- function(b, coi, qstart = 0.5, tol = 1e-4, toldrv = 1e-3,
+                    off = 1e-3) {
   i1 <- as.logical(b)
   n1 <- coi[i1]
   sum0 <- sum(coi[!i1])
   q    <- 2
+  qdrv <- 100
   qnew <- qstart
-  while(abs(qnew - q) > tol) {
+  while(abs(qnew - q) > tol || abs(qdrv[1]) > toldrv) {
     q     <- qnew
     qdrv  <- qDrvs(q, n1, sum0, drv2 = TRUE)
     qnew  <- q - qdrv[1]/qdrv[2]

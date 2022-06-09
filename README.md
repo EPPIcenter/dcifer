@@ -125,7 +125,7 @@ Look at the results for a single pair of samples:
 ``` r
 dres0[17, 10, ]  
 #>   estimate    p_value   CI_lower   CI_upper 
-#> 0.31100000 0.06203213 0.00000000 0.68000000
+#> 0.31100000 0.06203212 0.00000000 0.68000000
 ```
 
 Alternatively, we may want to first sort samples by clinic or geographic
@@ -372,7 +372,7 @@ arrows(CI[1], yCI, CI[2], yCI, angle = 20, length = 0.1, code = 3,
 arrows(0.15, res2$llik[1], 0.15, max(res2$llik), angle = 20, length = 0.1, 
        code = 3, col = cols[3])
 text(0.165, yLR, adj = 0, "0.5 LR statistic", col = cols[3])
-text(mean(CI), yCI + 0.04*diff(llrng), "confidence interval", col = cols[3])
+text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 

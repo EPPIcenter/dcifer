@@ -233,7 +233,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   if (maxllik) {                       # for ibdEstM()
     if (mnewton) {
       C <- p01[2, ]/p01[1, ] - 1
-      rhat <- rNewton(C, tol = tol)
+      rhat <- rNewton(C, tol = tol, off = tol)
       res$maxllik <- sum(log(rhat*(p01[2, ] - p01[1, ]) + p01[1, ]))
     } else {
       res$maxllik <- max(llikr)
@@ -490,14 +490,15 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
 }
 
 # If outside bounds, check 1st deriv at bound, then start next iter at bound
-rNewton <- function(C, rstart = 0.5, tol = 1e-3, off = 1e-3) {
+rNewton <- function(C, rstart = 0.5, tol = 1e-3, toldrv = 1e-3, off = 1e-3) {
   rold <- 2
+  sc   <- 100
   rnew <- rstart
-  while(abs(rnew - rold) > tol) {
+  while(abs(rnew - rold) > tol || abs(sc) > toldrv) {
     rold <- rnew
     sc <- drv1(rold, C)
     scdrv <- -sum((C/(C*rold + 1))^2)  # 2nd derivative of llik
-    rnew <- rold - sc/scdrv
+    (rnew <- rold - sc/scdrv)
     if (rnew < 0) {
       if (drv1(0, C) < 0) {
         return(0)
