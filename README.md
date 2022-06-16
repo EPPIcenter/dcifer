@@ -17,6 +17,8 @@ You can install dcifer from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
+remotes::install_github("innager/dcifer")
+# or, to include a vignette:
 remotes::install_github("innager/dcifer", build_vignettes = TRUE)
 ```
 
@@ -24,7 +26,6 @@ remotes::install_github("innager/dcifer", build_vignettes = TRUE)
 library(dcifer)
 help(package = "dcifer")
 vignette(package = "dcifer", "vignetteDcifer")
-#> Warning: vignette 'vignetteDcifer' not found
 pardef <- par(no.readonly = TRUE)
 ```
 

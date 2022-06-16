@@ -35,17 +35,9 @@ corresponds to a locus.}
 \item{Mmax}{a maximum number of related pairs of strains to evaluate over.
 If greater than \code{min(coi)}, will be set to \code{min(coi)}.}
 
-\item{pval}{logical values specifying if
-relatedness estimate, p-value, confidence region, log-likelihood for a
-range of \eqn{r} values, and maximum log-likelihood should be returned.}
-
-\item{confreg}{logical values specifying if
-relatedness estimate, p-value, confidence region, log-likelihood for a
-range of \eqn{r} values, and maximum log-likelihood should be returned.}
-
-\item{llik}{logical values specifying if
-relatedness estimate, p-value, confidence region, log-likelihood for a
-range of \eqn{r} values, and maximum log-likelihood should be returned.}
+\item{pval, confreg, llik}{logical values specifying if p-value, confidence
+region, and log-likelihood for a range of \eqn{r} values should be
+returned.}
 
 \item{rnull}{a null value of relatedness parameter for hypothesis testing
 (needed if \code{pval = TRUE}).}

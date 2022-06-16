@@ -30,8 +30,8 @@ plotColorbar(
 Creates a colorbar for a plot.
 }
 \details{
-\preformatted{The colorbar will fill the whole plotting region, which needs to
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{The colorbar will fill the whole plotting region, which needs to
+}\if{html}{\out{</div>}}
 
 be specified outside of this function to control proportions and location
 of the colorbar (see examples). To match the colors in the main plot,

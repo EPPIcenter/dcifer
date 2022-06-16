@@ -11,12 +11,11 @@ Description: An IBD-based method to calculate genetic distance between polyclona
 Imports:
     stats,
     utils,
-    graphics,
-    grDevices
+    graphics
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)
 Author: Inna Gerlovina <innager@berkeley.edu>
 Maintainer: Inna Gerlovina <innager@berkeley.edu>

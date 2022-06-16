@@ -273,24 +273,27 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #' afreq <- calcAfreq(dsmp, coi, tol = 1e-5)  # estimate allele frequencies
 #'
 #' # matrix is returned
-#' dres1 <- ibdDat(dsmp, coi, afreq, pval = FALSE, nr = 1e3)
+#' dres1 <- ibdDat(dsmp, coi, afreq, pval = FALSE)
 #' dim(dres1)
 #'
-#' # test a null hypothesis H0: r = 0
-#' dres2 <- ibdDat(dsmp, coi, afreq, pval = TRUE, rnull = 0)
+#' # test a null hypothesis H0: r = 0, change precision
+#' dres2 <- ibdDat(dsmp, coi, afreq, pval = TRUE, rnull = 0 , nr = 1e2)
 #' dim(dres2)
 #'
 #' # test H0: r = 0.2, include 99% confidence intervals
-#' dres3 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0.2,
-#'                 alpha = 0.01)
-#' dres3[2, 1, ]
+#' #dres3 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0.2,
+#' #                 alpha = 0.01)
+#' #dres3[2, 1, ]
 #'
 #' # pairwise relatedness between samples from two datasets
-#' i1 <- 1:20
-#' i2 <- 31:45
+#' # test H0: r = 0.2, include 99% confidence intervals
+#' i1 <- 1:10
+#' i2 <- 31:37
 #' drbetween <- ibdDat(dsmp[i1], coi[i1], afreq, dsmp2 = dsmp[i2],
-#'                     coi2 = coi[i2])
+#'                     coi2 = coi[i2], confint = TRUE, rnull = 0.2,
+#'                     alpha = 0.01)
 #' dim(drbetween)
+#' drbetween[2, 1, ]
 #' sum(is.na(drbetween[, , 1]))
 #'
 #' @seealso \code{\link{ibdPair}} for genetic relatedness between two samples
@@ -374,6 +377,9 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
 #' @inheritParams ibdPair
 #' @param Mmax  a maximum number of related pairs of strains to evaluate over.
 #'   If greater than \code{min(coi)}, will be set to \code{min(coi)}.
+#' @param pval,confreg,llik logical values specifying if p-value, confidence
+#'   region, and log-likelihood for a range of \eqn{r} values should be
+#'   returned.
 #' @param nrs   an integer vector where \code{i}'th element correspons to
 #'   \ifelse{html}{\out{M = i}}{\eqn{M = i}} and indicates precision of the
 #'   estimate (resolution of a grid of parameter values). Ignored if non-null
