@@ -276,24 +276,25 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #' dres1 <- ibdDat(dsmp, coi, afreq, pval = FALSE)
 #' dim(dres1)
 #'
+#' # subset of samples for faster processing
+#' i1 <- 1:15     # from Maputo
+#' i2 <- 31:40    # from Inhambane
+#'
 #' # test a null hypothesis H0: r = 0, change precision
-#' dres2 <- ibdDat(dsmp, coi, afreq, pval = TRUE, rnull = 0 , nr = 1e2)
+#' dres2 <- ibdDat(dsmp[c(i1, i2)], coi[c(i1, i2)], afreq, pval = TRUE,
+#'                 rnull = 0, nr = 1e2)
 #' dim(dres2)
 #'
 #' # test H0: r = 0.2, include 99% confidence intervals
-#' #dres3 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0.2,
-#' #                 alpha = 0.01)
-#' #dres3[2, 1, ]
+#' dres3 <- ibdDat(dsmp[c(i1, i2)], coi[c(i1, i2)], afreq, pval = TRUE,
+#'                 confint = TRUE, rnull = 0.2, alpha = 0.01)
+#' dres3[2, 1, ]
 #'
-#' # pairwise relatedness between samples from two datasets
-#' # test H0: r = 0.2, include 99% confidence intervals
-#' i1 <- 1:10
-#' i2 <- 31:37
-#' drbetween <- ibdDat(dsmp[i1], coi[i1], afreq, dsmp2 = dsmp[i2],
-#'                     coi2 = coi[i2], confint = TRUE, rnull = 0.2,
-#'                     alpha = 0.01)
+#' # pairwise relatedness between two datasets, H0: r = 0
+#' drbetween <- ibdDat(dsmp[i1], coi[i1], afreq,
+#'                     dsmp2 = dsmp[i2], coi2 = coi[i2])
 #' dim(drbetween)
-#' drbetween[2, 1, ]
+#' drbetween[1, 2, ]
 #' sum(is.na(drbetween[, , 1]))
 #'
 #' @seealso \code{\link{ibdPair}} for genetic relatedness between two samples

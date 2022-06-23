@@ -1,7 +1,7 @@
 Package: dcifer
 Type: Package
 Title: Relatedness Between Polyclonal Infections
-Version: 0.2.0
+Version: 1.0.0
 Author@R: 
     person("Inna", "Gerlovina", 
            role = c("aut", "cre"),
