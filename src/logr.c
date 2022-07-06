@@ -70,32 +70,6 @@ SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
   return Rres;
 }
     
-/* test to unpack a list */
 
-SEXP unpackList(SEXP Rlst, SEXP Rn)
-{
-  int n, i;
-  int *m1, *nmid;
-  double *logr, *log1r, *sum1r, *ans;
-  SEXP Rans;
-
-  n = INTEGER(Rn)[0];
-  logr  = REAL(VECTOR_ELT(Rlst, 0));
-  log1r = REAL(VECTOR_ELT(Rlst, 1));
-  m1    = INTEGER(VECTOR_ELT(Rlst, 2));
-  nmid  = INTEGER(VECTOR_ELT(Rlst, 3));
-  sum1r = REAL(VECTOR_ELT(Rlst, 4));
-
-  Rans = PROTECT(allocVector(REALSXP, n));
-  ans = REAL(Rans);
-
-  for (i = 0; i < n; i++) {
-    ans[i] = sum1r[i];
-  } 
-
-  UNPROTECT(1);
-  return Rans;
-}
-  
   
   
