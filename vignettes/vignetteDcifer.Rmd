@@ -30,10 +30,14 @@ Dcifer relatedness estimation requires sample data in a specific format and esti
 
 ```{r}
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
-# optionally, extract location information
-meta <- unique(read.csv(sfile)[c("sampleID", "province")])
 dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
+```
+
+```{r}
+# optionally, extract location information
+meta <- unique(read.csv(sfile)[c("sampleID", "province")])
+meta <- meta[match(names(dsmp), meta$sampleID), ]  # order samples as in dsmp
 ```
 
 Next, estimate COI for all the samples - here we use naive estimation, first ranking loci of a sample by the number of detected alleles, and then using a locus with a prescribed rank (`lrank`) to determine COI:

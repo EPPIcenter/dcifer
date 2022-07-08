@@ -2,15 +2,16 @@ Package: dcifer
 Type: Package
 Title: Genetic Relatedness Between Polyclonal Infections
 Version: 1.0.0
-Author@R: 
+Authors@R: 
     person("Inna", "Gerlovina", 
            role = c("aut", "cre"),
            email = "innager@berkeley.edu", 
            comment = c(ORCID = "0000-0002-7772-7473"))
-Description: Dcifer (Distance for complex infections: fast estimation of 
-    relatedness) is an IBD-based method to calculate genetic relatedness 
-    between polyclonal infections from biallelic and multiallelic data. 
-    The package includes functions that format and preprocess the data,
+Maintainer: Inna Gerlovina <innager@berkeley.edu>
+Description: An implementation of Dcifer (Distance for complex infections: fast
+    estimation of relatedness), an IBD-based method to calculate genetic
+    relatedness between polyclonal infections from biallelic and multiallelic
+    data. The package includes functions that format and preprocess the data, 
     implement the method, and visualize the results.  
     Gerlovina et al. (2022) <doi:10.1101/2022.04.14.488406>.
 Imports:
@@ -22,8 +23,6 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.0
 Roxygen: list(markdown = TRUE)
-Author: Inna Gerlovina <innager@berkeley.edu>
-Maintainer: Inna Gerlovina <innager@berkeley.edu>
 URL: https://github.com/innager/dcifer
 Suggests: 
     knitr,

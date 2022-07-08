@@ -15,7 +15,8 @@
 #' @return For \code{readDat}, a list with elements corresponding to samples.
 #'   Each element of the list is itself a list of binary vectors, one vector for
 #'   each locus. For \code{readAfreq}, a list with elements corresponding to
-#'   loci. The frequencies at each locus are normalized and sum to 1.
+#'   loci. The frequencies at each locus are normalized and sum to 1. Samples,
+#'   loci, and alleles are ordered by their IDs/names.
 #'
 #' @examples
 #' sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
@@ -30,7 +31,6 @@
 #' @rdname read
 #' @export
 #'
-#*** sort(alleles) is optional but table() sorts and unique() doesn't
 readDat <- function(sfile, svar, lvar, avar, ...) {
   dat <- utils::read.csv(sfile, ...)
   anames <- by(dat, dat[[lvar]], function(df) sort(unique(df[[avar]])))

@@ -29,7 +29,8 @@ readAfreq(afile, lvar, avar, fvar, ...)
 For \code{readDat}, a list with elements corresponding to samples.
 Each element of the list is itself a list of binary vectors, one vector for
 each locus. For \code{readAfreq}, a list with elements corresponding to
-loci. The frequencies at each locus are normalized and sum to 1.
+loci. The frequencies at each locus are normalized and sum to 1. Samples,
+loci, and alleles are ordered by their IDs/names.
 }
 \description{
 Reads data from \code{csv} files and reformats these data for further processing. Original data are assumed to be in a long format, with one row per allele.

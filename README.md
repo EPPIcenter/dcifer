@@ -40,8 +40,6 @@ reads and reformats the data:
 
 ``` r
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
-# optionally, extract location information
-meta <- unique(read.csv(sfile)[c("sampleID", "province")])
 dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
 #> List of 52
@@ -58,6 +56,12 @@ str(dsmp, list.len = 2)
 #>   .. ..- attr(*, "names")= chr [1:4] "D10--D6--HB3.0" "t10.0" "t10.2" "U659.0"
 #>   .. [list output truncated]
 #>   [list output truncated]
+```
+
+``` r
+# optionally, extract location information
+meta <- unique(read.csv(sfile)[c("sampleID", "province")])
+meta <- meta[match(names(dsmp), meta$sampleID), ]  # order samples as in dsmp
 ```
 
 Next, estimate COI for all the samples - here we use naive estimation,
@@ -166,7 +170,7 @@ plotRel(dmat, isig = isig, draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE,
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
-![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
 
 For the sorted samples:
 
@@ -183,7 +187,7 @@ plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 ```
 
-![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
 
 For these symmetric distance measures, one of the triangles can be used
 to display other relevant information, such as p-values, geographic
@@ -219,7 +223,7 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE,
         draw_diag = TRUE, col_diag = "gray45", border_diag = "white")
 ```
 
-![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -240,7 +244,7 @@ par(mar = c(1, 0, 2, 3))
 plotColorbar()
 ```
 
-![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -266,7 +270,7 @@ ncol <- 301
 lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ```
 
-![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -377,7 +381,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
-![](man/figures/README-unnamed-chunk-19-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 par(pardef)
