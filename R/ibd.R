@@ -272,22 +272,23 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #' coi   <- getCOI(dsmp, lrank = 2)           # estimate COI
 #' afreq <- calcAfreq(dsmp, coi, tol = 1e-5)  # estimate allele frequencies
 #'
-#' # matrix is returned
-#' dres1 <- ibdDat(dsmp, coi, afreq, pval = FALSE)
-#' dim(dres1)
-#'
 #' # subset of samples for faster processing
 #' i1 <- 1:15     # from Maputo
 #' i2 <- 31:40    # from Inhambane
+#' isub <- c(i1, i2)
+#'
+#' # matrix is returned
+#' dres1 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = FALSE)
+#' dim(dres1)
 #'
 #' # test a null hypothesis H0: r = 0, change precision
-#' dres2 <- ibdDat(dsmp[c(i1, i2)], coi[c(i1, i2)], afreq, pval = TRUE,
-#'                 rnull = 0, nr = 1e2)
+#' dres2 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, rnull = 0,
+#'                 nr = 1e2)
 #' dim(dres2)
 #'
 #' # test H0: r = 0.2, include 99% confidence intervals
-#' dres3 <- ibdDat(dsmp[c(i1, i2)], coi[c(i1, i2)], afreq, pval = TRUE,
-#'                 confint = TRUE, rnull = 0.2, alpha = 0.01)
+#' dres3 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, confint = TRUE,
+#'                 rnull = 0.2, alpha = 0.01)
 #' dres3[2, 1, ]
 #'
 #' # pairwise relatedness between two datasets, H0: r = 0
