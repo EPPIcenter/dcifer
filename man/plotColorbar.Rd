@@ -26,6 +26,9 @@ plotColorbar(
 
 \item{...}{other graphical parameters.}
 }
+\value{
+\code{NULL}; called for plotting.
+}
 \description{
 Creates a colorbar for a plot.
 }

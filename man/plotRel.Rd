@@ -72,6 +72,9 @@ perpendicular to the axes.}
 
 \item{...}{other graphical parameters.}
 }
+\value{
+\code{NULL}; called for plotting.
+}
 \description{
 Represents a matrix of pairwise relatedness estimates with colors
 corresponding to the levels of relatedness. Optionally, also outlines results

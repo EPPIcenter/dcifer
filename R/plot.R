@@ -34,6 +34,7 @@
 #'   rotation angles for sample ID labels. If \code{NULL}, the labels will be
 #'   perpendicular to the axes.
 #' @param ... other graphical parameters.
+#' @return \code{NULL}; called for plotting.
 #'
 #' @examples
 #' parstart <- par(no.readonly = TRUE)   # save starting graphical parameters
@@ -163,6 +164,7 @@ adjID <- function(s, srt) {
 #' @param at    a vector of tickmark locations.
 #' @param horiz a logical value specifying if the colorbar should be drawn horizontally.
 #' @param col   the colors for the colorbar.
+#' @return \code{NULL}; called for plotting.
 #' @inheritParams plotRel
 #' @details     The colorbar will fill the whole plotting region, which needs to
 #'   be specified outside of this function to control proportions and location
