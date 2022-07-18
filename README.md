@@ -13,13 +13,20 @@ included. We will illustrate the analysis process using microhaplotype
 data from two health facilities in Maputo and Inhambane provinces of
 Mozambique \[2\].
 
-You can install dcifer from [GitHub](https://github.com/) with:
+You can install the released version of dcifer from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("dcifer")
+```
+
+and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("innager/dcifer")
 # or, to include a vignette:
-remotes::install_github("innager/dcifer", build_vignettes = TRUE)
+remotes::install_github("EPPIcenter/dcifer", build_vignettes = TRUE)
 ```
 
 ``` r

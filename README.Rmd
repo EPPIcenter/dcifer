@@ -19,13 +19,19 @@ knitr::opts_chunk$set(
 
 Package `dcifer` (Distance for Complex Infections: Fast Estimation of Relatedness) calculates genetic distance between polyclonal infections by estimating relatedness from biallelic and multiallelic data @gerlovina2022dcifer. In addition to estimates, the package provides a likelihood function and statistical inference. Functions for reading and reformatting data, performing preparatory steps, and visualizing the results are also included. We will illustrate the analysis process using microhaplotype data from two health facilities in Maputo and Inhambane provinces of Mozambique @tessema2022sensitive.
 
-You can install dcifer from [GitHub](https://github.com/) with:
+You can install the released version of dcifer from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("dcifer")
+```
+
+and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("innager/dcifer")
 # or, to include a vignette:
-remotes::install_github("innager/dcifer", build_vignettes = TRUE)
+remotes::install_github("EPPIcenter/dcifer", build_vignettes = TRUE)
 ```
 
 ```{r setup, warning = FALSE}

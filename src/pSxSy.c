@@ -105,7 +105,7 @@ void probSxSyCond(int *vx, int *vy, double *logpxy, double *logj, double *factj,
   double prob; 
 
   prob = combx + comby;
-  numx = nx; // do we need nx, ny (can start with numx, numy) // numerator
+  numx = nx; // numerator // can start with numx, numy
   numy = ny;
   nums = 0;
 
@@ -120,7 +120,7 @@ void probSxSyCond(int *vx, int *vy, double *logpxy, double *logj, double *factj,
   }
   *mmax = MIN(*mmax, nm);  
   vMax(vxy, nuxy, *mmax, vmax);  /* vmax equal vxy if *mmax = nm */
-  mm = *mmax;  // almost no gain  
+  mm = *mmax;  
 
   /* initialize sprob with 0's, fill in the independence case */
   sprob[0] = exp(prob);    /* independence, Sxy is an empty set */  
