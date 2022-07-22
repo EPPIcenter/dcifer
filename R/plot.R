@@ -166,9 +166,9 @@ adjID <- function(s, srt) {
 #' @param col   the colors for the colorbar.
 #' @return \code{NULL}; called for plotting.
 #' @inheritParams plotRel
-#' @details     The colorbar will fill the whole plotting region, which needs to
-#'   be specified outside of this function to control proportions and location
-#'   of the colorbar (see examples). To match the colors in the main plot,
+#' @details The colorbar will fill the whole plotting region, which needs to be
+#'   specified outside of this function to control proportions and location of
+#'   the colorbar (see examples). To match the colors in the main plot,
 #'   \code{rlim} values should be the same for \code{plotRel} and
 #'   \code{plotColorbar}; if \code{rlim = NULL} or \code{rlim = NA} in
 #'   \code{plotRel}, provide the actual range of relatedness estimates for

@@ -84,14 +84,17 @@ length(llikt)
 
 # M = 2, equalr = TRUE
 reval <- matrix(seq(0, 1, 0.001), 1)
-logr  <- logReval(reval, M = 1)
+logr  <- logReval(reval, M = M, equalr = TRUE)
 llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
                   equalr = TRUE, logr = logr, neval = ncol(reval))
 
 # M = 1, mnewton = FALSE
 M <- 1
+reval <- matrix(seq(0, 1, 0.001), 1)
+logr  <- logReval(reval, M = M)
 llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
-                  mnewton = FALSE, reval = seq(0, 1, 1e-3), neval = 1e3 + 1)
+                  mnewton = FALSE, reval = reval, logr = logr,
+                  neval = ncol(reval))
 
 # M = 1, mnewton = TRUE
 probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj, mnewton = TRUE)

@@ -4,7 +4,7 @@
 \alias{logReval}
 \title{Logarithms of \code{reval}}
 \usage{
-logReval(reval, M = NULL, neval = NULL)
+logReval(reval, M = NULL, neval = NULL, equalr = FALSE)
 }
 \arguments{
 \item{reval}{a matrix representing a grid of
@@ -15,21 +15,33 @@ column is a single combination.}
 \item{M}{the number of related pairs of strains.}
 
 \item{neval}{the number of relatedness values/combinations to evaluate over.}
+
+\item{equalr}{a logical value. If \code{TRUE}, the same level of relatedness
+is assumed for M pairs of strains
+(\ifelse{html}{\out{r<sub>1</sub>}}{\eqn{r_1}} = ... =
+\ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).}
 }
 \value{
 A list of length 5 that contains \code{log(reval)}, \code{log(1 -
   reval)}, the number of \code{reval = 1} for each column, the number of
-\code{0 < reval < 1} for each column, and \code{sum(log(1 - reval))} for
-each column.
+\code{0 < reval < 1} for each column, and \code{sum(log(1 - reval[reval <
+  1]))} for each column.
 }
 \description{
 Calculates logarithms of \code{reval} and \code{1 - reval}, as well as other
 associated quantities.
 }
 \details{
-Use \code{M = 1} if \code{equalr = TRUE}.
+For \code{equalr = TRUE} relatedness estimation, \code{reval} should
+be a \code{1 x neval} matrix.
 }
 \examples{
 reval <- generateReval(M = 2, nr = 1e2)
-logr  <- logReval(reval, M = 2)
+logr  <- logReval(reval, M = 2, equalr = FALSE)
+
+reval <- generateReval(M = 1, nr = 1e3)
+logr3  <- logReval(reval, M = 3, equalr = TRUE)
+logr1  <- logReval(reval, M = 1)
+all(logr3$sum1r == logr1$sum1r*3)
+
 }

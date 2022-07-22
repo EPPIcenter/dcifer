@@ -33,11 +33,9 @@ plotColorbar(
 Creates a colorbar for a plot.
 }
 \details{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{The colorbar will fill the whole plotting region, which needs to
-}\if{html}{\out{</div>}}
-
-be specified outside of this function to control proportions and location
-of the colorbar (see examples). To match the colors in the main plot,
+The colorbar will fill the whole plotting region, which needs to be
+specified outside of this function to control proportions and location of
+the colorbar (see examples). To match the colors in the main plot,
 \code{rlim} values should be the same for \code{plotRel} and
 \code{plotColorbar}; if \code{rlim = NULL} or \code{rlim = NA} in
 \code{plotRel}, provide the actual range of relatedness estimates for

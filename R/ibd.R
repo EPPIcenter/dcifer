@@ -147,21 +147,16 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 
   npar <- if (equalr) 1 else M
   if (!mnewton) {
-    if (is.null(reval)) {
-      reval <- round(seq(0, 1, 1/nr), ceiling(log(nr, 10)))
-    }
     if (!inherits(reval, "matrix")) {
-      reval <- generateReval(npar, rval = reval)
+      reval <- generateReval(npar, rval = reval, nr = nr)
     } else if (nrow(reval) != npar) {
       stop("reval doesn't match M")
     }
     if (is.null(neval)) {
       neval <- ncol(reval)
     }
-    if (M > 1) {
-      if (is.null(logr)) {
-        logr <- logReval(reval, M = npar, neval = neval)
-      }
+    if (is.null(logr)) {
+      logr <- logReval(reval, M = M, neval = neval, equalr = equalr)
     }
     llikr <- rep(0, neval)
   } else {
@@ -315,10 +310,17 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
     tol     <- 1/nr
   }
 
-  if (!mnewton && is.null(reval)) {
-      reval <- generateReval(M = 1, nr = nr)
+  if (!mnewton) {
+    if (!inherits(reval, "matrix")) {
+      reval <- generateReval(M = 1, rval = reval, nr = nr)
+    }
+    neval <- ncol(reval)
+    logr  <- logReval(reval, M = 1, neval = neval)
+  } else {
+    neval <- NULL
   }
-  neval  <- if (mnewton)          NULL else length(reval)
+  #***
+#  neval  <- if (mnewton)          NULL else ncol(reval)
   inull  <- if (mnewton || !pval) NULL else which.min(abs(reval - rnull))
   afreq  <- lapply(afreq, log)
   nloc   <- length(afreq)
@@ -352,8 +354,8 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
       rxy <- ibdPair(list(dsmp[[ix]], dsmp2[[iy]]), c(coi[ix], coi2[iy]), afreq,
                      M = 1, pval = pval, confreg = confint, rnull = rnull,
                      alpha = alpha, mnewton = mnewton, freqlog = TRUE,
-                     reval = reval, tol = tol, neval = neval, inull = inull,
-                     nloc = nloc)
+                     reval = reval, tol = tol, logr = logr, neval = neval,
+                     inull = inull, nloc = nloc)
       if (!pval && !confint) {
         res[ix, iy] <- rxy
       } else {
@@ -449,20 +451,17 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
   }
 
   if (equalr) {
-    if (is.null(revals)) {
-      reval <- generateReval(1, nr = nrs[1])
-    } else {
-      reval <- revals[[1]]
-    }
     reval <- if (is.null(revals)) generateReval(1, nr = nrs[1]) else revals[[1]]
     neval <- length(reval)
     logr  <- if (is.null(logrs))
       logReval(reval, M = 1, neval = neval) else logrs[[1]]
+    sum1r <- logr$sum1r
     inull <- if (pval) which.min(abs(reval - rnull)) else NULL
 
     resall  <- list()
     llikall <- numeric(Mmax)
     for (M in 1:Mmax) {
+      logr$sum1r <- sum1r*M
       res <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
                      llik = llik, maxllik = TRUE, rnull = rnull, alpha = alpha,
                      equalr = TRUE, freqlog = TRUE, nr = nrs[1], reval = reval,
