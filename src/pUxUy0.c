@@ -6,28 +6,24 @@
 
 /******************************************************************************/
 /*                                                                            */ 
-/*                         MULTIPLE RELATED STRAINS                           */
+/*                 Special case: no shared alleles (nuxy = 0)                 */
 /*                      likelihood for a pair of samples                      */
 /*   fix probs for X; subsets of Sxy: subtract from Y update multinom coefs   */
 /*                                                                            */ 
 /******************************************************************************/
 
-/* ixy - indices of which ux are in uy (or uxy), sorted; likewise for iyx */
 /* logj(starts with 1), factj (starts with 0)                             */
-SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny, 
-	  SEXP Rlogp, SEXP Rlogj, SEXP Rfactj, SEXP Rnm, SEXP Rloglist,
-	  SEXP Rneval)
+SEXP llik0(SEXP Rux, SEXP Ruy, SEXP Rnx, SEXP Rny, SEXP Rlogp, SEXP Rlogj,
+	  SEXP Rfactj, SEXP Rnm, SEXP Rloglist, SEXP Rneval)
 { 
-  int nux, nuy, nuxy, nm, nx, ny, ax, ay, bx, by, i, ix, iy, mmax, neval, shift;
-  int *ux1, *uy1, *ixy1, *iyx1, *nmid, *m1;  // to not rewrite R obj
-  double combx, comby;
-  double *logp, *logj, *factj, *logr, *log1r, *sum1r, *lik;
+  int nux, nuy, nm, nx, ny, ax, ay, bx, by, i, ix, iy, neval;
+  int *ux1, *uy1, *m1;    // to not rewrite R obj
+  double combx, comby, sprob;
+  double *logp, *logj, *factj, *sum1r, *lik;
   SEXP Rlik;
 
   ux1   = INTEGER(Rux);   // one-based indices (passed from R)
   uy1   = INTEGER(Ruy);   // one-based indices (passed from R)
-  ixy1  = INTEGER(Rixy);  // one-based indices (passed from R)
-  iyx1  = INTEGER(Riyx);  // one-based indices (passed from R)
   nx    = INTEGER(Rnx)[0];
   ny    = INTEGER(Rny)[0];
   nm    = INTEGER(Rnm)[0];
@@ -37,41 +33,27 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   factj = REAL(Rfactj);
   nux   = length(Rux);         
   nuy   = length(Ruy);
-  nuxy  = length(Rixy);   // length(Rixy) = length(Riyx)
-  logr  = REAL(VECTOR_ELT(Rloglist, 0));
-  log1r = REAL(VECTOR_ELT(Rloglist, 1));
   m1    = INTEGER(VECTOR_ELT(Rloglist, 2));
-  nmid  = INTEGER(VECTOR_ELT(Rloglist, 3));
   sum1r = REAL(VECTOR_ELT(Rloglist, 4));
 
   Rlik  = PROTECT(allocVector(REALSXP, neval));  
-  lik   = REAL(Rlik); 
-  for (i = 0; i < neval; i++) {
-    lik[i] = 0;
-  }
+  lik   = REAL(Rlik);
 
   ax = nux - 1;  /* can     be 0 */
   ay = nuy - 1;
   bx = nx - ax;  /* can not be 0 */
   by = ny - ay;
 
-  int ux[nux], uy[nuy], ixy[nuxy], iyx[nuxy], vx[nux], vy[nuy],
-    vmaxx[nux], vmaxy[nuy];
-  double logpx[nux], logpy[nuy], logpxy[nuxy], ppx[nux], ppy[nuy],
-    pplastx[bx], pplasty[by], sprob[nm + 1];
+  int ux[nux], uy[nuy], vx[nux], vy[nuy], vmaxx[nux], vmaxy[nuy];
+  double logpx[nux], logpy[nuy], ppx[nux], ppy[nuy], pplastx[bx], pplasty[by];
 
-  /* ux, uy, ixy, and iyx: zero-based indices for convenience */
+  /* ux, uy: zero-based indices for convenience */
   for (i = 0; i < nux;  i++) ux[i] = ux1[i] - 1;
   for (i = 0; i < nuy;  i++) uy[i] = uy1[i] - 1;
-  for (i = 0; i < nuxy; i++) {
-    ixy[i] = ixy1[i] - 1;
-    iyx[i] = iyx1[i] - 1;
-  }  
   
-  /* logpx, logpy, logpxy */
+  /* logpx, logpy */
   for (i = 0; i < nux;  i++) logpx[ i] = logp[ux[i]];
   for (i = 0; i < nuy;  i++) logpy[ i] = logp[uy[i]];
-  for (i = 0; i < nuxy; i++) logpxy[i] = logp[ux[ixy[i]]];
 
   /* vmaxx, vmaxy */
   vmaxx[0] = bx;
@@ -88,6 +70,8 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   for (i = 1; i < by; i++) {
     pplasty[i] = pplasty[i - 1] + pplasty[0] - logj[i];
   }
+
+  sprob = 0;
 
   /* initialize vx, nxlast, ppx with nonexistent "pre-first" combination */
   for (i = 0; i < ax; i++) {
@@ -157,27 +141,20 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
       }
       comby += factj[ny]; 
 
-      /* calculate conditional probabilities P(Sx, Sy | m) */
-      probSxSyCond(vx, vy, logpxy, logj, factj, nx, ny, nux, nuy, nuxy,
-		   ixy, iyx, combx, comby, sprob, &mmax, nm);
-      for (i = 0; i <= mmax; i++) {
-	sprob[i] = log(sprob[i]);
-      }
-
-      /* calculate likelihood for each vector of r */
-      shift = 0;
-      for (i = 0; i < neval; i++) {
-	lik[i] += probSxSy(logr + shift, log1r + shift, sum1r[i], sprob, nm,
-			   mmax, nmid[i], m1[i]);
-        shift += nm;	
-      }
+      /* conditional probabily P(Sx, Sy | m = 0) */
+       sprob += exp(combx + comby);  
     }
   }
 
+  /* calculate likelihood for each vector of r */
   for (i = 0; i < neval; i++) {
-    lik[i] = log(lik[i]);
+    if (m1[i] > 0) {
+      lik[i] = -INFINITY;
+    } else {
+      lik[i] = log(sprob) + sum1r[i];
+    }
   }
-  
+
   UNPROTECT(1);
   return Rlik;
 }

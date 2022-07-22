@@ -37,7 +37,7 @@ SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
 
   shift = 0;
   for (j = 0; j < neval; j++) {
-    ntemp = nm;
+    ntemp = nm;  //*** do we need ntemp????????
     mtemp = 0;
     stemp = 0;
     ikeep = 0;

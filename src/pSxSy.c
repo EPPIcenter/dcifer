@@ -57,7 +57,7 @@ double probSxSy(double *logr, double *log1r, double prob, double *sprob,
       ibd[i] = 1;
       m1++;
       prob += logr[i] - log1r[i];
-      sum += exp(prob + sprob[m1]);  // that's where we'll add 0's and 1's
+      sum += exp(prob + sprob[m1]);  // that's where we add 0's and 1's
       i = nmid - 1;
     }
   } 
@@ -96,17 +96,15 @@ double probSxSyEqr(double logr, double log1r, double *sprob, double *sproblog,
 /******************************************************************************/
 
 void probSxSyCond(int *vx, int *vy, double *logpxy, double *logj, double *factj,
-		  int nx, int ny, int nux, int nuy, int nuxy, int *ixy,
+		  int numx, int numy, int nux, int nuy, int nuxy, int *ixy,
 		  int *iyx, double combx, double comby, double *sprob,
 		  int *mmax, int nm)
 {
   int vxy[nuxy], s[nuxy], vxc[nuxy], vyc[nuxy], vmax[nuxy];
-  int i, numx, numy, nums, nsi, mm;
+  int i, nums, nsi, mm;  // numerators: numx = nx; numy = ny
   double prob; 
 
   prob = combx + comby;
-  numx = nx; // numerator // can start with numx, numy
-  numy = ny;
   nums = 0;
 
   /* find vxy (for Sxy), initiate s with 0's, calculate mmax, vmax */
@@ -129,7 +127,7 @@ void probSxSyCond(int *vx, int *vy, double *logpxy, double *logj, double *factj,
   /* go through the subsets */
   i = nuxy - 1;
 
-  // !!! note factj starts with 0 (but not logj) !!!
+  // !!! note factj starts with 0 (but not logj) !!! 
   while (!equalArr(s, vmax, nuxy)) {
     if (s[i] == vxy[i] || nums == mm) {
       nsi = s[i]; 

@@ -56,7 +56,7 @@ SEXP llikEqr(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 
   int ux[nux], uy[nuy], ixy[nuxy], iyx[nuxy], vx[nux], vy[nuy],
     vmaxx[nux], vmaxy[nuy];  
-  double logpx[nux], logpy[nuy], logpxy[nuxy], ppx[ax], ppy[ay], pplastx[bx],
+  double logpx[nux], logpy[nuy], logpxy[nuxy], ppx[nux], ppy[nuy], pplastx[bx],
     pplasty[by], sprob[nm + 1], sproblog[nm + 1], cbinom[nm + 1];
 
   /* binomial coefficients for probSxSyEqr() */
@@ -65,7 +65,7 @@ SEXP llikEqr(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
     cbinom[i + 1] = cbinom[i] + log(nm - i) - log(i + 1);
   }
 
-  /* ux, uy, ixy, and iyx: zero-based indices for convenience (optional) */
+  /* ux, uy, ixy, and iyx: zero-based indices for convenience */
   for (i = 0; i < nux;  i++) ux[i] = ux1[i] - 1;
   for (i = 0; i < nuy;  i++) uy[i] = uy1[i] - 1;
   for (i = 0; i < nuxy; i++) {
@@ -165,12 +165,10 @@ SEXP llikEqr(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
       /* calculate conditional probabilities P(Sx, Sy | m) */
       probSxSyCond(vx, vy, logpxy, logj, factj, nx, ny, nux, nuy, nuxy, ixy, iyx,
 		   combx, comby, sprob, &mmax, nm);
-      //*** should we pass both? What about nonEqr?
       for (i = 0; i <= mmax; i++) {
 	sproblog[i] = log(sprob[i]);
       }
 
-      //***      mmax = MIN(mmax, nm);  // e.g. when nm < min(nx, ny) 
       /* calculate likelihood for each value of r */
       for (i = 0; i < neval; i++) {
         lik[i] += probSxSyEqr(logr[i], log1r[i], sprob, sproblog, nm, mmax, cbinom,
