@@ -44,10 +44,10 @@ SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
       rtemp = reval[shift + i];
       if (rtemp == 1) {
 	mtemp++;
-      } else {
-	logr[ shift + ikeep] = log(rtemp);
-	log1r[shift + ikeep] = log(1 - rtemp);
-	stemp       += log1r[shift + ikeep];
+      } else if (rtemp != 0) { 
+	logr[ shift + ikeep] = log(rtemp);  
+	log1r[shift + ikeep] = log(1 - rtemp); 
+	stemp       += log1r[shift + ikeep];  
 	ikeep++;
       }
     }
