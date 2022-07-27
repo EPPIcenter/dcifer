@@ -319,9 +319,8 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
   } else {
     neval <- NULL
   }
-  #***
-#  neval  <- if (mnewton)          NULL else ncol(reval)
-  inull  <- if (mnewton || !pval) NULL else which.min(abs(reval - rnull))
+
+  inull  <- if (pval && !mnewton) which.min(abs(reval - rnull)) else NULL
   afreq  <- lapply(afreq, log)
   nloc   <- length(afreq)
   nsmp   <- length(dsmp)
