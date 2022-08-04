@@ -1,7 +1,4 @@
-url: https://eppicenter.github.io/dcifer/
+url: ~
 template:
   bootstrap: 5
-figures:
-  fig.width: 7.2
-  fig.height: 7.2
 
