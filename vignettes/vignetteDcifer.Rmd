@@ -7,9 +7,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 bibliography: dciferpkg.bib 
 csl: vancouver-brackets.csl
-pkgdown:
-  as_is: true
-  extension: pdf
 ---
 
 ```{r, include = FALSE}
