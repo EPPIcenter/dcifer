@@ -83,7 +83,7 @@ of a hypothesis testing. The plot follows a matrix layout.
 \examples{
 parstart <- par(no.readonly = TRUE)   # save starting graphical parameters
 
-par(mar = c(1, 2, 2, 1))
+par(mar = c(0.5, 0.5, 0.5, 0.5))
 plotRel(dres, alpha = 0.05, draw_diag = TRUE)
 
 # draw log of p-values in the upper triangle
@@ -94,7 +94,7 @@ plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "PuRd"),
         add = TRUE, col_diag = "slategray2", border_diag = 1)
 
 # symmetric matrix, outline significant in upper triangle, display sample ID
-par(mar = c(3, 3, 1, 1))
+par(mar = c(3, 3, 0.5, 0.5))
 dmat <- dres[, , "estimate"]
 dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]
 isig <- which(dres[, , "p_value"] <= 0.05, arr.ind = TRUE)
