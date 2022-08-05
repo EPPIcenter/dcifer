@@ -24,7 +24,7 @@ and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("innager/dcifer")
+remotes::install_github("EPPIcenter/dcifer")
 # or, to include a vignette:
 remotes::install_github("EPPIcenter/dcifer", build_vignettes = TRUE)
 ```
