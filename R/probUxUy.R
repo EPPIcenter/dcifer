@@ -99,7 +99,8 @@ probUxUy <- function(Ux, Uy, nx, ny, probs, M, logj, factj, equalr = FALSE,
   }
   return(.Call("llik0", as.integer(Ux), as.integer(Uy), as.integer(nx),
                as.integer(ny), as.double(probs), as.double(logj),
-               as.double(factj), logr, as.integer(neval), PACKAGE = "dcifer"))
+               as.double(factj), as.integer(M), logr, as.integer(neval),
+               PACKAGE = "dcifer"))
 }
 
 #' Logarithms of \code{reval}

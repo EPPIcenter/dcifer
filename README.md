@@ -24,7 +24,7 @@ and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("EPPIcenter/dcifer")
+remotes::install_github("innager/dcifer")
 # or, to include a vignette:
 remotes::install_github("EPPIcenter/dcifer", build_vignettes = TRUE)
 ```
@@ -287,16 +287,16 @@ par(pardef)
 
 Examine pairs that are determined to be significantly related at the
 significance level
-![\alpha](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Calpha "\alpha")
+![\\alpha](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Calpha "\alpha")
 more closely by allowing multiple pairs of strains to be related between
 two infections. Using `ibdEstM`, we also estimate the number of
 positively related pairs
 ![M'](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%27 "M'")
 of strains and compare results yielded by a constrained model assuming
-![r_1 = \dotso = r_M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;r_1%20%3D%20%5Cdotso%20%3D%20r_M "r_1 = \dotso = r_M")
+![r_1 = \\dotso = r_M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;r_1%20%3D%20%5Cdotso%20%3D%20r_M "r_1 = \dotso = r_M")
 (faster method) and without the constraint. In addition, we look at the
 estimates
-![\hat{r}\_{total}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7Br%7D_%7Btotal%7D "\hat{r}_{total}")
+![\\hat{r}\_{total}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7Br%7D_%7Btotal%7D "\hat{r}_{total}")
 of overall relatedness.
 
 ``` r

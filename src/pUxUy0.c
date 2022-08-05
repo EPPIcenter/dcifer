@@ -14,9 +14,9 @@
 
 /* logj(starts with 1), factj (starts with 0)                             */
 SEXP llik0(SEXP Rux, SEXP Ruy, SEXP Rnx, SEXP Rny, SEXP Rlogp, SEXP Rlogj,
-	  SEXP Rfactj, SEXP Rloglist, SEXP Rneval)
+	  SEXP Rfactj, SEXP Rnm, SEXP Rloglist, SEXP Rneval)
 { 
-  int nux, nuy, nx, ny, ax, ay, bx, by, i, ix, iy, neval;
+  int nux, nuy, nm, nx, ny, ax, ay, bx, by, i, ix, iy, neval;
   int *ux1, *uy1, *m1;    // to not rewrite R obj
   double combx, comby, sprob;
   double *logp, *logj, *factj, *sum1r, *lik;
@@ -26,6 +26,7 @@ SEXP llik0(SEXP Rux, SEXP Ruy, SEXP Rnx, SEXP Rny, SEXP Rlogp, SEXP Rlogj,
   uy1   = INTEGER(Ruy);   // one-based indices (passed from R)
   nx    = INTEGER(Rnx)[0];
   ny    = INTEGER(Rny)[0];
+  nm    = INTEGER(Rnm)[0];
   neval = INTEGER(Rneval)[0];
   logp  = REAL(Rlogp);
   logj  = REAL(Rlogj);
