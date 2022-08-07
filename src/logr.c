@@ -35,6 +35,12 @@ SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
   nmid  = INTEGER(Rnmid);
   sum1r = REAL(Rsum1r);
 
+  /* if r = 0, log1r = 0; needed for llik0M1() */
+  /* if r = 1, log1r is not used by  llik0M1() */
+  for (i = 0; i < nn; i++) {
+    log1r[i] = 0;
+  }
+
   shift = 0;
   for (j = 0; j < neval; j++) {
     mtemp = 0;

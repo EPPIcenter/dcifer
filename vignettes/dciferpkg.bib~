@@ -17,7 +17,7 @@
 	number = {7},
 	pages = {1227--1237},
 	publisher = {Oxford University Press US},
-	title = {Sensitive, highly multiplexed sequencing of microhaplotypes from the {Plasmodium} falciparum heterozygome},
+	title = {Sensitive, highly multiplexed sequencing of microhaplotypes from the Plasmodium falciparum heterozygome},
 	volume = {225},
 	year = {2022}}
 
@@ -27,5 +27,5 @@
 	date-modified = {2022-06-04 20:02:34 -0700},
 	journal = {bioRxiv},
 	publisher = {Cold Spring Harbor Laboratory},
-	title = {Dcifer: an {IBD}-based method to calculate genetic distance between polyclonal infections},
+	title = {Dcifer: an IBD-based method to calculate genetic distance between polyclonal infections},
 	year = {2022}}
