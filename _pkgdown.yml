@@ -4,4 +4,10 @@ template:
 figures:
   fig.width: 7.2
   fig.height: 7.2
-
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: dcifer vignette
+        href: articles/vigArticle.html

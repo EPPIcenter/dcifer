@@ -410,7 +410,7 @@ between polyclonal infections. bioRxiv. 2022; </span>
 <span class="csl-left-margin">2. </span><span
 class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M,
 Chen A, Aydemir O, et al. Sensitive, highly multiplexed sequencing of
-microhaplotypes from the plasmodium falciparum heterozygome. The Journal
+microhaplotypes from the Plasmodium falciparum heterozygome. The Journal
 of infectious diseases. 2022;225(7):1227–37. </span>
 
 </div>
