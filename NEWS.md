@@ -1,3 +1,8 @@
+
+# dcifer 1.1.1
+
+- Fix: `logReval()` now covers all relevant edge cases. 
+
 # dcifer 1.1.0
 
 - Special case added: loci with no shared alleles (more efficient);
