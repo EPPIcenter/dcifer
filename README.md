@@ -11,7 +11,7 @@ statistical inference. Functions for reading and reformatting data,
 performing preparatory steps, and visualizing the results are also
 included. We will illustrate the analysis process using microhaplotype
 data from two health facilities in Maputo and Inhambane provinces of
-Mozambique \[2\].
+Mozambique \[2\] adding something.
 
 You can install the released version of dcifer from
 [CRAN](https://CRAN.R-project.org) with:
