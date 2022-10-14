@@ -3,6 +3,8 @@
 
 # Dcifer: Genetic Distance Between Polyclonal Infections
 
+![](man/figures/aqua10f.png)<!-- -->
+
 Package `dcifer` (Distance for Complex Infections: Fast Estimation of
 Relatedness) calculates genetic distance between polyclonal infections
 by estimating relatedness from biallelic and multiallelic data \[1\]. In
