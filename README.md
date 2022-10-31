@@ -41,11 +41,19 @@ pardef <- par(no.readonly = TRUE)
 ## Read and reformat data, estimate COI and population allele frequencies
 
 Dcifer relatedness estimation requires sample data in a specific format
-and estimates of complexity of infection (COI) and population allele
-frequencies. Here is an example of some preparation steps using
-Mozambique dataset. First, read in original data stored in a `.csv`
-file. The name of that file is the first argument to the function that
-reads and reformats the data:
+as well as estimates of complexity of infection (COI) and population
+allele frequencies. Here is an example of some preparation steps using
+Mozambique dataset. First, read in original data stored in a `.csv` file
+in a long format.
+
+| sampleID   | locus | allele             | clinic    | province  |
+|------------|-------|--------------------|-----------|-----------|
+| 8025874217 | t1    | HB3.0              | Inhassoro | Inhambane |
+| 8025874217 | t1    | D10–D6–FCR3–V1-S.0 | Inhassoro | Inhambane |
+| 8025874217 | t20   | U659.0             | Inhassoro | Inhambane |
+
+The name of the file is the first argument to the function that reads
+and reformats the data:
 
 ``` r
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
@@ -65,6 +73,12 @@ str(dsmp, list.len = 2)
 #>   .. ..- attr(*, "names")= chr [1:4] "D10--D6--HB3.0" "t10.0" "t10.2" "U659.0"
 #>   .. [list output truncated]
 #>   [list output truncated]
+```
+
+Or, to reformat an R data frame (`dlong`) containing the same dataset:
+
+``` r
+dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 ```
 
 ``` r
@@ -96,22 +110,38 @@ str(afreq, list.len = 2)
 ```
 
 In some situations, population allele frequencies might be estimated
-from a different (e.g. larger) dataset and are provided separately (in a
-`.csv` file). In that case, after the frequencies are read in, they need
-to be checked against the the existing data object to make sure that all
-the loci and alleles are in the same order. Function `matchAfreq`
-performs the checking and rearranges sample data to conform to the
-provided allele frequencies. For that procedure, loci and alleles in
-both lists (`dsmp` and `afreq`) have to be named; otherwise the names
-are not required, and the order of loci and alleles is assumed to be the
-same for sample data and allele frequencies. If `afreq` contains “extra”
-alleles that are not listed in `dsmp`, these alleles are added to
-`dsmp`. The opposite situation (alleles listed and present in `dsmp` but
-not listed in `afreq`) will result in an error.
+from a different (e.g. larger) dataset and provided separately (e.g. in
+a `.csv` file or R data frame):
+
+| locus | allele             | freq       |
+|-------|--------------------|------------|
+| t1    | D10–D6–FCR3–V1-S.0 | 0.44377920 |
+| t1    | HB3.0              | 0.27713450 |
+| t1    | t1.0               | 0.09375438 |
+
+In that case, after the frequencies are read in, they need to be checked
+against the the existing data object to make sure that all the loci and
+alleles are in the same order. Function `matchAfreq` performs the
+checking and rearranges sample data to conform to the provided allele
+frequencies. For that procedure, loci and alleles in both lists (`dsmp`
+and `afreq`) have to be named; otherwise the names are not required, and
+the order of loci and alleles is assumed to be the same for sample data
+and allele frequencies. If `afreq` contains “extra” alleles that are not
+listed in `dsmp`, these alleles are added to `dsmp`. The opposite
+situation (alleles listed and present in `dsmp` but not listed in
+`afreq`) will result in an error.
 
 ``` r
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")  
+afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq") 
+```
+
+``` r
+# alternatively, if allele frequencies are provided in an R data frame (aflong):
+afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
+```
+
+``` r
 dsmp2  <- matchAfreq(dsmp, afreq2)
 ```
 
@@ -179,7 +209,7 @@ plotRel(dmat, isig = isig, draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE,
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
-![](man/figures/README-unnamed-chunk-11-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
 
 For the sorted samples:
 
@@ -196,7 +226,7 @@ plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 ```
 
-![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
 
 For these symmetric distance measures, one of the triangles can be used
 to display other relevant information, such as p-values, geographic
@@ -232,7 +262,7 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE,
         draw_diag = TRUE, col_diag = "gray45", border_diag = "white")
 ```
 
-![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -253,7 +283,7 @@ par(mar = c(1, 0, 2, 3))
 plotColorbar()
 ```
 
-![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -279,7 +309,7 @@ ncol <- 301
 lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ```
 
-![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -390,7 +420,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
-![](man/figures/README-unnamed-chunk-20-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-23-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -401,9 +431,11 @@ par(pardef)
 <div id="ref-gerlovina2022dcifer" class="csl-entry">
 
 <span class="csl-left-margin">1. </span><span
-class="csl-right-inline">Gerlovina I, Gerlovin B, Rodriguez-Barraquer I,
-Greenhouse B. Dcifer: An IBD-based method to calculate genetic distance
-between polyclonal infections. bioRxiv. 2022; </span>
+class="csl-right-inline">Gerlovina I, Gerlovin B, Rodríguez-Barraquer I,
+Greenhouse B. [<span class="nocase">Dcifer: an IBD-based method to
+calculate genetic distance between polyclonal
+infections</span>](https://doi.org/10.1093/genetics/iyac126). Genetics.
+2022 Aug;222(2). </span>
 
 </div>
 
@@ -411,9 +443,10 @@ between polyclonal infections. bioRxiv. 2022; </span>
 
 <span class="csl-left-margin">2. </span><span
 class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M,
-Chen A, Aydemir O, et al. Sensitive, highly multiplexed sequencing of
-microhaplotypes from the Plasmodium falciparum heterozygome. The Journal
-of infectious diseases. 2022;225(7):1227–37. </span>
+Chen A, Aydemir O, et al. [Sensitive, highly multiplexed sequencing of
+microhaplotypes from the Plasmodium falciparum
+heterozygome](https://doi.org/10.1093/infdis/jiaa527). The Journal of
+infectious diseases. 2022;225(7):1227–37. </span>
 
 </div>
 

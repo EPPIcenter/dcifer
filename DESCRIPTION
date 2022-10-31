@@ -1,7 +1,7 @@
 Package: dcifer
 Type: Package
 Title: Genetic Relatedness Between Polyclonal Infections
-Version: 1.1.2
+Version: 1.2.0
 Authors@R: 
     person("Inna", "Gerlovina", 
            role = c("aut", "cre"),
@@ -9,7 +9,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-7772-7473"))
 Maintainer: Inna Gerlovina <innager@berkeley.edu>
 Description: An implementation of Dcifer (Distance for complex infections: fast estimation of relatedness), an identity by descent (IBD) based method to calculate genetic relatedness between polyclonal infections from biallelic and multiallelic data. The package includes functions that format and preprocess the data, implement the method, and visualize the results. 
-    Gerlovina et al. (2022) <doi:10.1101/2022.04.14.488406>.
+    Gerlovina et al. (2022) <doi:10.1093/genetics/iyac126>. 
 Imports:
     stats,
     utils,

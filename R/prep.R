@@ -1,40 +1,65 @@
 
 #' Read and Reformat Data
 #'
-#' Reads data from \code{csv} files and reformats these data for further processing. Original data are assumed to be in a long format, with one row per allele.
+#' \code{readDat} and \code{readAfreq} read data and population allele
+#' frequencies from \code{csv} files and reformat them for further processing.
+#' \code{formatDat} and \code{formatAfreq} reformat corresponding data frames.
+#' Original data are assumed to be in a long format, with one row per allele.
 #'
-#' @name  read
-#' @param sfile the name of the file containing sample data.
-#' @param afile the name of the file containing population allele frequencies.
-#' @param svar  the name of the variable for sample ID.
-#' @param lvar  the name of the variable for locus/marker.
-#' @param avar  the name of the variable for allele/haplotype.
-#' @param fvar  the name of the variable for population allele frequiency.
+#' @name  format
+#' @param sfile  the name of the file containing sample data.
+#' @param dlong  a data frame containing sample data.
+#' @param afile  the name of the file containing population allele frequencies.
+#' @param aflong a data frame containing population allele frequencies.
+#' @param svar   the name of the variable for sample ID.
+#' @param lvar   the name of the variable for locus/marker.
+#' @param avar   the name of the variable for allele/haplotype.
+#' @param fvar   the name of the variable for population allele frequiency.
 #' @param ... additional arguments for \code{read.csv()}.
 #'
-#' @return For \code{readDat}, a list with elements corresponding to samples.
-#'   Each element of the list is itself a list of binary vectors, one vector for
-#'   each locus. For \code{readAfreq}, a list with elements corresponding to
-#'   loci. The frequencies at each locus are normalized and sum to 1. Samples,
-#'   loci, and alleles are ordered by their IDs/names.
+#' @return For \code{readDat} and \code{formatDat}, a list with elements
+#'   corresponding to samples. Each element of the list is itself a list of
+#'   binary vectors, one vector for each locus. For \code{readAfreq} and
+#'   \code{formatAfreq}, a list with elements corresponding to loci. The
+#'   frequencies at each locus are normalized and sum to 1. Samples, loci, and
+#'   alleles are ordered by their IDs/names.
 #'
 #' @examples
 #' sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 #' dsmp  <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 #'
+#' # OR, if the dataset is provided as an R data frame, e.g.
+#' dlong <- read.csv(sfile)
+#' # reformat only:
+#' dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
+#'
 #' afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
 #' afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
+#'
+#' # OR, if allele frequencies are provided as an R data frame, e.g.
+#' aflong <- read.csv(afile)
+#' # reformat only:
+#' afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
+#'
 #' dsmp2  <- matchAfreq(dsmp, afreq2)
 #'
 #' @seealso \code{\link{matchAfreq}} for making sure that the list containing
 #'   sample data is conformable to provided population allele frequencies.
-#' @rdname read
+
+#' @rdname format
 #' @export
 #'
 readDat <- function(sfile, svar, lvar, avar, ...) {
-  dat <- utils::read.csv(sfile, ...)
-  anames <- by(dat, dat[[lvar]], function(df) sort(unique(df[[avar]])))
-  smps <- lapply(split(dat, dat[[svar]]),
+  dlong <- utils::read.csv(sfile, ...)
+  return(formatDat(dlong, svar, lvar, avar))
+}
+
+#' @rdname format
+#' @export
+#'
+formatDat <- function(dlong, svar, lvar, avar) {
+  anames <- by(dlong, dlong[[lvar]], function(df) sort(unique(df[[avar]])))
+  smps <- lapply(split(dlong, dlong[[svar]]),
                  function(df) split(df[[avar]], df[[lvar]]))
   nsmp <- length(smps)
 
@@ -55,12 +80,19 @@ readDat <- function(sfile, svar, lvar, avar, ...) {
   return(dsmp)
 }
 
-#' @rdname read
+#' @rdname format
 #' @export
 #'
 readAfreq <- function(afile, lvar, avar, fvar, ...) {
-  afreq <- utils::read.csv(afile, ...)
-  afreq <- lapply(split(afreq, afreq[[lvar]]), function(df) {
+  aflong <- utils::read.csv(afile, ...)
+  return(formatAfreq(aflong, lvar, avar, fvar))
+}
+
+#' @rdname format
+#' @export
+#'
+formatAfreq <- function(aflong, lvar, avar, fvar) {
+  lapply(split(aflong, aflong[[lvar]]), function(df) {
     x <- stats::setNames(df[[fvar]], df[[avar]])
     x/sum(x)
   })

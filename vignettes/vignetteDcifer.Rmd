@@ -26,12 +26,26 @@ pardef <- par(no.readonly = TRUE)
 
 ## Read and reformat data, estimate COI and population allele frequencies
 
-Dcifer relatedness estimation requires sample data in a specific format and estimates of complexity of infection (COI) and population allele frequencies. Here is an example of some preparation steps using Mozambique dataset. First, read in original data stored in a `.csv` file. The name of that file is the first argument to the function that reads and reformats the data:
+Dcifer relatedness estimation requires sample data in a specific format as well as estimates of complexity of infection (COI) and population allele frequencies. Here is an example of some preparation steps using Mozambique dataset. First, read in original data stored in a `.csv` file in a long format. 
+
+| sampleID   | locus | allele | clinic | province |
+| ---------- | ----- | ------ | ------ | -------- |
+| 8025874217 | t1 | HB3.0 | Inhassoro | Inhambane |
+| 8025874217 | t1 | D10--D6--FCR3--V1-S.0 | Inhassoro | Inhambane |
+| 8025874217 | t20 | U659.0 | Inhassoro | Inhambane |
+
+The name of the file is the first argument to the function that reads and reformats the data:
 
 ```{r}
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
+```
+
+Or, to reformat an R data frame (`dlong`) containing the same dataset:
+
+```{r, eval = FALSE}
+dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 ```
 
 ```{r}
@@ -54,11 +68,25 @@ afreq <- calcAfreq(dsmp, coi, tol = 1e-5)
 str(afreq, list.len = 2)
 ```
 
-In some situations, population allele frequencies might be estimated from a different (e.g. larger) dataset and are provided separately (in a `.csv` file). In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function `matchAfreq` performs the checking and rearranges sample data to conform to the provided allele frequencies. For that procedure, loci and alleles in both lists (`dsmp` and `afreq`) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If `afreq` contains "extra" alleles that are not listed in `dsmp`, these alleles are added to `dsmp`. The opposite situation (alleles listed and present in `dsmp` but not listed in `afreq`) will result in an error. 
+In some situations, population allele frequencies might be estimated from a different (e.g. larger) dataset and provided separately (e.g. in a `.csv` file or R data frame):
+
+| locus | allele | freq |
+| ----- | ------ | ---- |
+| t1 | D10--D6--FCR3--V1-S.0 | 0.44377920 |
+| t1 | HB3.0 | 0.27713450 |
+| t1 | t1.0  | 0.09375438 |
+
+In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function `matchAfreq` performs the checking and rearranges sample data to conform to the provided allele frequencies. For that procedure, loci and alleles in both lists (`dsmp` and `afreq`) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If `afreq` contains "extra" alleles that are not listed in `dsmp`, these alleles are added to `dsmp`. The opposite situation (alleles listed and present in `dsmp` but not listed in `afreq`) will result in an error. 
 
 ```{r}
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")  
+afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq") 
+```
+```{r, eval = FALSE}
+# alternatively, if allele frequencies are provided in an R data frame (aflong):
+afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
+```
+```{r}
 dsmp2  <- matchAfreq(dsmp, afreq2)
 ```
 
