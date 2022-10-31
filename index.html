@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="An implementation of Dcifer (Distance for complex infections: fast estimation of relatedness), an identity by descent (IBD) based method to calculate genetic relatedness between polyclonal infections from biallelic and multiallelic data. The package includes functions that format and preprocess the data, implement the method, and visualize the results. 
-    Gerlovina et al. (2022) &lt;doi:10.1101/2022.04.14.488406&gt;.">
+    Gerlovina et al. (2022) &lt;doi:10.1093/genetics/iyac126&gt;. ">
 <title>Genetic Relatedness Between Polyclonal Infections • dcifer</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Genetic Relatedness Between Polyclonal Infections">
 <meta property="og:description" content="An implementation of Dcifer (Distance for complex infections: fast estimation of relatedness), an identity by descent (IBD) based method to calculate genetic relatedness between polyclonal infections from biallelic and multiallelic data. The package includes functions that format and preprocess the data, implement the method, and visualize the results. 
-    Gerlovina et al. (2022) &lt;doi:10.1101/2022.04.14.488406&gt;.">
+    Gerlovina et al. (2022) &lt;doi:10.1093/genetics/iyac126&gt;. ">
 <meta property="og:image" content="https://eppicenter.github.io/dcifer/reference/figures/boat1c.svg">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -29,7 +29,7 @@
     
     <a class="navbar-brand me-2" href="index.html">dcifer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,10 +91,43 @@
 <div class="section level2">
 <h2 id="read-and-reformat-data-estimate-coi-and-population-allele-frequencies">Read and reformat data, estimate COI and population allele frequencies<a class="anchor" aria-label="anchor" href="#read-and-reformat-data-estimate-coi-and-population-allele-frequencies"></a>
 </h2>
-<p>Dcifer relatedness estimation requires sample data in a specific format and estimates of complexity of infection (COI) and population allele frequencies. Here is an example of some preparation steps using Mozambique dataset. First, read in original data stored in a <code>.csv</code> file. The name of that file is the first argument to the function that reads and reformats the data:</p>
+<p>Dcifer relatedness estimation requires sample data in a specific format as well as estimates of complexity of infection (COI) and population allele frequencies. Here is an example of some preparation steps using Mozambique dataset. First, read in original data stored in a <code>.csv</code> file in a long format.</p>
+<table class="table">
+<thead><tr class="header">
+<th>sampleID</th>
+<th>locus</th>
+<th>allele</th>
+<th>clinic</th>
+<th>province</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>8025874217</td>
+<td>t1</td>
+<td>HB3.0</td>
+<td>Inhassoro</td>
+<td>Inhambane</td>
+</tr>
+<tr class="even">
+<td>8025874217</td>
+<td>t1</td>
+<td>D10–D6–FCR3–V1-S.0</td>
+<td>Inhassoro</td>
+<td>Inhambane</td>
+</tr>
+<tr class="odd">
+<td>8025874217</td>
+<td>t20</td>
+<td>U659.0</td>
+<td>Inhassoro</td>
+<td>Inhambane</td>
+</tr>
+</tbody>
+</table>
+<p>The name of the file is the first argument to the function that reads and reformats the data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MozParagon.csv"</span>, package <span class="op">=</span> <span class="st">"dcifer"</span><span class="op">)</span></span>
-<span><span class="va">dsmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read.html">readDat</a></span><span class="op">(</span><span class="va">sfile</span>, svar <span class="op">=</span> <span class="st">"sampleID"</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span><span class="op">)</span></span>
+<span><span class="va">dsmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/format.html">readDat</a></span><span class="op">(</span><span class="va">sfile</span>, svar <span class="op">=</span> <span class="st">"sampleID"</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">dsmp</span>, list.len <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 52</span></span>
 <span><span class="co">#&gt;  $ 8025874217:List of 87</span></span>
@@ -110,16 +143,19 @@
 <span><span class="co">#&gt;   .. ..- attr(*, "names")= chr [1:4] "D10--D6--HB3.0" "t10.0" "t10.2" "U659.0"</span></span>
 <span><span class="co">#&gt;   .. [list output truncated]</span></span>
 <span><span class="co">#&gt;   [list output truncated]</span></span></code></pre></div>
+<p>Or, to reformat an R data frame (<code>dlong</code>) containing the same dataset:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dsmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/format.html">formatDat</a></span><span class="op">(</span><span class="va">dlong</span>, svar <span class="op">=</span> <span class="st">"sampleID"</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># optionally, extract location information</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="va">sfile</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sampleID"</span>, <span class="st">"province"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="va">meta</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dsmp</span><span class="op">)</span>, <span class="va">meta</span><span class="op">$</span><span class="va">sampleID</span><span class="op">)</span>, <span class="op">]</span>  <span class="co"># order samples as in dsmp</span></span></code></pre></div>
 <p>Next, estimate COI for all the samples - here we use naive estimation, first ranking loci of a sample by the number of detected alleles, and then using a locus with a prescribed rank (<code>lrank</code>) to determine COI:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lrank</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="va">coi</span>   <span class="op">&lt;-</span> <span class="fu"><a href="reference/getCOI.html">getCOI</a></span><span class="op">(</span><span class="va">dsmp</span>, lrank <span class="op">=</span> <span class="va">lrank</span><span class="op">)</span></span></code></pre></div>
 <p>Finally, estimate population allele frequencies, adjusting for COI:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">afreq</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/calcAfreq.html">calcAfreq</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">coi</span>, tol <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">afreq</span>, list.len <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 87</span></span>
@@ -128,33 +164,62 @@
 <span><span class="co">#&gt;  $ t10 : Named num [1:4] 0.8539 0.00942 0.00951 0.12717</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:4] "D10--D6--HB3.0" "t10.0" "t10.2" "U659.0"</span></span>
 <span><span class="co">#&gt;   [list output truncated]</span></span></code></pre></div>
-<p>In some situations, population allele frequencies might be estimated from a different (e.g. larger) dataset and are provided separately (in a <code>.csv</code> file). In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function <code>matchAfreq</code> performs the checking and rearranges sample data to conform to the provided allele frequencies. For that procedure, loci and alleles in both lists (<code>dsmp</code> and <code>afreq</code>) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If <code>afreq</code> contains “extra” alleles that are not listed in <code>dsmp</code>, these alleles are added to <code>dsmp</code>. The opposite situation (alleles listed and present in <code>dsmp</code> but not listed in <code>afreq</code>) will result in an error.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>In some situations, population allele frequencies might be estimated from a different (e.g. larger) dataset and provided separately (e.g. in a <code>.csv</code> file or R data frame):</p>
+<table class="table">
+<thead><tr class="header">
+<th>locus</th>
+<th>allele</th>
+<th>freq</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>t1</td>
+<td>D10–D6–FCR3–V1-S.0</td>
+<td>0.44377920</td>
+</tr>
+<tr class="even">
+<td>t1</td>
+<td>HB3.0</td>
+<td>0.27713450</td>
+</tr>
+<tr class="odd">
+<td>t1</td>
+<td>t1.0</td>
+<td>0.09375438</td>
+</tr>
+</tbody>
+</table>
+<p>In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function <code>matchAfreq</code> performs the checking and rearranges sample data to conform to the provided allele frequencies. For that procedure, loci and alleles in both lists (<code>dsmp</code> and <code>afreq</code>) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If <code>afreq</code> contains “extra” alleles that are not listed in <code>dsmp</code>, these alleles are added to <code>dsmp</code>. The opposite situation (alleles listed and present in <code>dsmp</code> but not listed in <code>afreq</code>) will result in an error.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">afile</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MozAfreq.csv"</span>, package <span class="op">=</span> <span class="st">"dcifer"</span><span class="op">)</span></span>
-<span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read.html">readAfreq</a></span><span class="op">(</span><span class="va">afile</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span>  </span>
-<span><span class="va">dsmp2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/matchAfreq.html">matchAfreq</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">afreq2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/format.html">readAfreq</a></span><span class="op">(</span><span class="va">afile</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span> </span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># alternatively, if allele frequencies are provided in an R data frame (aflong):</span></span>
+<span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/format.html">formatAfreq</a></span><span class="op">(</span><span class="va">aflong</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dsmp2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/matchAfreq.html">matchAfreq</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">afreq2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="estimate-relatedness">Estimate relatedness<a class="anchor" aria-label="anchor" href="#estimate-relatedness"></a>
 </h2>
 <p>As a first step in relatedness estimation, we set <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;M%20%3D%201" title="M = 1" alt="M = 1"> (only one pair of strains between two infections can be related) and test the hypothesis that infections are unrelated (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;H_0%5C%21%3A%20r%20%3D%200" title="H_0!: r = 0" alt="H_0\!: r = 0">). This is done with <code>ibdDat</code> function. Then we explore significantly related pairs in more detail.</p>
 <p>For the purposes of demonstration, we first estimate relatedness and display results using <code>dsmp</code> as created previously where samples are not sorted by location.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dres0</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/IBDdat.html">ibdDat</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">coi</span>, <span class="va">afreq</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>, confint <span class="op">=</span> <span class="cn">TRUE</span>, rnull <span class="op">=</span> <span class="fl">0</span>, </span>
 <span>                alpha <span class="op">=</span> <span class="fl">0.05</span>, nr <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span>   </span></code></pre></div>
 <p>Look at the results for a single pair of samples:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dres0</span><span class="op">[</span><span class="fl">17</span>, <span class="fl">10</span>, <span class="op">]</span>  </span>
 <span><span class="co">#&gt;   estimate    p_value   CI_lower   CI_upper </span></span>
 <span><span class="co">#&gt; 0.31100000 0.06203212 0.00000000 0.68000000</span></span></code></pre></div>
 <p>Alternatively, we may want to first sort samples by clinic or geographic location:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">provinces</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Maputo"</span>, <span class="st">"Inhambane"</span><span class="op">)</span></span>
 <span><span class="va">nsite</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">meta</span><span class="op">$</span><span class="va">province</span><span class="op">)</span><span class="op">[</span><span class="va">provinces</span><span class="op">]</span></span>
 <span><span class="va">ord</span>       <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">meta</span><span class="op">$</span><span class="va">province</span>, levels <span class="op">=</span> <span class="va">provinces</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">dsmp</span> <span class="op">&lt;-</span> <span class="va">dsmp</span><span class="op">[</span><span class="va">ord</span><span class="op">]</span></span>
 <span><span class="va">coi</span>  <span class="op">&lt;-</span> <span class="va">coi</span><span class="op">[</span> <span class="va">ord</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dres</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/IBDdat.html">ibdDat</a></span><span class="op">(</span><span class="va">dsmp</span>,  <span class="va">coi</span>, <span class="va">afreq</span>, nr <span class="op">=</span> <span class="fl">1e3</span><span class="op">)</span>     </span></code></pre></div>
 </div>
 <div class="section level2">
@@ -162,7 +227,7 @@
 </h2>
 <p>When pairwise relatedness is calculated within a single dataset, <code>ibdDat</code> returns triangular matrices. For plotting, we can make them symmetric. Then significantly related pairs can be outlined in either or both triangles.</p>
 <p>Display the results for unsorted samples, with sample ID’s written on the margins. Label colors correspond to locations (health facilities):</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">0.05</span>                          <span class="co"># significance level                    </span></span>
 <span><span class="va">dmat</span> <span class="op">&lt;-</span> <span class="va">dres0</span><span class="op">[</span>, , <span class="st">"estimate"</span><span class="op">]</span></span>
@@ -172,9 +237,9 @@
 <span><span class="va">isig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">dres0</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="va">alpha</span>, arr.ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">1</span><span class="op">]</span> </span>
 <span><span class="fu"><a href="reference/plotRel.html">plotRel</a></span><span class="op">(</span><span class="va">dmat</span>, isig <span class="op">=</span> <span class="va">isig</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, lwd_diag <span class="op">=</span> <span class="fl">0.5</span>, idlab <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>        col_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">meta</span><span class="op">$</span><span class="va">province</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> </span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-11-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-14-1.png"><!-- --></p>
 <p>For the sorted samples:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">nsmp</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dsmp</span><span class="op">)</span></span>
 <span><span class="va">atsep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">nsite</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">nsite</span><span class="op">)</span><span class="op">]</span></span>
@@ -185,9 +250,9 @@
 <span><span class="fu"><a href="reference/plotRel.html">plotRel</a></span><span class="op">(</span><span class="va">dmat</span>, isig <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">isig</span>, <span class="va">isig</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="va">alpha</span>,</span>
 <span>        idlab <span class="op">=</span> <span class="cn">TRUE</span>, side_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, col_id <span class="op">=</span> <span class="va">col_id</span>, srt_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">65</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">atsep</span>, h <span class="op">=</span> <span class="va">atsep</span>, col <span class="op">=</span> <span class="st">"gray45"</span>, lty <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-15-1.png"><!-- --></p>
 <p>For these symmetric distance measures, one of the triangles can be used to display other relevant information, such as p-values, geographic distance, or a number of non-missing loci between two samples. For that, use <code>add = TRUE</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plotRel.html">plotRel</a></span><span class="op">(</span><span class="va">dres</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="va">alpha</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"p-values"</span>, <span class="fl">3</span>, <span class="fl">0.2</span><span class="op">)</span></span>
@@ -214,11 +279,11 @@
 <span><span class="va">coln</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">nrng</span><span class="op">)</span><span class="op">*</span><span class="fl">2.4</span>, <span class="st">"Purple-Blue"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">nrng</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="reference/plotRel.html">plotRel</a></span><span class="op">(</span><span class="va">nmat</span>, rlim <span class="op">=</span> <span class="cn">NA</span>, col <span class="op">=</span> <span class="va">coln</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>        draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, col_diag <span class="op">=</span> <span class="st">"gray45"</span>, border_diag <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-13-1.png"><!-- --></p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-unnamed-chunk-16-1.png"><!-- --></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pardef</span><span class="op">)</span></span></code></pre></div>
 <p>For reference, add a colorbar legend to the plot. It can be placed beside the main plot:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">layout</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="co">#, mgp = c(0, 0, 0.5))</span></span>
 <span><span class="fu"><a href="reference/plotRel.html">plotRel</a></span><span class="op">(</span><span class="va">dmat</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, isig <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">isig</span>, <span class="va">isig</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
@@ -228,11 +293,11 @@
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="va">provinces</span>, side <span class="op">=</span> <span class="fl">2</span>, at <span class="op">=</span> <span class="va">atclin</span>, line <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/plotColorbar.html">plotColorbar</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png"><!-- --></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-unnamed-chunk-17-1.png"><!-- --></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pardef</span><span class="op">)</span></span></code></pre></div>
 <p>The colorbar can also be located in the empty space left by the triangular matrix. In the example below, we specify horizontal colorbar and provide custom tick mark locations:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># horizontal colorbar </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">border_sig</span> <span class="op">=</span> <span class="st">"darkviolet"</span></span>
@@ -246,18 +311,18 @@
 <span><span class="fu"><a href="reference/plotColorbar.html">plotColorbar</a></span><span class="op">(</span>at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.8</span><span class="op">)</span>, horiz <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ncol</span> <span class="op">&lt;-</span> <span class="fl">301</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">ncol</span>, <span class="va">ncol</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"gray"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-15-1.png"><!-- --></p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-unnamed-chunk-18-1.png"><!-- --></p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pardef</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="further-analysis-of-related-samples">Further analysis of related samples<a class="anchor" aria-label="anchor" href="#further-analysis-of-related-samples"></a>
 </h2>
 <p>Examine pairs that are determined to be significantly related at the significance level <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%5Calpha" title="\alpha" alt=""> more closely by allowing multiple pairs of strains to be related between two infections. Using <code>ibdEstM</code>, we also estimate the number of positively related pairs <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;M%27" title="M'" alt="M’"> of strains and compare results yielded by a constrained model assuming <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;r_1%20%3D%20%5Cdotso%20%3D%20r_M" title="r_1 = \dotso = r_M" alt="r_1 = = r_M"> (faster method) and without the constraint. In addition, we look at the estimates <img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%5Chat%7Br%7D_%7Btotal%7D" title="\hat{r}_{total}" alt="_{total}"> of overall relatedness.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First, create a grid of r values to evaluate over</span></span>
 <span><span class="va">revals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">generateReval</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, nr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">1e2</span>, <span class="fl">32</span>, <span class="fl">16</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sig1</span> <span class="op">&lt;-</span> <span class="va">sig2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">isig</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">isig</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">sig1</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ibdEstM.html">ibdEstM</a></span><span class="op">(</span><span class="va">dsmp</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">]</span>, <span class="va">coi</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">]</span>, <span class="va">afreq</span>, Mmax <span class="op">=</span> <span class="fl">5</span>, </span>
@@ -276,7 +341,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">rtotal1</span>, <span class="va">rtotal2</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; [1] 0.9998965</span></span></code></pre></div>
 <p>Create a list of significant pairs:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dsmp</span><span class="op">)</span></span>
 <span><span class="va">sig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">isig</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">sig</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"id1"</span>, <span class="st">"id2"</span><span class="op">)</span><span class="op">]</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">samples</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">samples</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -291,7 +356,7 @@
 <span><span class="co">#&gt; 5  17   6 8025874928 8025874357  1  1   1.000   1.000</span></span>
 <span><span class="co">#&gt; 6  21   6 8025875042 8025874357  1  1   0.881   0.881</span></span></code></pre></div>
 <p>For full control, we can use the function <code>ibdPair</code> for any two samples and explore the outputs:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">18</span>                              </span>
 <span><span class="va">pair</span> <span class="op">&lt;-</span> <span class="va">dsmp</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">]</span></span>
 <span><span class="va">coii</span> <span class="op">&lt;-</span>  <span class="va">coi</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">]</span></span>
@@ -306,7 +371,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">rhat</span>, <span class="va">M2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>                  <span class="co"># estimate with equalr = TRUE</span></span>
 <span><span class="co">#&gt; [1] 0.673 0.673</span></span></code></pre></div>
 <p>When <code>llik = TRUE</code>, output includes log-likelihood (for a single parameter if we use <code>equalr = TRUE</code>), which provides the basis for statistical inference:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CI</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">confreg</span><span class="op">)</span></span>
 <span><span class="va">llikCI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">qchisq</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">alpha</span>, df <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span></span>
 <span><span class="va">llrng</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -327,17 +392,17 @@
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="fl">0.165</span>, <span class="va">yLR</span>, adj <span class="op">=</span> <span class="fl">0</span>, <span class="st">"0.5 LR statistic"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">CI</span><span class="op">)</span>, <span class="va">yCI</span> <span class="op">+</span> <span class="fl">0.05</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">llrng</span><span class="op">)</span>, <span class="st">"confidence interval"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">rhat</span> <span class="op">-</span> <span class="fl">0.025</span>, <span class="va">yLR</span>, <span class="st">"MLE"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, srt <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-20-1.png"><!-- --></p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-unnamed-chunk-23-1.png"><!-- --></p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pardef</span><span class="op">)</span></span></code></pre></div>
 <div id="refs" class="references csl-bib-body">
 <div id="ref-gerlovina2022dcifer" class="csl-entry">
 <div class="csl-left-margin">1. </div>
-<div class="csl-right-inline">Gerlovina I, Gerlovin B, Rodriguez-Barraquer I, Greenhouse B. Dcifer: An IBD-based method to calculate genetic distance between polyclonal infections. bioRxiv. 2022; </div>
+<div class="csl-right-inline">Gerlovina I, Gerlovin B, Rodríguez-Barraquer I, Greenhouse B. <a href="https://doi.org/10.1093/genetics/iyac126" class="external-link"><span class="nocase">Dcifer: an IBD-based method to calculate genetic distance between polyclonal infections</span></a>. Genetics. 2022 Aug;222(2). </div>
 </div>
 <div id="ref-tessema2022sensitive" class="csl-entry">
 <div class="csl-left-margin">2. </div>
-<div class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M, Chen A, Aydemir O, et al. Sensitive, highly multiplexed sequencing of microhaplotypes from the Plasmodium falciparum heterozygome. The Journal of infectious diseases. 2022;225(7):1227–37. </div>
+<div class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M, Chen A, Aydemir O, et al. <a href="https://doi.org/10.1093/infdis/jiaa527" class="external-link">Sensitive, highly multiplexed sequencing of microhaplotypes from the Plasmodium falciparum heterozygome</a>. The Journal of infectious diseases. 2022;225(7):1227–37. </div>
 </div>
 </div>
 </div>
