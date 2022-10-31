@@ -3,7 +3,7 @@ pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   vignetteDcifer: vignetteDcifer.html
-last_built: 2022-10-31T07:33Z
+last_built: 2022-10-31T08:07Z
 urls:
   reference: https://eppicenter.github.io/dcifer/reference
   article: https://eppicenter.github.io/dcifer/articles
