@@ -3,7 +3,7 @@ template:
   bootstrap: 5
   opengraph:
     image:
-      src: man/figures/boat1c.svg
+      src: man/figures/logo.svg
 figures:
   fig.width: 7.2
   fig.height: 7.2
