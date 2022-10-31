@@ -9,4 +9,4 @@ src/*.so
 src/*.dll
 inst/doc
 docs
-vignettes/vigArticle.Rmd
+
