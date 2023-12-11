@@ -54,9 +54,9 @@ is assumed for M pairs of strains
 \ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).}
 
 \item{mnewton}{a logical value. If \code{TRUE}, Newton's method, adapted for
-a bounded parameter space, will be used to find MLE. If \code{mnewton} is
-not specified, it will be set to \code{TRUE} if \code{M = 1}, \code{confreg
-  = FALSE}, and \code{llik = FALSE}.}
+a bounded parameter space, will be used to find MLE. Ignored (set to
+\code{FALSE}) if \code{M > 1}, \code{confreg = TRUE}, or \code{llik =
+  TRUE}.}
 
 \item{freqlog}{a logical value indicating if \code{afreq} is on the log
 scale.}

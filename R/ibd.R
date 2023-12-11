@@ -27,9 +27,9 @@
 #'   (\ifelse{html}{\out{r<sub>1</sub>}}{\eqn{r_1}} = ... =
 #'    \ifelse{html}{\out{r<sub>M</sub>}}{\eqn{r_M}}).
 #' @param mnewton a logical value. If \code{TRUE}, Newton's method, adapted for
-#'   a bounded parameter space, will be used to find MLE. If \code{mnewton} is
-#'   not specified, it will be set to \code{TRUE} if \code{M = 1}, \code{confreg
-#'   = FALSE}, and \code{llik = FALSE}.
+#'   a bounded parameter space, will be used to find MLE. Ignored (set to
+#'   \code{FALSE}) if \code{M > 1}, \code{confreg = TRUE}, or \code{llik =
+#'   TRUE}.
 #' @param freqlog a logical value indicating if \code{afreq} is on the log
 #'   scale.
 #' @param nr      an integer specifying precision of the estimate: resolution of
@@ -186,7 +186,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
     return(llikr)
   }
   if (mnewton) {
-    p01 <- p01[, !is.na(p01[1, ])]
+    p01 <- p01[, !is.na(p01[1, ]), drop = FALSE]
     C   <- p01[2, ]/p01[1, ] - 1
     rhat <- rNewton(C, tol = tol, off = tol)
   } else {
@@ -319,8 +319,7 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
   } else {
     neval <- NULL
   }
-  #***
-#  neval  <- if (mnewton)          NULL else ncol(reval)
+
   inull  <- if (mnewton || !pval) NULL else which.min(abs(reval - rnull))
   afreq  <- lapply(afreq, log)
   nloc   <- length(afreq)

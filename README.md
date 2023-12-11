@@ -147,13 +147,11 @@ dsmp2  <- matchAfreq(dsmp, afreq2)
 
 ## Estimate relatedness
 
-As a first step in relatedness estimation, we set
-![M = 1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%20%3D%201 "M = 1")
-(only one pair of strains between two infections can be related) and
-test the hypothesis that infections are unrelated
-(![H_0\\!: r = 0](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;H_0%5C%21%3A%20r%20%3D%200 "H_0\!: r = 0")).
-This is done with `ibdDat` function. Then we explore significantly
-related pairs in more detail.
+As a first step in relatedness estimation, we set $M = 1$ (only one pair
+of strains between two infections can be related) and test the
+hypothesis that infections are unrelated ($H_0\!: r = 0$). This is done
+with `ibdDat` function. Then we explore significantly related pairs in
+more detail.
 
 For the purposes of demonstration, we first estimate relatedness and
 display results using `dsmp` as created previously where samples are not
@@ -240,7 +238,7 @@ mtext("p-values", 3, 0.2)
 # p-values for upper triangle
 pmat <- matrix(NA, length(dsmp), length(dsmp))
 pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
-pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])#*1.2
+pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "Red-Purple"), 
         sig = FALSE, add = TRUE, col_diag = "white", border_diag = "gray45")
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
@@ -253,7 +251,7 @@ for (jsmp in 2:nsmp) {
     nmat[ismp, jsmp] <- sum(!dmiss[[ismp]] & !dmiss[[jsmp]])
   }
 }
-nrng <- range(nmat, na.rm = TRUE)  #  
+nrng <- range(nmat, na.rm = TRUE)    
 par(mar = c(1, 0.2, 1, 0))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("number of loci", 3, 0.2)
@@ -273,7 +271,7 @@ beside the main plot:
 
 ``` r
 layout(matrix(1:2, 1), width = c(7, 1))
-par(mar = c(1, 1, 2, 1))#, mgp = c(0, 0, 0.5))
+par(mar = c(1, 1, 2, 1))
 plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig[, 2:1]))
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
@@ -296,7 +294,7 @@ and provide custom tick mark locations:
 ``` r
 # horizontal colorbar 
 par(mar = c(1, 1, 1, 3))
-border_sig = "darkviolet"
+border_sig <- "darkviolet"
 plotRel(dres, draw_diag = TRUE, border_diag = border_sig, alpha = alpha, 
         border_sig = border_sig, lwd_sig = 2)
 legend(32, 20, pch = 0, col = border_sig, pt.lwd = 2, pt.cex = 1.4, 
@@ -318,18 +316,13 @@ par(pardef)
 ## Further analysis of related samples
 
 Examine pairs that are determined to be significantly related at the
-significance level
-![\alpha](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Calpha "\alpha")
-more closely by allowing multiple pairs of strains to be related between
-two infections. Using `ibdEstM`, we also estimate the number of
-positively related pairs
-![M'](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%27 "M'")
-of strains and compare results yielded by a constrained model assuming
-![r_1 = \dotso = r_M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;r_1%20%3D%20%5Cdotso%20%3D%20r_M "r_1 = \dotso = r_M")
-(faster method) and without the constraint. In addition, we look at the
-estimates
-![\hat{r}\_{total}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Chat%7Br%7D_%7Btotal%7D "\hat{r}_{total}")
-of overall relatedness.
+significance level $\alpha$ more closely by allowing multiple pairs of
+strains to be related between two infections. Using `ibdEstM`, we also
+estimate the number of positively related pairs $M'$ of strains and
+compare results yielded by a constrained model assuming
+$r_1 = \dotso = r_M$ (faster method) and without the constraint. In
+addition, we look at the estimates $\hat{r}_{total}$ of overall
+relatedness.
 
 ``` r
 # First, create a grid of r values to evaluate over
@@ -407,7 +400,7 @@ cols <- c("purple", "cadetblue3", "gray60")
 
 par(mar = c(3, 2.5, 2, 0.1), mgp = c(1.5, 0.3, 0))
 plot(revals[[1]], res2$llik, type = "l", xlab = "r", ylab = "log-likelihood", 
-     yaxt = "n")#, tck = -0.01)
+     yaxt = "n")
 abline(v = res2$rhat, lty = 1, col = cols[1])
 abline(h = c(max(res2$llik), llikCI, res2$llik[[1]]), lty = 2, col = cols[2])
 abline(v = CI, col = cols[1], lty = 5)
@@ -430,10 +423,10 @@ par(pardef)
 
 <div id="ref-gerlovina2022dcifer" class="csl-entry">
 
-<span class="csl-left-margin">1. </span><span
-class="csl-right-inline">Gerlovina I, Gerlovin B, Rodríguez-Barraquer I,
-Greenhouse B. [<span class="nocase">Dcifer: an IBD-based method to
-calculate genetic distance between polyclonal
+<span class="csl-left-margin">1.
+</span><span class="csl-right-inline">Gerlovina I, Gerlovin B,
+Rodríguez-Barraquer I, Greenhouse B. [<span class="nocase">Dcifer: an
+IBD-based method to calculate genetic distance between polyclonal
 infections</span>](https://doi.org/10.1093/genetics/iyac126). Genetics.
 2022 Aug;222(2). </span>
 
@@ -441,10 +434,10 @@ infections</span>](https://doi.org/10.1093/genetics/iyac126). Genetics.
 
 <div id="ref-tessema2022sensitive" class="csl-entry">
 
-<span class="csl-left-margin">2. </span><span
-class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M,
-Chen A, Aydemir O, et al. [Sensitive, highly multiplexed sequencing of
-microhaplotypes from the Plasmodium falciparum
+<span class="csl-left-margin">2.
+</span><span class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier
+NB, Murphy M, Chen A, Aydemir O, et al. [Sensitive, highly multiplexed
+sequencing of microhaplotypes from the Plasmodium falciparum
 heterozygome](https://doi.org/10.1093/infdis/jiaa527). The Journal of
 infectious diseases. 2022;225(7):1227–37. </span>
 

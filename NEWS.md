@@ -1,7 +1,11 @@
 
+# dcifer 1.2.1
+
+- Single locus data now allowed. 
+
 # dcifer 1.2.0
 
-- Functions `formatDat()` and `formatAfreq()` that reformat data frames containing sample data and population allele frequencies in long formats are added. 
+- New: functions `formatDat()` and `formatAfreq()` that reformat data frames containing sample data and population allele frequencies in long formats.
 
 # dcifer 1.1.1
 

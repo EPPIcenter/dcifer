@@ -148,7 +148,7 @@ mtext("p-values", 3, 0.2)
 # p-values for upper triangle
 pmat <- matrix(NA, length(dsmp), length(dsmp))
 pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
-pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])#*1.2
+pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "Red-Purple"), 
         sig = FALSE, add = TRUE, col_diag = "white", border_diag = "gray45")
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
@@ -161,7 +161,7 @@ for (jsmp in 2:nsmp) {
     nmat[ismp, jsmp] <- sum(!dmiss[[ismp]] & !dmiss[[jsmp]])
   }
 }
-nrng <- range(nmat, na.rm = TRUE)  #  
+nrng <- range(nmat, na.rm = TRUE)    
 par(mar = c(1, 0.2, 1, 0))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("number of loci", 3, 0.2)
@@ -176,7 +176,7 @@ For reference, add a colorbar legend to the plot. It can be placed beside the ma
 
 ```{r, fit.width = 7, fig.height = 6.3}
 layout(matrix(1:2, 1), width = c(7, 1))
-par(mar = c(1, 1, 2, 1))#, mgp = c(0, 0, 0.5))
+par(mar = c(1, 1, 2, 1))
 plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig[, 2:1]))
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
@@ -190,9 +190,9 @@ par(pardef)
 The colorbar can also be located in the empty space left by the triangular matrix. In the example below, we specify horizontal colorbar and provide custom tick mark locations:
 
 ```{r, fig.width = 6.2, fig.height = 6.1}
-# horizontal colorbar (needed?)
+# horizontal colorbar 
 par(mar = c(1, 1, 1, 3))
-border_sig = "darkviolet"
+border_sig <- "darkviolet"
 plotRel(dres, draw_diag = TRUE, border_diag = border_sig, alpha = alpha, 
         border_sig = border_sig, lwd_sig = 2)
 legend(32, 20, pch = 0, col = border_sig, pt.lwd = 2, pt.cex = 1.4, 
@@ -269,7 +269,7 @@ cols <- c("purple", "cadetblue3", "gray60")
 
 par(mar = c(3, 2.5, 2, 0.1), mgp = c(1.5, 0.3, 0))
 plot(revals[[1]], res2$llik, type = "l", xlab = "r", ylab = "log-likelihood", 
-     yaxt = "n")#, tck = -0.01)
+     yaxt = "n")
 abline(v = res2$rhat, lty = 1, col = cols[1])
 abline(h = c(max(res2$llik), llikCI, res2$llik[[1]]), lty = 2, col = cols[2])
 abline(v = CI, col = cols[1], lty = 5)
