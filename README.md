@@ -3,8 +3,6 @@
 
 # Dcifer: Genetic Distance Between Polyclonal Infections
 
-![](man/figures/aqua10f.png)<!-- -->
-
 Package `dcifer` (Distance for Complex Infections: Fast Estimation of
 Relatedness) calculates genetic distance between polyclonal infections
 by estimating relatedness from biallelic and multiallelic data \[1\]. In
@@ -14,6 +12,8 @@ performing preparatory steps, and visualizing the results are also
 included. We will illustrate the analysis process using microhaplotype
 data from two health facilities in Maputo and Inhambane provinces of
 Mozambique \[2\].
+
+![](man/figures/aqua10f.png)<!-- -->
 
 You can install the released version of dcifer from
 [CRAN](https://CRAN.R-project.org) with:
@@ -418,6 +418,10 @@ text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ``` r
 par(pardef)
 ```
+
+<center>
+<img src="man/figures/logo.svg" style="width:18.0%" />
+</center>
 
 <div id="refs" class="references csl-bib-body">
 
