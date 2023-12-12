@@ -419,9 +419,9 @@ text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 par(pardef)
 ```
 
-<center>
+<p align="center">
 <img src="man/figures/logo.svg" alt="" width=160>
-</center>
+</p>
 
 <div id="refs" class="references csl-bib-body">
 
