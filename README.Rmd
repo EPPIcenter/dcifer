@@ -314,7 +314,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 par(pardef)
 ```
-<center>
-![](man/figures/logo.svg){width=18%} 
-</center>
 
+<center>
+<img src="man/figures/logo.svg" alt="" width=160>
+</center>

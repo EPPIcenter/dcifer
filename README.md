@@ -420,7 +420,7 @@ par(pardef)
 ```
 
 <center>
-<img src="man/figures/logo.svg" style="width:18.0%" />
+<img src="man/figures/logo.svg" alt="" width=160>
 </center>
 
 <div id="refs" class="references csl-bib-body">
