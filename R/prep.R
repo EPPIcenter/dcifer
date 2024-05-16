@@ -212,6 +212,9 @@ getCOI <- function(dsmp, lrank = 2) {
 #' @export
 #'
 calcAfreq <- function(dsmp, coi, tol = 1e-4, qstart = 0.5) {
+  if (any(coi == 0)) {
+    stop("zero COI not allowed")
+  }
   alist <- dsmp[[1]]
   K     <- sapply(alist, length)
   nloc  <- length(K)
@@ -219,9 +222,11 @@ calcAfreq <- function(dsmp, coi, tol = 1e-4, qstart = 0.5) {
   dloc <- apply(matrix(dloc, nloc), 1, as.list)
   off  <- 10^(-ceiling(log(sum(coi), 10)))
   for (iloc in 1:nloc) {
-    b <- do.call(rbind, dloc[[iloc]])
+    imiss <- sapply(dloc[[iloc]], sum) == 0
+    b <- do.call(rbind, dloc[[iloc]][!imiss])
     for (iall in 1:K[iloc]) {
-      q <- qNewton(b[, iall], coi, tol = tol, qstart = qstart, off = off)
+      q <- qNewton(b[, iall], coi[!imiss], tol = tol, qstart = qstart,
+                   off = off)
       alist[[iloc]][iall] <- 1 - q
     }
   }

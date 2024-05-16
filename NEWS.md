@@ -1,3 +1,6 @@
+# dcifer 1.3.0
+
+- Function `calcAfreq()` adjusted to exclude missing data (per ID at a locus)
 
 # dcifer 1.2.1
 

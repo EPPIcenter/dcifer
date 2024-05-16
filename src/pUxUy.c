@@ -105,7 +105,7 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   while (!equalArr(vx, vmaxx, nux)) {   
     if (ax == 0) {  
       vx[ax]--;     
-    } else if (vx[ax] == 1 || vx[ix] == bx) {
+    } else if (vx[ax] == 1 || vx[ix] == bx) { // else { while () }
       vx[ax] += vx[ix] - 1;
       vx[ix] = 1;
       ppx[ix] = logpx[ix];
