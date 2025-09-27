@@ -188,7 +188,7 @@ generateReval <- function(M, rval = NULL, nr = NULL) {
 #' @inheritParams ibdDat
 #' @param lrank the rank of the locus that will determine a sample's COI (loci
 #'   are ranked by the number of detected alleles).
-#' @return a vector with estimated COI for each sample.
+#' @return A vector with estimated COI for each sample.
 #' @examples
 #' coi <- getCOI(dsmp, lrank = 2)
 #' @export

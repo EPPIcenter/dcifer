@@ -1,3 +1,7 @@
+# dcifer 1.4.0
+
+- Added: one-sided tests for functions `ibdPair()` and `ibdDat()`. The argument `side` indicates if a one- or two-sided test is performed and which side is needed if the test is one-sided. 
+
 # dcifer 1.3.0
 
 - Function `calcAfreq()` adjusted to exclude missing data (per ID at a locus)

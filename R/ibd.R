@@ -118,6 +118,8 @@
 #' @export
 #' @useDynLib dcifer
 
+#*** make an update: NA if no loci with non-missing data in both samples
+
 ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
                     confreg = FALSE, llik = FALSE, maxllik = FALSE, rnull = 0,
                     alpha = 0.05, equalr = FALSE, mnewton = NULL,
@@ -188,10 +190,20 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   if (mnewton) {
     p01 <- p01[, !is.na(p01[1, ]), drop = FALSE]
     C   <- p01[2, ]/p01[1, ] - 1
-    rhat <- rNewton(C, tol = tol, off = tol)
+    #*** update
+    if (length(C) == 0) {
+      rhat <- NA
+    } else {
+      rhat <- rNewton(C, tol = tol, off = tol)
+    }
   } else {
-    imax <- which.max(llikr)           # which(llikr == max(llikr))
-    rhat <- reval[, imax]              # rowMeans(reval[, imax, drop = FALSE])
+    if (all(llikr) == 0) {
+      rhat <- NA
+    } else {
+      imax <- which.max(llikr)         # which(llikr == max(llikr))
+      rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
+    }
+    #*** end update (need to test with all possible outputs)
   }
   if (!pval && !confreg && !llik && !maxllik) {
     return(rhat)
