@@ -190,20 +190,18 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   if (mnewton) {
     p01 <- p01[, !is.na(p01[1, ]), drop = FALSE]
     C   <- p01[2, ]/p01[1, ] - 1
-    #*** update
-    if (length(C) == 0) {
+    if (ncol(p01) == 0) {              # missing data
       rhat <- NA
     } else {
       rhat <- rNewton(C, tol = tol, off = tol)
     }
   } else {
-    if (all(llikr) == 0) {
+    if (all(llikr) == 0) {             # missing data
       rhat <- NA
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
     }
-    #*** end update (need to test with all possible outputs)
   }
   if (!pval && !confreg && !llik && !maxllik) {
     return(rhat)

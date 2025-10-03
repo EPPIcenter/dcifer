@@ -1,6 +1,9 @@
 # dcifer 1.4.0
 
 - Added: one-sided tests for functions `ibdPair()` and `ibdDat()`. The argument `side` indicates if a one- or two-sided test is performed and which side is needed if the test is one-sided. 
+- Minor updates/fixes: 
+  * NA returned when there are no loci with data in both samples
+  * names for COI match sample ID's
 
 # dcifer 1.3.0
 
