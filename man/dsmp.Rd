@@ -12,6 +12,7 @@ elements (loci), which are integer vectors (alleles).
 dsmp
 }
 \description{
-Microhaplotype data from two clinics in Mozambique. Samples are sorted by location.
+Microhaplotype data from two clinics in Mozambique. Samples are sorted by
+location.
 }
 \keyword{datasets}

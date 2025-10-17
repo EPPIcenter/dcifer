@@ -124,13 +124,14 @@
 
 ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
                     confreg = FALSE, llik = FALSE, maxllik = FALSE, rnull = 0,
-                    side = "right", alpha = 0.05, equalr = FALSE,
-                    mnewton = NULL, freqlog = FALSE, nr = 1e3, reval = NULL,
-                    tol = NULL, logr = NULL, neval = NULL, inull = NULL,
-                    nloc = NULL) {
+                    side = c("right", "left", "two-sided"), alpha = 0.05,
+                    equalr = FALSE, mnewton = NULL, freqlog = FALSE, nr = 1e3,
+                    reval = NULL, tol = NULL, logr = NULL, neval = NULL,
+                    inull = NULL, nloc = NULL) {
   if (M > (min(coi))) {
     stop("number of related strains greater than min(coi)")
   }
+  side <- match.arg(side)
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -140,14 +141,14 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   maxj <- max(sapply(pair[[1]], sum), sapply(pair[[2]], sum), max(coi))
   logj   <- log(1:maxj)                # starts with 1
   factj  <- lgamma(0:maxj + 1)         # starts with 0
-  if (is.null(mnewton)) {
+
+  if (M > 1 || confreg || llik) {
     mnewton <- FALSE
-    if (M == 1 && !confreg && !llik) {
-      mnewton <- TRUE
-      if (is.null(tol)) {
-        tol <- 1/nr
-      }
-    }
+  } else if (is.null(mnewton)) {
+    mnewton <- TRUE
+  }
+  if (mnewton && is.null(tol)) {
+    tol <- 1/nr
   }
 
   npar <- if (equalr) 1 else M
@@ -166,6 +167,21 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
     llikr <- rep(0, neval)
   } else {
     p01 <- matrix(NA, 2, nloc)
+  }
+
+  #********** Q: do we want to repeat or to add 0's? (so rnull is the sum)
+  #           issue a warning with description of what is done
+  if (npar > 1) {
+    if (length(rnull) == 1) {
+      rnull <- rep(rnull, npar)
+    } else {
+      rnull <- sort(rnull)
+    }
+  }
+  if (all(rnull == 0)) {  #*** do we need this if npar = 1? (if not, fix below)
+    side <- "right"
+  } else if (all(rnull == 1)) {
+    side <- "left"
   }
 
   for (t in 1:nloc) {
@@ -199,7 +215,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
       rhat <- rNewton(C, tol = tol, off = tol)
     }
   } else {
-    if (all(llikr) == 0) {             # missing data
+    if (all(llikr == 0)) {             # missing data
       rhat <- NA
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
@@ -219,22 +235,32 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
         if (equalr) {
           inull <- which.min(abs(reval - rnull))
         } else {
-          inull <- which.min(colSums(abs(reval - sort(rnull))))
+          inull <- which.min(.colSums(abs(reval - rnull), npar, neval))
+          #inull <- which.min(apply(abs(reval - rnull), 2, max))  # better, slow
         }
       }
       lrs <- 2*(llikr[imax] - llikr[inull])
     }
 
-    if ((side == "right" && rhat <= rnull) ||
-        (side == "left"  && rhat >= rnull)) {
-      res$pval <- 0.5
-    } else {
-      if (side %in% c("left", "right") || rnull %in% c(0, 1)) {
-        adj <- 0.5
-      } else {
-        adj <- 1
-      }
-      res$pval <- (1 - stats::pchisq(lrs, df = npar))*adj
+    #***** might be changed
+    #********** Q: for one-sided - do we want all the rhats on one side
+    #              or a sum to be on one side?
+    if (side %in% c("left", "right") || rnull %in% c(0, 1)) {  #*** multiple
+      adj <- 0.5
+    } else if (side == "two-sided") {
+      adj <- 1
+    }
+    res$pval <- (1 - stats::pchisq(lrs, df = npar))*adj
+    #*** WIP updated version
+    if (!rhat %in% c(0, 1))  # ??? then no need to specify side for 0 or 1 above
+    if ((side == "right" && all(rhat < rnull)) ||
+        (side == "left"  && all(rhat > rnull))) {
+      res$pval <- 1 - res$pval
+    }
+    #*** previous version
+    if ((side == "right" && rhat < rnull) ||                   #*** multiple
+        (side == "left"  && rhat > rnull)) {
+      res$pval <- 1 - res$pval
     }
   }
 
@@ -461,12 +487,15 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
 #' @export
 #'
 
+#********* what happens with rnull here when M increases?
 ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
-                    llik = FALSE, rnull = 0, side = "right", alpha = 0.05,
+                    llik = FALSE, rnull = 0,
+                    side = c("right", "left", "two-sided"), alpha = 0.05,
                     equalr = FALSE, freqlog = FALSE,
                     nrs = c(1e3, 1e2, 32, 16, 12, 10), revals = NULL,
                     tol0 = 1e-9, logrs = NULL, nevals = NULL, nloc = NULL) {
   Mmax <- min(coi, Mmax)
+  side <- match.arg(side)
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -502,20 +531,17 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
       res <- res[[1]]
     }
   } else {
-    M <- 0
-    rhat <- 1
-    while(all(rhat > tol0) && M < Mmax) {
-      M <- M + 1
-      res <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
-                     llik = llik, maxllik = FALSE, rnull = rnull, side = side,
-                     alpha = alpha, equalr = FALSE, freqlog = TRUE, nr = nrs[M],
-                     reval = revals[[M]], logr = logrs[[M]], neval = nevals[M],
-                     nloc = nloc)
-      if (inherits(res, "list")) {
-        rhat <- res$rhat
-      } else {
-        rhat <- res
+    for (M in 1:Mmax) {
+      resnew <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
+                        llik = llik, maxllik = FALSE, rnull = rnull, #side = side,
+                        alpha = alpha, equalr = FALSE, freqlog = TRUE,
+                        nr = nrs[M], reval = revals[[M]], logr = logrs[[M]],
+                        neval = nevals[M], nloc = nloc)
+      rhat <- if (inherits(resnew, "list")) resnew$rhat else resnew
+      if (M > 1 && any(rhat <= tol0)) {
+        break
       }
+      res <- resnew
     }
   }
   return(res)

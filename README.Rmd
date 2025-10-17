@@ -117,7 +117,14 @@ For the purposes of demonstration, we first estimate relatedness and display res
 
 ```{r}
 dres0 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0, 
-                alpha = 0.05, nr = 1e3)   
+                alpha = 0.05, nr = 1e3)  
+#***** debugging: start here
+if (FALSE) {
+pair <- list(dsmp[[ix]], dsmp2[[iy]])
+coi  <- c(coi[ix], coi2[iy])
+M = 1; confreg = confint; freqlog = TRUE
+}
+
 ```
 
 Look at the results for a single pair of samples: 
@@ -136,8 +143,14 @@ dsmp <- dsmp[ord]
 coi  <- coi[ ord]
 ```
 ```{r, eval = FALSE}
-dres <- ibdDat(dsmp,  coi, afreq, nr = 1e3)     
+dres <- ibdDat(dsmp, coi, afreq)     
 ```   
+
+To test different hypotheses, we can use `rnull` and `side` arguments. For example, to test whether pairwise relatedness is higher than 0.25 ($H_0: r \leq 0.25$) and obtain one-tailed p-values:
+
+```{r}
+dres2 <- ibdDat(dsmp, coi, afreq, rnull = 0.25, side = "right")
+```
 
 ## Visualize the results
 
