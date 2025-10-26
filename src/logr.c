@@ -12,23 +12,28 @@
 
 SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
 {
-  int neval, nm, nn, i, j, mtemp, ikeep, shift;
+  int neval, nm, nn, i, j, mtemp, ikeep, shift, nprotect;
   double rtemp, stemp;
   int *m1, *nmid;
   double *reval, *logr, *log1r, *sum1r;
   SEXP Rres, Rlogr, Rlog1r, Rm1, Rnmid, Rsum1r;
 
+  nprotect = 0;
+  Rreval = PROTECT(Rf_coerceVector(Rreval, REALSXP)); nprotect++;
+  Rneval = PROTECT(Rf_coerceVector(Rneval, INTSXP));  nprotect++;
+  Rnm    = PROTECT(Rf_coerceVector(Rnm,    INTSXP));  nprotect++;
+  
   reval = REAL(Rreval);
   neval = INTEGER(Rneval)[0];
   nm    = INTEGER(Rnm)[0];
   nn    = neval*nm;
   
-  Rres   = PROTECT(allocVector(VECSXP,  5));
-  Rlogr  = PROTECT(allocVector(REALSXP, nn));
-  Rlog1r = PROTECT(allocVector(REALSXP, nn));  
-  Rm1    = PROTECT(allocVector(INTSXP,  neval));
-  Rnmid  = PROTECT(allocVector(INTSXP,  neval));
-  Rsum1r = PROTECT(allocVector(REALSXP, neval));
+  Rres   = PROTECT(Rf_allocVector(VECSXP,  5));     nprotect++;
+  Rlogr  = PROTECT(Rf_allocVector(REALSXP, nn));    nprotect++;
+  Rlog1r = PROTECT(Rf_allocVector(REALSXP, nn));    nprotect++;
+  Rm1    = PROTECT(Rf_allocVector(INTSXP,  neval)); nprotect++;
+  Rnmid  = PROTECT(Rf_allocVector(INTSXP,  neval)); nprotect++;
+  Rsum1r = PROTECT(Rf_allocVector(REALSXP, neval)); nprotect++;
   logr  = REAL(Rlogr);
   log1r = REAL(Rlog1r);
   m1    = INTEGER(Rm1);
@@ -68,7 +73,7 @@ SEXP logReval(SEXP Rreval, SEXP Rneval, SEXP Rnm)
   SET_VECTOR_ELT(Rres, 2, Rm1);
   SET_VECTOR_ELT(Rres, 3, Rnmid);
   SET_VECTOR_ELT(Rres, 4, Rsum1r);  
-  UNPROTECT(6);
+  UNPROTECT(nprotect);
   return Rres;
 }
     

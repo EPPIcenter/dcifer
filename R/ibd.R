@@ -197,7 +197,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
       rhat <- rNewton(C, tol = tol, off = tol)
     }
   } else {
-    if (all(llikr) == 0) {
+    if (all(llikr == 0)) {
       rhat <- NA
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))

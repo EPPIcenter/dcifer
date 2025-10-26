@@ -18,16 +18,33 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
 	  SEXP Rlogp, SEXP Rlogj, SEXP Rfactj, SEXP Rnm, SEXP Rloglist,
 	  SEXP Rneval)
 { 
-  int nux, nuy, nuxy, nm, nx, ny, ax, ay, bx, by, i, ix, iy, mmax, neval, shift;
-  int *ux1, *uy1, *ixy1, *iyx1, *nmid, *m1;  // to not rewrite R obj
+  int nux, nuy, nuxy, nm, nx, ny, ax, ay, bx, by, i, ix, iy, mmax, neval, shift,
+    nprotect;
+  int *ux, *uy, *ixy, *iyx, *ux1, *uy1, *ixy1, *iyx1, *nmid, *m1, *vx, *vy,
+    *vmaxx, *vmaxy;  
   double combx, comby;
-  double *logp, *logj, *factj, *logr, *log1r, *sum1r, *lik;
+  double *logp, *logj, *factj, *logr, *log1r, *sum1r, *logpx, *logpy, *logpxy,
+    *ppx, *ppy, *pplastx, *pplasty, *sprob, *lik;
   SEXP Rlik;
 
-  ux1   = INTEGER(Rux);   // one-based indices (passed from R)
-  uy1   = INTEGER(Ruy);   // one-based indices (passed from R)
-  ixy1  = INTEGER(Rixy);  // one-based indices (passed from R)
-  iyx1  = INTEGER(Riyx);  // one-based indices (passed from R)
+  nprotect = 0;
+  Rux    = PROTECT(Rf_coerceVector(Rux,    INTSXP));  nprotect++;
+  Ruy    = PROTECT(Rf_coerceVector(Ruy,    INTSXP));  nprotect++;
+  Rixy   = PROTECT(Rf_coerceVector(Rixy,   INTSXP));  nprotect++;
+  Riyx   = PROTECT(Rf_coerceVector(Riyx,   INTSXP));  nprotect++;    
+  Rnx    = PROTECT(Rf_coerceVector(Rnx,    INTSXP));  nprotect++;
+  Rny    = PROTECT(Rf_coerceVector(Rny,    INTSXP));  nprotect++;
+  Rlogp  = PROTECT(Rf_coerceVector(Rlogp,  REALSXP)); nprotect++;
+  Rlogj  = PROTECT(Rf_coerceVector(Rlogj,  REALSXP)); nprotect++;
+  Rfactj = PROTECT(Rf_coerceVector(Rfactj, REALSXP)); nprotect++;
+  Rnm    = PROTECT(Rf_coerceVector(Rnm,    INTSXP));  nprotect++;
+  Rneval = PROTECT(Rf_coerceVector(Rneval, INTSXP));  nprotect++;
+  // Rloglist not checked since created within package
+
+  ux1   = INTEGER(Rux);     // one-based indices (passed from R)
+  uy1   = INTEGER(Ruy);     // one-based indices (passed from R)
+  ixy1  = INTEGER(Rixy);    // one-based indices (passed from R)
+  iyx1  = INTEGER(Riyx);    // one-based indices (passed from R)
   nx    = INTEGER(Rnx)[0];
   ny    = INTEGER(Rny)[0];
   nm    = INTEGER(Rnm)[0];
@@ -35,16 +52,16 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   logp  = REAL(Rlogp);
   logj  = REAL(Rlogj);
   factj = REAL(Rfactj);
-  nux   = length(Rux);         
-  nuy   = length(Ruy);
-  nuxy  = length(Rixy);   // length(Rixy) = length(Riyx)
-  logr  = REAL(VECTOR_ELT(Rloglist, 0));
-  log1r = REAL(VECTOR_ELT(Rloglist, 1));
-  m1    = INTEGER(VECTOR_ELT(Rloglist, 2));
-  nmid  = INTEGER(VECTOR_ELT(Rloglist, 3));
-  sum1r = REAL(VECTOR_ELT(Rloglist, 4));
+  nux   = Rf_length(Rux);         
+  nuy   = Rf_length(Ruy);
+  nuxy  = Rf_length(Rixy);  // length(Rixy) = length(Riyx)
+  logr  = REAL(VECTOR_ELT(Rloglist, 0));    
+  log1r = REAL(VECTOR_ELT(Rloglist, 1));    
+  m1    = INTEGER(VECTOR_ELT(Rloglist, 2)); 
+  nmid  = INTEGER(VECTOR_ELT(Rloglist, 3)); 
+  sum1r = REAL(VECTOR_ELT(Rloglist, 4));    
 
-  Rlik  = PROTECT(allocVector(REALSXP, neval));  
+  Rlik  = PROTECT(Rf_allocVector(REALSXP, neval)); nprotect++; 
   lik   = REAL(Rlik); 
   for (i = 0; i < neval; i++) {
     lik[i] = 0;
@@ -55,11 +72,23 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
   bx = nx - ax;  /* can not be 0 */
   by = ny - ay;
 
-  int ux[nux], uy[nuy], ixy[nuxy], iyx[nuxy], vx[nux], vy[nuy],
-    vmaxx[nux], vmaxy[nuy];
-  double logpx[nux], logpy[nuy], logpxy[nuxy], ppx[nux], ppy[nuy],
-    pplastx[bx], pplasty[by], sprob[nm + 1];
-
+  ux      = (int *) R_alloc(nux,  sizeof(int));
+  uy      = (int *) R_alloc(nuy,  sizeof(int));
+  ixy     = (int *) R_alloc(nuxy, sizeof(int));
+  iyx     = (int *) R_alloc(nuxy, sizeof(int));
+  vx      = (int *) R_alloc(nux,  sizeof(int));
+  vy      = (int *) R_alloc(nuy,  sizeof(int));
+  vmaxx   = (int *) R_alloc(nux,  sizeof(int));  
+  vmaxy   = (int *) R_alloc(nuy,  sizeof(int));
+  logpx   = (double *) R_alloc(nux,    sizeof(double));
+  logpy   = (double *) R_alloc(nuy,    sizeof(double));
+  logpxy  = (double *) R_alloc(nuxy,   sizeof(double));
+  ppx     = (double *) R_alloc(nux,    sizeof(double));
+  ppy     = (double *) R_alloc(nuy,    sizeof(double));
+  pplastx = (double *) R_alloc(bx,     sizeof(double));
+  pplasty = (double *) R_alloc(by,     sizeof(double));
+  sprob   = (double *) R_alloc(nm + 1, sizeof(double));
+  
   /* ux, uy, ixy, and iyx: zero-based indices for convenience */
   for (i = 0; i < nux;  i++) ux[i] = ux1[i] - 1;
   for (i = 0; i < nuy;  i++) uy[i] = uy1[i] - 1;
@@ -178,6 +207,6 @@ SEXP llik(SEXP Rux, SEXP Ruy, SEXP Rixy, SEXP Riyx, SEXP Rnx, SEXP Rny,
     lik[i] = log(lik[i]);
   }
   
-  UNPROTECT(1);
+  UNPROTECT(nprotect);
   return Rlik;
 }

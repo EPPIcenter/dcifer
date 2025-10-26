@@ -167,7 +167,7 @@ Look at the results for a single pair of samples:
 ``` r
 dres0[17, 10, ]  
 #>   estimate    p_value   CI_lower   CI_upper 
-#> 0.31100000 0.06203212 0.00000000 0.68000000
+#> 0.31000000 0.06255194 0.00000000 0.67900000
 ```
 
 Alternatively, we may want to first sort samples by clinic or geographic
@@ -346,7 +346,7 @@ rtotal2 <- sapply(sig2, sum)
 cor(M1, M2)                 
 #> [1] 0.9486851
 cor(rtotal1, rtotal2) 
-#> [1] 0.9998965
+#> [1] 0.9998955
 ```
 
 Create a list of significant pairs:
@@ -359,7 +359,7 @@ sig[c("M1", "M2")]           <- list(M1, M2)
 sig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
 head(sig)
 #>   row col        id1        id2 M1 M2 rtotal1 rtotal2
-#> 1  14   2 8025874706 8025874271  1  1   0.410   0.412
+#> 1  14   2 8025874706 8025874271  1  1   0.410   0.411
 #> 2  52   2 8034209790 8025874271  1  1   0.133   0.133
 #> 3  25   3 8034209803 8025874316  1  1   1.000   1.000
 #> 4  16   5 8025874872 8025874340  2  2   0.520   0.516
@@ -420,6 +420,7 @@ par(pardef)
 ```
 
 <p align="center">
+
 <img src="man/figures/logo.svg" alt="" width=160>
 </p>
 

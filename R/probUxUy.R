@@ -66,40 +66,29 @@ probUxUy <- function(Ux, Uy, nx, ny, probs, M, logj, factj, equalr = FALSE,
   if (length(ixy) > 0) {
     if (M == 1) {
       if (mnewton) {
-        return(.Call("p0p1", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                     as.integer(iyx), as.integer(nx),  as.integer(ny),
-                     as.double(probs), as.double(logj), as.double(factj),
+        return(.Call("p0p1", Ux, Uy, ixy, iyx, nx, ny, probs, logj, factj,
                      PACKAGE = "dcifer"))
       }
-      return(.Call("llikM1", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                   as.integer(iyx), as.integer(nx),  as.integer(ny),
-                   as.double(probs), as.double(logj), as.double(factj),
-                   as.double(reval), as.integer(neval), PACKAGE = "dcifer"))
+      return(.Call("llikM1", Ux, Uy, ixy, iyx, nx,  ny, probs, logj, factj,
+                   reval, neval, PACKAGE = "dcifer"))
     }
     if (equalr) {
-      return(.Call("llikEqr", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                   as.integer(iyx), as.integer(nx),  as.integer(ny),
-                   as.double(probs), as.double(logj), as.double(factj),
-                   as.integer(M), logr, as.integer(neval), PACKAGE = "dcifer"))
+      return(.Call("llikEqr", Ux, Uy, ixy, iyx, nx, ny, probs, logj, factj, M,
+                   logr, neval, PACKAGE = "dcifer"))
     }
-    return(.Call("llik", as.integer(Ux), as.integer(Uy), as.integer(ixy),
-                 as.integer(iyx), as.integer(nx), as.integer(ny),
-                 as.double(probs), as.double(logj), as.double(factj),
-                 as.integer(M), logr, as.integer(neval), PACKAGE = "dcifer"))
+    return(.Call("llik", Ux, Uy, ixy, iyx, nx, ny, probs, logj, factj,
+                 M, logr, neval, PACKAGE = "dcifer"))
   }
   if (M == 1) {
     if (mnewton) {
-      return(.Call("p0p10", as.integer(Ux), as.integer(Uy), as.integer(nx),
-                   as.integer(ny), as.double(probs), as.double(logj),
-                   as.double(factj), PACKAGE = "dcifer"))
+      return(.Call("p0p10", Ux, Uy, nx, ny, probs, logj, factj,
+                   PACKAGE = "dcifer"))
     }
-    return(.Call("llik0M1", as.integer(Ux), as.integer(Uy), as.integer(nx),
-                 as.integer(ny), as.double(probs), as.double(logj),
-                 as.double(factj), logr, as.integer(neval), PACKAGE = "dcifer"))
+    return(.Call("llik0M1", Ux, Uy, nx, ny, probs, logj, factj, logr, neval,
+                 PACKAGE = "dcifer"))
   }
-  return(.Call("llik0", as.integer(Ux), as.integer(Uy), as.integer(nx),
-               as.integer(ny), as.double(probs), as.double(logj),
-               as.double(factj), logr, as.integer(neval), PACKAGE = "dcifer"))
+  return(.Call("llik0", Ux, Uy, nx, ny, probs, logj, factj, logr, neval,
+               PACKAGE = "dcifer"))
 }
 
 #' Logarithms of \code{reval}
@@ -136,8 +125,7 @@ logReval <- function(reval, M = NULL, neval = NULL, equalr = FALSE) {
     stop("nrow(reval) should be equal to M")
   }
 
-  res <- .Call("logReval", as.double(reval), as.integer(neval), as.integer(nc),
-               PACKAGE = "dcifer")
+  res <- .Call("logReval", reval, neval, nc, PACKAGE = "dcifer")
   res[[1]] <- matrix(res[[1]], nc)
   res[[2]] <- matrix(res[[2]], nc)
   names(res) <- c("logr", "log1r", "m1", "nmid", "sum1r")

@@ -13,7 +13,7 @@ getCOI(dsmp, lrank = 2)
 are ranked by the number of detected alleles).}
 }
 \value{
-a vector with estimated COI for each sample.
+A vector with estimated COI for each sample.
 }
 \description{
 Calculates complexity of infection for a list of samples, using the number of
