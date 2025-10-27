@@ -203,7 +203,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
     }
-    #*** end update (need to test with all possible outputs)
+    #*** end update (test with all possible outputs)
   }
   if (!pval && !confreg && !llik && !maxllik) {
     return(rhat)
