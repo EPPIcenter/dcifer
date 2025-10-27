@@ -1,75 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/404.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/articles/vigArticle.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/articles/vignetteDcifer.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/index.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/IBDdat.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/IBDpair.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/calcAfreq.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/dres.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/dsmp.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/format.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/generateReval.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/getCOI.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/ibdEstM.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/logReval.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/matchAfreq.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/plotColorbar.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/plotRel.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/probUxUy.html</loc>
-  </url>
-  <url>
-    <loc>https://eppicenter.github.io/dcifer/reference/revals.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://eppicenter.github.io/dcifer/404.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/LICENSE-text.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/articles/index.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/articles/vigArticle.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/articles/vignetteDcifer.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/authors.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/index.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/news/index.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/IBDdat.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/IBDpair.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/calcAfreq.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/dres.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/dsmp.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/format.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/generateReval.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/getCOI.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/ibdEstM.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/index.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/logReval.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/matchAfreq.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/plotColorbar.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/plotRel.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/probUxUy.html</loc></url>
+<url><loc>https://eppicenter.github.io/dcifer/reference/revals.html</loc></url>
 </urlset>
+
