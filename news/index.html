@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dcifer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,12 +32,16 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/EPPIcenter/dcifer/blob/v1.3.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/EPPIcenter/dcifer/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="dcifer-140">dcifer 1.4.0<a class="anchor" aria-label="anchor" href="#dcifer-140"></a></h2>
-<ul><li>Added: one-sided tests for functions <code><a href="../reference/IBDpair.html">ibdPair()</a></code> and <code><a href="../reference/IBDdat.html">ibdDat()</a></code>. The argument <code>side</code> indicates if a one- or two-sided test is performed and which side is needed if the test is one-sided.</li>
+<ul><li>Added: one-sided (one-tailed) tests for functions <code><a href="../reference/IBDpair.html">ibdPair()</a></code>, <code><a href="../reference/IBDdat.html">ibdDat()</a></code>, and <code><a href="../reference/ibdEstM.html">ibdEstM()</a></code>. The argument <code>side</code> indicates if a one- or two-sided test is performed and the side for the one-sided test.</li>
+<li>Minor updates/fixes:
+<ul><li>NA returned when there are no loci with data in both samples</li>
+<li>names for COI match sample ID’s</li>
+</ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="dcifer-130">dcifer 1.3.0<a class="anchor" aria-label="anchor" href="#dcifer-130"></a></h2>

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dcifer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Dcifer: Genetic Distance Between Polyclonal Infections</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/v1.3.1/vignettes/vigArticle.Rmd" class="external-link"><code>vignettes/vigArticle.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/main/vignettes/vigArticle.Rmd" class="external-link"><code>vignettes/vigArticle.Rmd</code></a></small>
       <div class="d-none name"><code>vigArticle.Rmd</code></div>
     </div>
 
@@ -366,7 +366,7 @@ relatedness.</p>
 <pre><code>&gt; [1] 0.9486851</code></pre>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">rtotal1</span>, <span class="va">rtotal2</span><span class="op">)</span> </span></code></pre></div>
-<pre><code>&gt; [1] 0.9998955</code></pre>
+<pre><code>&gt; [1] 0.9998956</code></pre>
 <p>Create a list of significant pairs:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dsmp</span><span class="op">)</span></span>
@@ -376,7 +376,7 @@ relatedness.</p>
 <span><span class="va">sig</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rtotal1"</span>, <span class="st">"rtotal2"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">rtotal1</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">rtotal2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sig</span><span class="op">)</span></span></code></pre></div>
 <pre><code>&gt;   row col        id1        id2 M1 M2 rtotal1 rtotal2
-&gt; 1  14   2 8025874706 8025874271  1  1   0.410   0.411
+&gt; 1  14   2 8025874706 8025874271  1  1   0.411   0.411
 &gt; 2  52   2 8034209790 8025874271  1  1   0.133   0.133
 &gt; 3  25   3 8034209803 8025874316  1  1   1.000   1.000
 &gt; 4  16   5 8025874872 8025874340  2  2   0.520   0.516
@@ -390,19 +390,22 @@ any two samples and explore the outputs:</p>
 <span><span class="va">coii</span> <span class="op">&lt;-</span>  <span class="va">coi</span><span class="op">[</span><span class="va">isig</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">res1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IBDpair.html">ibdPair</a></span><span class="op">(</span><span class="va">pair</span>, <span class="va">coii</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="va">M1</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>, equalr <span class="op">=</span> <span class="cn">FALSE</span>,  </span>
-<span>                reval <span class="op">=</span> <span class="va">revals</span><span class="op">[[</span><span class="va">M1</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IBDpair.html">ibdPair</a></span><span class="op">(</span><span class="va">pair</span>, <span class="va">coii</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="va">M2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>, equalr <span class="op">=</span> <span class="cn">TRUE</span>,  </span>
+<span>                reval <span class="op">=</span> <span class="va">revals</span><span class="op">[[</span><span class="va">M1</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code>&gt; Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, :
+&gt; Single value for rnull provided; used as a sum</code></pre>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/IBDpair.html">ibdPair</a></span><span class="op">(</span><span class="va">pair</span>, <span class="va">coii</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="va">M2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>, equalr <span class="op">=</span> <span class="cn">TRUE</span>,  </span>
 <span>                confreg <span class="op">=</span> <span class="cn">TRUE</span>, llik <span class="op">=</span> <span class="cn">TRUE</span>, reval <span class="op">=</span> <span class="va">revals</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">res1</span><span class="op">$</span><span class="va">rhat</span>                              <span class="co"># estimate with equalr = FALSE</span></span></code></pre></div>
 <pre><code>&gt; [1] 0.31 1.00</code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">rhat</span>, <span class="va">M2</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>                  <span class="co"># estimate with equalr = TRUE</span></span></code></pre></div>
 <pre><code>&gt; [1] 0.673 0.673</code></pre>
 <p>When <code>llik = TRUE</code>, output includes log-likelihood (for a
 single parameter if we use <code>equalr = TRUE</code>), which provides
 the basis for statistical inference:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CI</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">confreg</span><span class="op">)</span></span>
 <span><span class="va">llikCI</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html" class="external-link">qchisq</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">alpha</span>, df <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span></span>
 <span><span class="va">llrng</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">llik</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -424,7 +427,7 @@ the basis for statistical inference:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">CI</span><span class="op">)</span>, <span class="va">yCI</span> <span class="op">+</span> <span class="fl">0.05</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">llrng</span><span class="op">)</span>, <span class="st">"confidence interval"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="va">res2</span><span class="op">$</span><span class="va">rhat</span> <span class="op">-</span> <span class="fl">0.025</span>, <span class="va">yLR</span>, <span class="st">"MLE"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, srt <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
 <p><img src="vigArticle_files/figure-html/unnamed-chunk-21-1.png" width="576"></p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pardef</span><span class="op">)</span></span></code></pre></div>
 <div id="refs" class="references csl-bib-body">
 <div id="ref-gerlovina2022dcifer" class="csl-entry">

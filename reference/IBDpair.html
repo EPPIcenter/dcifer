@@ -9,7 +9,7 @@ along with an optional support curve and inference."><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">dcifer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@ along with an optional support curve and inference."><meta property="og:image" c
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Relatedness Between Two Samples</h1>
-      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/v1.3.1/R/ibd.R" class="external-link"><code>R/ibd.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/main/R/ibd.R" class="external-link"><code>R/ibd.R</code></a></small>
       <div class="d-none name"><code>IBDpair.Rd</code></div>
     </div>
 
@@ -56,6 +56,7 @@ along with an optional support curve and inference.</p>
 <span>  llik <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  maxllik <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rnull <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  side <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"two-sided"</span><span class="op">)</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  equalr <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  mnewton <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -100,6 +101,13 @@ range of \(r\) values, and maximum log-likelihood should be returned.</p></dd>
 <dt id="arg-rnull">rnull<a class="anchor" aria-label="anchor" href="#arg-rnull"></a></dt>
 <dd><p>a null value of relatedness parameter for hypothesis testing
 (needed if <code>pval = TRUE</code>).</p></dd>
+
+
+<dt id="arg-side">side<a class="anchor" aria-label="anchor" href="#arg-side"></a></dt>
+<dd><p>a character string specifying if a one-sided (<code>"right"</code> or
+<code>"left"</code>) or a two-sided (<code>"two-sided"</code>) hypothesis test should
+be performed (needed if <code>pval = TRUE</code>). Set to <code>"right"</code> if
+<code>rnul = 0</code> and to <code>"left"</code> if <code>rnull = 1</code>.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
@@ -259,7 +267,7 @@ strains and <code><a href="IBDdat.html">ibdDat</a></code> for processing multi-s
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu">ibdPair</span><span class="op">(</span><span class="va">pair</span>, <span class="va">coip</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="fl">1</span>, mnewton <span class="op">=</span> <span class="cn">FALSE</span>, nr  <span class="op">=</span> <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.064   0.012   0.076 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.064   0.012   0.075 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
