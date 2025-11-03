@@ -169,21 +169,6 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
     p01 <- matrix(NA, 2, nloc)
   }
 
-  #********** Q: do we want to repeat or to add 0's? (so rnull is the sum)
-  #           issue a warning with description of what is done
-  if (npar > 1) {
-    if (length(rnull) == 1) {
-      rnull <- rep(rnull, npar)
-    } else {
-      rnull <- sort(rnull)
-    }
-  }
-  if (all(rnull == 0)) {  #*** do we need this if npar = 1? (if not, fix below)
-    side <- "right"
-  } else if (all(rnull == 1)) {
-    side <- "left"
-  }
-
   for (t in 1:nloc) {
     Ux <- which(as.logical(pair[[1]][[t]]))  # in case of integer vector
     Uy <- which(as.logical(pair[[2]][[t]]))
@@ -231,8 +216,16 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
     if (mnewton) {
       lrs <- lrsP01(rhat, rnull, p01)
     } else {
+      if (npar > 1) {
+        if (length(rnull) == 1) {
+          rnull <- rep(rnull/npar, npar)
+          warning("Single value for rnull provided; used as a sum")
+        } else {
+          rnull <- sort(rnull)
+        }
+      }
       if (is.null(inull)) {
-        if (equalr) {
+        if (npar == 1) {
           inull <- which.min(abs(reval - rnull))
         } else {
           inull <- which.min(.colSums(abs(reval - rnull), npar, neval))
@@ -242,25 +235,19 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
       lrs <- 2*(llikr[imax] - llikr[inull])
     }
 
-    #***** might be changed
-    #********** Q: for one-sided - do we want all the rhats on one side
-    #              or a sum to be on one side?
-    if (side %in% c("left", "right") || rnull %in% c(0, 1)) {  #*** multiple
+    snull <- sum(rnull)
+    srhat <- sum(rhat)
+    if (side %in% c("left", "right") || snull %in% c(0, npar)) {
       adj <- 0.5
     } else if (side == "two-sided") {
       adj <- 1
     }
     res$pval <- (1 - stats::pchisq(lrs, df = npar))*adj
-    #*** WIP updated version
-    if (!rhat %in% c(0, 1))  # ??? then no need to specify side for 0 or 1 above
-    if ((side == "right" && all(rhat < rnull)) ||
-        (side == "left"  && all(rhat > rnull))) {
-      res$pval <- 1 - res$pval
-    }
-    #*** previous version
-    if ((side == "right" && rhat < rnull) ||                   #*** multiple
-        (side == "left"  && rhat > rnull)) {
-      res$pval <- 1 - res$pval
+    if (!snull %in% c(0, npar)) {
+      if ((side == "right" && srhat < snull) ||
+          (side == "left"  && srhat > snull)) {
+        res$pval <- 1 - res$pval
+      }
     }
   }
 
@@ -330,9 +317,9 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #'                 nr = 1e2)
 #' dim(dres2)
 #'
-#' # test H0: r = 0.2, include 99% confidence intervals
+#' # test H0: r <= 0.2, include 99% confidence intervals
 #' dres3 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, confint = TRUE,
-#'                 rnull = 0.2, alpha = 0.01)
+#'                 rnull = 0.2, side = "right", alpha = 0.01)
 #' dres3[2, 1, ]
 #'
 #' # pairwise relatedness between two datasets, H0: r = 0
@@ -487,7 +474,6 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
 #' @export
 #'
 
-#********* what happens with rnull here when M increases?
 ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
                     llik = FALSE, rnull = 0,
                     side = c("right", "left", "two-sided"), alpha = 0.05,
@@ -495,7 +481,10 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
                     nrs = c(1e3, 1e2, 32, 16, 12, 10), revals = NULL,
                     tol0 = 1e-9, logrs = NULL, nevals = NULL, nloc = NULL) {
   Mmax <- min(coi, Mmax)
-  side <- match.arg(side)
+  if (pval) {
+    side <- match.arg(side)
+    rnull0 <- rnull
+  }
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -515,6 +504,7 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
     llikall <- numeric(Mmax)
     for (M in 1:Mmax) {
       logr$sum1r <- sum1r*M
+      if (pval) rnull <- rnull0/M
       res <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
                      llik = llik, maxllik = TRUE, rnull = rnull, side = side,
                      alpha = alpha, equalr = TRUE, freqlog = TRUE, nr = nrs[1],
@@ -532,11 +522,12 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
     }
   } else {
     for (M in 1:Mmax) {
+      if (pval) rnull <- rep(rnull0/M, M)
       resnew <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
-                        llik = llik, maxllik = FALSE, rnull = rnull, #side = side,
-                        alpha = alpha, equalr = FALSE, freqlog = TRUE,
-                        nr = nrs[M], reval = revals[[M]], logr = logrs[[M]],
-                        neval = nevals[M], nloc = nloc)
+                        llik = llik, maxllik = FALSE, rnull = rnull,
+                        side = side, alpha = alpha, equalr = FALSE,
+                        freqlog = TRUE, nr = nrs[M], reval = revals[[M]],
+                        logr = logrs[[M]], neval = nevals[M], nloc = nloc)
       rhat <- if (inherits(resnew, "list")) resnew$rhat else resnew
       if (M > 1 && any(rhat <= tol0)) {
         break

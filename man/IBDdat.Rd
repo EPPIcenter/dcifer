@@ -90,9 +90,9 @@ dres2 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, rnull = 0,
                 nr = 1e2)
 dim(dres2)
 
-# test H0: r = 0.2, include 99\% confidence intervals
+# test H0: r <= 0.2, include 99\% confidence intervals
 dres3 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, confint = TRUE,
-                rnull = 0.2, alpha = 0.01)
+                rnull = 0.2, side = "right", alpha = 0.01)
 dres3[2, 1, ]
 
 # pairwise relatedness between two datasets, H0: r = 0

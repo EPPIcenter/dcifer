@@ -118,13 +118,6 @@ For the purposes of demonstration, we first estimate relatedness and display res
 ```{r}
 dres0 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0, 
                 alpha = 0.05, nr = 1e3)  
-#***** debugging: start here
-if (FALSE) {
-pair <- list(dsmp[[ix]], dsmp2[[iy]])
-coi  <- c(coi[ix], coi2[iy])
-M = 1; confreg = confint; freqlog = TRUE
-}
-
 ```
 
 Look at the results for a single pair of samples: 
@@ -146,10 +139,10 @@ coi  <- coi[ ord]
 dres <- ibdDat(dsmp, coi, afreq)     
 ```   
 
-To test different hypotheses, we can use `rnull` and `side` arguments. For example, to test whether pairwise relatedness is higher than 0.25 ($H_0: r \leq 0.25$) and obtain one-tailed p-values:
+To test different hypotheses, we can use `rnull` and `side` arguments. For example, to test whether pairwise relatedness is higher than 0.2 ($H_0: r \leq 0.2$) and obtain one-tailed p-values:
 
 ```{r}
-dres2 <- ibdDat(dsmp, coi, afreq, rnull = 0.25, side = "right")
+dres_hi <- ibdDat(dsmp, coi, afreq, rnull = 0.2, side = "right")
 ```
 
 ## Visualize the results
@@ -217,12 +210,13 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE,
 par(pardef)
 ```
 
-For reference, add a colorbar legend to the plot. It can be placed beside the main plot:
+For reference, add a colorbar legend to the plot. It can be placed beside the main plot. For the upper matrix, we outline the pairs for which relatedness is significantly higher than $0.2$ (at the same significance level $\alpha = 0.05$):
 
 ```{r, fig.width = 6.7, fig.height = 6}
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
-plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig[, 2:1]))
+isig_hi <- which(dres_hi[, , "p_value"] <= alpha, arr.ind = TRUE)
+plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig_hi[, 2:1]))
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 mtext(provinces, side = 3, at = atclin, line = 0.2)
