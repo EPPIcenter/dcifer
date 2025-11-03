@@ -200,20 +200,12 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
       rhat <- rNewton(C, tol = tol, off = tol)
     }
   } else {
-<<<<<<< HEAD
-    if (all(llikr == 0)) {
-=======
     if (all(llikr == 0)) {             # missing data
->>>>>>> pvupd
       rhat <- NA
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
     }
-<<<<<<< HEAD
-    #*** end update (test with all possible outputs)
-=======
->>>>>>> pvupd
   }
   if (!pval && !confreg && !llik && !maxllik) {
     return(rhat)
