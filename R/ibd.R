@@ -20,6 +20,10 @@
 #'   range of \eqn{r} values, and maximum log-likelihood should be returned.
 #' @param rnull  a null value of relatedness parameter for hypothesis testing
 #'   (needed if \code{pval = TRUE}).
+#' @param side   a character string specifying if a one-sided (\code{"right"} or
+#'   \code{"left"}) or a two-sided (\code{"two-sided"}) hypothesis test should
+#'   be performed (needed if \code{pval = TRUE}). Set to \code{"right"} if
+#'   \code{rnul = 0} and to \code{"left"} if \code{rnull = 1}.
 #' @param alpha  significance level for a \ifelse{html}{\out{1 -
 #'   &alpha;}}{\eqn{1 - \alpha}} confidence region.
 #' @param equalr a logical value. If \code{TRUE}, the same level of relatedness
@@ -118,16 +122,16 @@
 #' @export
 #' @useDynLib dcifer
 
-#*** make an update: NA if no loci with non-missing data in both samples
-
 ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
                     confreg = FALSE, llik = FALSE, maxllik = FALSE, rnull = 0,
-                    alpha = 0.05, equalr = FALSE, mnewton = NULL,
-                    freqlog = FALSE, nr = 1e3, reval = NULL, tol = NULL,
-                    logr = NULL, neval = NULL, inull = NULL, nloc = NULL) {
+                    side = c("right", "left", "two-sided"), alpha = 0.05,
+                    equalr = FALSE, mnewton = NULL, freqlog = FALSE, nr = 1e3,
+                    reval = NULL, tol = NULL, logr = NULL, neval = NULL,
+                    inull = NULL, nloc = NULL) {
   if (M > (min(coi))) {
     stop("number of related strains greater than min(coi)")
   }
+  side <- match.arg(side)
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -137,14 +141,14 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   maxj <- max(sapply(pair[[1]], sum), sapply(pair[[2]], sum), max(coi))
   logj   <- log(1:maxj)                # starts with 1
   factj  <- lgamma(0:maxj + 1)         # starts with 0
-  if (is.null(mnewton)) {
+
+  if (M > 1 || confreg || llik) {
     mnewton <- FALSE
-    if (M == 1 && !confreg && !llik) {
-      mnewton <- TRUE
-      if (is.null(tol)) {
-        tol <- 1/nr
-      }
-    }
+  } else if (is.null(mnewton)) {
+    mnewton <- TRUE
+  }
+  if (mnewton && is.null(tol)) {
+    tol <- 1/nr
   }
 
   npar <- if (equalr) 1 else M
@@ -190,20 +194,26 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   if (mnewton) {
     p01 <- p01[, !is.na(p01[1, ]), drop = FALSE]
     C   <- p01[2, ]/p01[1, ] - 1
-    #*** update
-    if (length(C) == 0) {
+    if (ncol(p01) == 0) {              # missing data
       rhat <- NA
     } else {
       rhat <- rNewton(C, tol = tol, off = tol)
     }
   } else {
+<<<<<<< HEAD
     if (all(llikr == 0)) {
+=======
+    if (all(llikr == 0)) {             # missing data
+>>>>>>> pvupd
       rhat <- NA
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
     }
+<<<<<<< HEAD
     #*** end update (test with all possible outputs)
+=======
+>>>>>>> pvupd
   }
   if (!pval && !confreg && !llik && !maxllik) {
     return(rhat)
@@ -214,17 +224,39 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
     if (mnewton) {
       lrs <- lrsP01(rhat, rnull, p01)
     } else {
+      if (npar > 1) {
+        if (length(rnull) == 1) {
+          rnull <- rep(rnull/npar, npar)
+          warning("Single value for rnull provided; used as a sum")
+        } else {
+          rnull <- sort(rnull)
+        }
+      }
       if (is.null(inull)) {
-        if (equalr) {
+        if (npar == 1) {
           inull <- which.min(abs(reval - rnull))
         } else {
-          inull <- which.min(colSums(abs(reval - sort(rnull))))
+          inull <- which.min(.colSums(abs(reval - rnull), npar, neval))
+          #inull <- which.min(apply(abs(reval - rnull), 2, max))  # better, slow
         }
       }
       lrs <- 2*(llikr[imax] - llikr[inull])
     }
-    adj  <- (rnull %in% c(0, 1)) + 1   # adjustment for one-sided test
-    res$pval <- (1 - stats::pchisq(lrs, df = npar))/adj
+
+    snull <- sum(rnull)
+    srhat <- sum(rhat)
+    if (side %in% c("left", "right") || snull %in% c(0, npar)) {
+      adj <- 0.5
+    } else if (side == "two-sided") {
+      adj <- 1
+    }
+    res$pval <- (1 - stats::pchisq(lrs, df = npar))*adj
+    if (!snull %in% c(0, npar)) {
+      if ((side == "right" && srhat < snull) ||
+          (side == "left"  && srhat > snull)) {
+        res$pval <- 1 - res$pval
+      }
+    }
   }
 
   if (confreg) {
@@ -293,9 +325,9 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #'                 nr = 1e2)
 #' dim(dres2)
 #'
-#' # test H0: r = 0.2, include 99% confidence intervals
+#' # test H0: r <= 0.2, include 99% confidence intervals
 #' dres3 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, confint = TRUE,
-#'                 rnull = 0.2, alpha = 0.01)
+#'                 rnull = 0.2, side = "right", alpha = 0.01)
 #' dres3[2, 1, ]
 #'
 #' # pairwise relatedness between two datasets, H0: r = 0
@@ -311,9 +343,11 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
 #' @export
 
 ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
-                   confint = FALSE, rnull = 0, alpha = 0.05, nr = 1e3,
-                   reval = NULL) {
+                   confint = FALSE, rnull = 0,
+                   side = c("right", "left", "two-sided"), alpha = 0.05,
+                   nr = 1e3, reval = NULL) {
   dwithin <- is.null(dsmp2)
+  side <- match.arg(side)
   if (confint) {
     mnewton <- FALSE
     tol     <- NULL
@@ -364,9 +398,9 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
     for (iy in 1:yend) {
       rxy <- ibdPair(list(dsmp[[ix]], dsmp2[[iy]]), c(coi[ix], coi2[iy]), afreq,
                      M = 1, pval = pval, confreg = confint, rnull = rnull,
-                     alpha = alpha, mnewton = mnewton, freqlog = TRUE,
-                     reval = reval, tol = tol, logr = logr, neval = neval,
-                     inull = inull, nloc = nloc)
+                     side = side, alpha = alpha, mnewton = mnewton,
+                     freqlog = TRUE, reval = reval, tol = tol, logr = logr,
+                     neval = neval, inull = inull, nloc = nloc)
       if (!pval && !confint) {
         res[ix, iy] <- rxy
       } else {
@@ -449,11 +483,16 @@ ibdDat <- function(dsmp, coi, afreq, dsmp2 = NULL, coi2 = NULL, pval = TRUE,
 #'
 
 ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
-                    llik = FALSE, rnull = 0, alpha = 0.05, equalr = FALSE,
-                    freqlog = FALSE, nrs = c(1e3, 1e2, 32, 16, 12, 10),
-                    revals = NULL, tol0 = 1e-9, logrs = NULL, nevals = NULL,
-                    nloc = NULL) {
+                    llik = FALSE, rnull = 0,
+                    side = c("right", "left", "two-sided"), alpha = 0.05,
+                    equalr = FALSE, freqlog = FALSE,
+                    nrs = c(1e3, 1e2, 32, 16, 12, 10), revals = NULL,
+                    tol0 = 1e-9, logrs = NULL, nevals = NULL, nloc = NULL) {
   Mmax <- min(coi, Mmax)
+  if (pval) {
+    side <- match.arg(side)
+    rnull0 <- rnull
+  }
   if (is.null(nloc)) {
     nloc <- length(afreq)
   }
@@ -473,10 +512,12 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
     llikall <- numeric(Mmax)
     for (M in 1:Mmax) {
       logr$sum1r <- sum1r*M
+      if (pval) rnull <- rnull0/M
       res <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
-                     llik = llik, maxllik = TRUE, rnull = rnull, alpha = alpha,
-                     equalr = TRUE, freqlog = TRUE, nr = nrs[1], reval = reval,
-                     logr = logr, neval = neval, inull = inull, nloc = nloc)
+                     llik = llik, maxllik = TRUE, rnull = rnull, side = side,
+                     alpha = alpha, equalr = TRUE, freqlog = TRUE, nr = nrs[1],
+                     reval = reval, logr = logr, neval = neval, inull = inull,
+                     nloc = nloc)
       resall[[M]] <- res
       llikall[M]  <- res$maxllik
     }
@@ -488,20 +529,18 @@ ibdEstM <- function(pair, coi, afreq, Mmax = 6, pval = FALSE, confreg = FALSE,
       res <- res[[1]]
     }
   } else {
-    M <- 0
-    rhat <- 1
-    while(all(rhat > tol0) && M < Mmax) {
-      M <- M + 1
-      res <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
-                     llik = llik, maxllik = FALSE, rnull = rnull, alpha = alpha,
-                     equalr = FALSE, freqlog = TRUE, nr = nrs[M],
-                     reval = revals[[M]], logr = logrs[[M]], neval = nevals[M],
-                     nloc = nloc)
-      if (inherits(res, "list")) {
-        rhat <- res$rhat
-      } else {
-        rhat <- res
+    for (M in 1:Mmax) {
+      if (pval) rnull <- rep(rnull0/M, M)
+      resnew <- ibdPair(pair, coi, afreq, M, pval = pval, confreg = confreg,
+                        llik = llik, maxllik = FALSE, rnull = rnull,
+                        side = side, alpha = alpha, equalr = FALSE,
+                        freqlog = TRUE, nr = nrs[M], reval = revals[[M]],
+                        logr = logrs[[M]], neval = nevals[M], nloc = nloc)
+      rhat <- if (inherits(resnew, "list")) resnew$rhat else resnew
+      if (M > 1 && any(rhat <= tol0)) {
+        break
       }
+      res <- resnew
     }
   }
   return(res)

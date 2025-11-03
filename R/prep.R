@@ -194,7 +194,8 @@ generateReval <- function(M, rval = NULL, nr = NULL) {
 #' @export
 #'
 getCOI <- function(dsmp, lrank = 2) {
-  sapply(dsmp, function(smp) sort(sapply(smp, sum), decreasing = TRUE)[lrank])
+  sapply(dsmp, function(smp)
+    stats::setNames(sort(sapply(smp, sum), decreasing = TRUE)[lrank], ""))
 }
 
 #' Calculate Allele Frequencies

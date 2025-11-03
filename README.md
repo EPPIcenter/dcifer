@@ -159,7 +159,7 @@ sorted by location.
 
 ``` r
 dres0 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0, 
-                alpha = 0.05, nr = 1e3)   
+                alpha = 0.05, nr = 1e3)  
 ```
 
 Look at the results for a single pair of samples:
@@ -182,7 +182,15 @@ coi  <- coi[ ord]
 ```
 
 ``` r
-dres <- ibdDat(dsmp,  coi, afreq, nr = 1e3)     
+dres <- ibdDat(dsmp, coi, afreq)     
+```
+
+To test different hypotheses, we can use `rnull` and `side` arguments.
+For example, to test whether pairwise relatedness is higher than 0.2
+($H_0: r \leq 0.2$) and obtain one-tailed p-values:
+
+``` r
+dres_hi <- ibdDat(dsmp, coi, afreq, rnull = 0.2, side = "right")
 ```
 
 ## Visualize the results
@@ -207,7 +215,7 @@ plotRel(dmat, isig = isig, draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE,
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
-![](man/figures/README-unnamed-chunk-14-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
 
 For the sorted samples:
 
@@ -224,7 +232,7 @@ plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 ```
 
-![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
 
 For these symmetric distance measures, one of the triangles can be used
 to display other relevant information, such as p-values, geographic
@@ -260,19 +268,22 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE,
         draw_diag = TRUE, col_diag = "gray45", border_diag = "white")
 ```
 
-![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 par(pardef)
 ```
 
 For reference, add a colorbar legend to the plot. It can be placed
-beside the main plot:
+beside the main plot. For the upper matrix, we outline the pairs for
+which relatedness is significantly higher than $0.2$ (at the same
+significance level $\alpha = 0.05$):
 
 ``` r
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
-plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig[, 2:1]))
+isig_hi <- which(dres_hi[, , "p_value"] <= alpha, arr.ind = TRUE)
+plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig_hi[, 2:1]))
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 mtext(provinces, side = 3, at = atclin, line = 0.2)
@@ -281,7 +292,7 @@ par(mar = c(1, 0, 2, 3))
 plotColorbar()
 ```
 
-![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -307,7 +318,7 @@ ncol <- 301
 lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ```
 
-![](man/figures/README-unnamed-chunk-18-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -346,7 +357,7 @@ rtotal2 <- sapply(sig2, sum)
 cor(M1, M2)                 
 #> [1] 0.9486851
 cor(rtotal1, rtotal2) 
-#> [1] 0.9998955
+#> [1] 0.9998956
 ```
 
 Create a list of significant pairs:
@@ -359,7 +370,7 @@ sig[c("M1", "M2")]           <- list(M1, M2)
 sig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
 head(sig)
 #>   row col        id1        id2 M1 M2 rtotal1 rtotal2
-#> 1  14   2 8025874706 8025874271  1  1   0.410   0.411
+#> 1  14   2 8025874706 8025874271  1  1   0.411   0.411
 #> 2  52   2 8034209790 8025874271  1  1   0.133   0.133
 #> 3  25   3 8034209803 8025874316  1  1   1.000   1.000
 #> 4  16   5 8025874872 8025874340  2  2   0.520   0.516
@@ -377,6 +388,8 @@ coii <-  coi[isig[i, ]]
 
 res1 <- ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE,  
                 reval = revals[[M1[i]]])
+#> Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, :
+#> Single value for rnull provided; used as a sum
 res2 <- ibdPair(pair, coii, afreq, M = M2[i], pval = TRUE, equalr = TRUE,  
                 confreg = TRUE, llik = TRUE, reval = revals[[1]])
 
@@ -413,7 +426,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
-![](man/figures/README-unnamed-chunk-23-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-24-1.png)<!-- -->
 
 ``` r
 par(pardef)

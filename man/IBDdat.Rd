@@ -13,6 +13,7 @@ ibdDat(
   pval = TRUE,
   confint = FALSE,
   rnull = 0,
+  side = c("right", "left", "two-sided"),
   alpha = 0.05,
   nr = 1000,
   reval = NULL
@@ -37,6 +38,11 @@ returned.}
 
 \item{rnull}{a null value of relatedness parameter for hypothesis testing
 (needed if \code{pval = TRUE}).}
+
+\item{side}{a character string specifying if a one-sided (\code{"right"} or
+\code{"left"}) or a two-sided (\code{"two-sided"}) hypothesis test should
+be performed (needed if \code{pval = TRUE}). Set to \code{"right"} if
+\code{rnul = 0} and to \code{"left"} if \code{rnull = 1}.}
 
 \item{alpha}{significance level for a \ifelse{html}{\out{1 -
 &alpha;}}{\eqn{1 - \alpha}} confidence region.}
@@ -84,9 +90,9 @@ dres2 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, rnull = 0,
                 nr = 1e2)
 dim(dres2)
 
-# test H0: r = 0.2, include 99\% confidence intervals
+# test H0: r <= 0.2, include 99\% confidence intervals
 dres3 <- ibdDat(dsmp[isub], coi[isub], afreq, pval = TRUE, confint = TRUE,
-                rnull = 0.2, alpha = 0.01)
+                rnull = 0.2, side = "right", alpha = 0.01)
 dres3[2, 1, ]
 
 # pairwise relatedness between two datasets, H0: r = 0

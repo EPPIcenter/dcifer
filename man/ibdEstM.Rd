@@ -13,6 +13,7 @@ ibdEstM(
   confreg = FALSE,
   llik = FALSE,
   rnull = 0,
+  side = c("right", "left", "two-sided"),
   alpha = 0.05,
   equalr = FALSE,
   freqlog = FALSE,
@@ -41,6 +42,11 @@ returned.}
 
 \item{rnull}{a null value of relatedness parameter for hypothesis testing
 (needed if \code{pval = TRUE}).}
+
+\item{side}{a character string specifying if a one-sided (\code{"right"} or
+\code{"left"}) or a two-sided (\code{"two-sided"}) hypothesis test should
+be performed (needed if \code{pval = TRUE}). Set to \code{"right"} if
+\code{rnul = 0} and to \code{"left"} if \code{rnull = 1}.}
 
 \item{alpha}{significance level for a \ifelse{html}{\out{1 -
 &alpha;}}{\eqn{1 - \alpha}} confidence region.}
