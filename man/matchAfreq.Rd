@@ -4,17 +4,20 @@
 \alias{matchAfreq}
 \title{Match Samples and Allele Frequencies}
 \usage{
-matchAfreq(dsmp, afreq)
+matchAfreq(dsmp, afreq, minfreq = 1e-04)
 }
 \arguments{
 \item{dsmp}{a list with each element corresponding to one sample.}
 
 \item{afreq}{a list of allele frequencies. Each element of the list
 corresponds to a locus.}
+
+\item{minfreq}{an allele frequency to assign to alleles that are present in
+\code{dsmp} but not in \code{afreq}.}
 }
 \value{
-A list of the same length as \code{dsmp}, with each element matching
-the lengths and the names of \code{afreq} and its elements.
+A named list of length 2 containing updated and matching \code{dsmp}
+and \code{afreq}.
 }
 \description{
 Checks if the list containing sample data is conformable to provided
@@ -29,8 +32,10 @@ for this procedure.
 }
 \examples{
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
-dsmp2  <- matchAfreq(dsmp, afreq2)
+afreq  <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
+da_upd <- matchAfreq(dsmp, afreq, minfreq = 1e-3)
+dsmp2  <- da_upd$dsmp
+afreq2 <- da_upd$afreq
 
 }
 \seealso{

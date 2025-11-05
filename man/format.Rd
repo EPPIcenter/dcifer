@@ -58,18 +58,20 @@ dlong <- read.csv(sfile)
 # reformat only:
 dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 
-afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
+afile <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
+afreq <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
 
 # OR, if allele frequencies are provided as an R data frame, e.g.
 aflong <- read.csv(afile)
 # reformat only:
-afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
+afreq <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
 
-dsmp2  <- matchAfreq(dsmp, afreq2)
+da_upd <- matchAfreq(dsmp, afreq)
+dsmp2  <- da_upd$dsmp
+afreq2 <- da_upd$afreq
 
 }
 \seealso{
-\code{\link{matchAfreq}} for making sure that the list containing
-sample data is conformable to provided population allele frequencies.
+\code{\link{matchAfreq}} for making sure that the lists containing
+sample data and provided population allele frequencies are matching.
 }

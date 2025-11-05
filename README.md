@@ -122,14 +122,15 @@ a `.csv` file or R data frame):
 In that case, after the frequencies are read in, they need to be checked
 against the the existing data object to make sure that all the loci and
 alleles are in the same order. Function `matchAfreq` performs the
-checking and rearranges sample data to conform to the provided allele
+checking and provides updated matching sample data and allele
 frequencies. For that procedure, loci and alleles in both lists (`dsmp`
 and `afreq`) have to be named; otherwise the names are not required, and
 the order of loci and alleles is assumed to be the same for sample data
 and allele frequencies. If `afreq` contains “extra” alleles that are not
-listed in `dsmp`, these alleles are added to `dsmp`. The opposite
-situation (alleles listed and present in `dsmp` but not listed in
-`afreq`) will result in an error.
+listed in `dsmp`, these alleles are added to `dsmp`. If `dsmp` has
+alleles not included in `afreq`, they are added to `afreq` and assigned
+a small probability (optional `minfreq` argument) with subsequent
+renormalization.
 
 ``` r
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
@@ -142,7 +143,9 @@ afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
 ```
 
 ``` r
-dsmp2  <- matchAfreq(dsmp, afreq2)
+da_upd <- matchAfreq(dsmp, afreq2, minfreq = 1/sum(coi)/10)
+dsmp2  <- da_upd$dsmp
+afreq2 <- da_upd$afreq
 ```
 
 ## Estimate relatedness
@@ -388,8 +391,8 @@ coii <-  coi[isig[i, ]]
 
 res1 <- ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE,  
                 reval = revals[[M1[i]]])
-#> Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, :
-#> Single value for rnull provided; used as a sum
+#> Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, : Single
+#> value for rnull provided; used as a sum
 res2 <- ibdPair(pair, coii, afreq, M = M2[i], pval = TRUE, equalr = TRUE,  
                 confreg = TRUE, llik = TRUE, reval = revals[[1]])
 

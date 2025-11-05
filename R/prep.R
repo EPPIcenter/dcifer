@@ -33,18 +33,20 @@
 #' # reformat only:
 #' dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 #'
-#' afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-#' afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
+#' afile <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
+#' afreq <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
 #'
 #' # OR, if allele frequencies are provided as an R data frame, e.g.
 #' aflong <- read.csv(afile)
 #' # reformat only:
-#' afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
+#' afreq <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
 #'
-#' dsmp2  <- matchAfreq(dsmp, afreq2)
+#' da_upd <- matchAfreq(dsmp, afreq)
+#' dsmp2  <- da_upd$dsmp
+#' afreq2 <- da_upd$afreq
 #'
-#' @seealso \code{\link{matchAfreq}} for making sure that the list containing
-#'   sample data is conformable to provided population allele frequencies.
+#' @seealso \code{\link{matchAfreq}} for making sure that the lists containing
+#'   sample data and provided population allele frequencies are matching.
 
 #' @rdname format
 #' @export
@@ -108,42 +110,51 @@ formatAfreq <- function(aflong, lvar, avar, fvar) {
 #'   \code{afreq} and not in \code{dsmp}; doesn't handle cases when alleles are
 #'   present in \code{dsmp} but not in \code{afreq}. Allele names are required
 #'   for this procedure.
+#' @param minfreq an allele frequency to assign to alleles that are present in
+#'   \code{dsmp} but not in \code{afreq}.
 #' @inheritParams ibdDat
 #' @inheritParams ibdPair
-#' @return A list of the same length as \code{dsmp}, with each element matching
-#'   the lengths and the names of \code{afreq} and its elements.
+#' @return A named list of length 2 containing updated and matching \code{dsmp}
+#'   and \code{afreq}.
 #'
 #' @examples
 #' afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
-#' afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
-#' dsmp2  <- matchAfreq(dsmp, afreq2)
+#' afreq  <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq")
+#' da_upd <- matchAfreq(dsmp, afreq, minfreq = 1e-3)
+#' dsmp2  <- da_upd$dsmp
+#' afreq2 <- da_upd$afreq
 #'
 #' @seealso \code{\link{readDat}} and \code{\link{readAfreq}} for reading in and
 #'   reformating data.
 #' @export
 #'
-matchAfreq <- function(dsmp, afreq) {
+matchAfreq <- function(dsmp, afreq, minfreq = 1e-4) {
   if (!all(sapply(afreq, length) == sapply(dsmp[[1]], length)) ||
       !all(names(unlist(afreq)) == names(unlist(dsmp[[1]])))) {
-    loci <- names(afreq)
-    K    <- sapply(afreq, length)
-    nloc <- length(K)
-    for (ismp in 1:length(dsmp)) {
-      dsmpi <- stats::setNames(dsmp[[ismp]], loci)
-      for (iloc in 1:nloc) {
-        old <- dsmp[[ismp]][[loci[iloc]]]
-        upd <- afreq[[iloc]]
-        upd[] <- 0
-        upd[names(old[old == 1])] <- 1
-        if (length(upd) > K[iloc]) {
-          stop("extra alleles in dsmp")
-        }
-        dsmpi[[iloc]] <- upd
+    nloc  <- length(afreq)
+    afreq <- afreq[names(dsmp[[1]])]
+    for (iloc in 1:nloc) {
+      aold <- afreq[[iloc]]
+      alleles <- union(names(aold), names(dsmp[[1]][[iloc]]))
+      anew <- rep(0, length(alleles))
+      names(anew) <- alleles
+      dloc <- anew
+      anew[names(aold)] <- aold
+      i0 <- anew == 0
+      if (any(i0)) {
+        anew[i0] <- minfreq
+        anew <- anew/sum(anew)
       }
-      dsmp[[ismp]] <- dsmpi
+      for (ismp in 1:length(dsmp)) {
+        dold <- dsmp[[ismp]][[iloc]]
+        dnew <- dloc
+        dnew[names(dold)] <- dold
+        dsmp[[ismp]][[iloc]] <- dnew
+      }
+      afreq[[iloc]] <- anew
     }
   }
-  return(dsmp)
+  return(list(dsmp = dsmp, afreq = afreq))
 }
 
 #' Grid of Parameter Values

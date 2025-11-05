@@ -1,6 +1,7 @@
 # dcifer 1.4.0
 
 - Added: one-sided (one-tailed) tests for functions `ibdPair()`, `ibdDat()`, and `ibdEstM()`. The argument `side` indicates if a one- or two-sided test is performed and the side for the one-sided test. 
+- `matchAfreq()` function now provides both updated `dsmp` and `afreq` (outputting a list of two corresponding elements). The new version allows for "extra" alleles in both `dsmp` and `afreq`.
 - Minor updates/fixes: 
   * NA returned when there are no loci with data in both samples
   * names for COI match sample ID's
