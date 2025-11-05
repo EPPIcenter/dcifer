@@ -197,15 +197,17 @@ a <code>.csv</code> file or R data frame):</p>
 <p>In that case, after the frequencies are read in, they need to be
 checked against the the existing data object to make sure that all the
 loci and alleles are in the same order. Function <code>matchAfreq</code>
-performs the checking and rearranges sample data to conform to the
-provided allele frequencies. For that procedure, loci and alleles in
-both lists (<code>dsmp</code> and <code>afreq</code>) have to be named;
-otherwise the names are not required, and the order of loci and alleles
-is assumed to be the same for sample data and allele frequencies. If
+performs the checking and and provides updated matching sample data and
+allele frequencies. For that procedure, loci and alleles in both lists
+(<code>dsmp</code> and <code>afreq</code>) have to be named; otherwise
+the names are not required, and the order of loci and alleles is assumed
+to be the same for sample data and allele frequencies. If
 <code>afreq</code> contains “extra” alleles that are not listed in
-<code>dsmp</code>, these alleles are added to <code>dsmp</code>. The
-opposite situation (alleles listed and present in <code>dsmp</code> but
-not listed in <code>afreq</code>) will result in an error.</p>
+<code>dsmp</code>, these alleles are added to <code>dsmp</code>. If
+<code>dsmp</code> has alleles not included in <code>afreq</code>, they
+are added to <code>afreq</code> and assigned a small probability
+(optional <code>minfreq</code> argument) with subsequent
+renormalization.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">afile</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MozAfreq.csv"</span>, package <span class="op">=</span> <span class="st">"dcifer"</span><span class="op">)</span></span>
 <span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format.html">readAfreq</a></span><span class="op">(</span><span class="va">afile</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span> </span></code></pre></div>
@@ -213,7 +215,9 @@ not listed in <code>afreq</code>) will result in an error.</p>
 <code class="sourceCode R"><span><span class="co"># alternatively, if allele frequencies are provided in an R data frame (aflong):</span></span>
 <span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/format.html">formatAfreq</a></span><span class="op">(</span><span class="va">aflong</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dsmp2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/matchAfreq.html">matchAfreq</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">afreq2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">da_upd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/matchAfreq.html">matchAfreq</a></span><span class="op">(</span><span class="va">dsmp</span>, <span class="va">afreq2</span>, minfreq <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">coi</span><span class="op">)</span><span class="op">/</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">dsmp2</span>  <span class="op">&lt;-</span> <span class="va">da_upd</span><span class="op">$</span><span class="va">dsmp</span></span>
+<span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="va">da_upd</span><span class="op">$</span><span class="va">afreq</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="estimate-relatedness">Estimate relatedness<a class="anchor" aria-label="anchor" href="#estimate-relatedness"></a>
