@@ -128,9 +128,9 @@ and `afreq`) have to be named; otherwise the names are not required, and
 the order of loci and alleles is assumed to be the same for sample data
 and allele frequencies. If `afreq` contains “extra” alleles that are not
 listed in `dsmp`, these alleles are added to `dsmp`. If `dsmp` has
-alleles not included in `afreq`, they are added to `afreq` and assigned
-a small probability (optional `minfreq` argument) with subsequent
-renormalization.
+alleles not included in `afreq` or listed with a frequency of 0, they
+are assigned a small probability (optional `minfreq` argument) with
+subsequent renormalization.
 
 ``` r
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
@@ -456,9 +456,10 @@ infections</span>](https://doi.org/10.1093/genetics/iyac126). Genetics.
 <div id="ref-tessema2022sensitive" class="csl-entry">
 
 <span class="csl-left-margin">2.
-</span><span class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier
-NB, Murphy M, Chen A, Aydemir O, et al. [Sensitive, highly multiplexed
-sequencing of microhaplotypes from the Plasmodium falciparum
+</span><span class="csl-right-inline"><span class="nocase">Tessema SK,
+Hathaway NJ, Teyssier NB, Murphy M, Chen A, Aydemir O, et al.</span>
+[Sensitive, highly multiplexed sequencing of microhaplotypes from the
+Plasmodium falciparum
 heterozygome](https://doi.org/10.1093/infdis/jiaa527). The Journal of
 infectious diseases. 2022;225(7):1227–37. </span>
 

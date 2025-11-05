@@ -129,30 +129,27 @@ formatAfreq <- function(aflong, lvar, avar, fvar) {
 #' @export
 #'
 matchAfreq <- function(dsmp, afreq, minfreq = 1e-4) {
-  if (!all(sapply(afreq, length) == sapply(dsmp[[1]], length)) ||
-      !all(names(unlist(afreq)) == names(unlist(dsmp[[1]])))) {
-    nloc  <- length(afreq)
-    afreq <- afreq[names(dsmp[[1]])]
-    for (iloc in 1:nloc) {
-      aold <- afreq[[iloc]]
-      alleles <- union(names(aold), names(dsmp[[1]][[iloc]]))
-      anew <- rep(0, length(alleles))
-      names(anew) <- alleles
-      dloc <- anew
-      anew[names(aold)] <- aold
-      i0 <- anew == 0
-      if (any(i0)) {
-        anew[i0] <- minfreq
-        anew <- anew/sum(anew)
-      }
-      for (ismp in 1:length(dsmp)) {
-        dold <- dsmp[[ismp]][[iloc]]
-        dnew <- dloc
-        dnew[names(dold)] <- dold
-        dsmp[[ismp]][[iloc]] <- dnew
-      }
-      afreq[[iloc]] <- anew
+  nloc  <- length(afreq)
+  afreq <- afreq[names(dsmp[[1]])]
+  for (iloc in 1:nloc) {
+    aold <- afreq[[iloc]]
+    alleles <- union(names(aold), names(dsmp[[1]][[iloc]]))
+    anew <- rep(0, length(alleles))
+    names(anew) <- alleles
+    dloc <- anew
+    anew[names(aold)] <- aold
+    i0 <- anew == 0
+    if (any(i0)) {
+      anew[i0] <- minfreq
+      anew <- anew/sum(anew)
     }
+    for (ismp in 1:length(dsmp)) {
+      dold <- dsmp[[ismp]][[iloc]]
+      dnew <- dloc
+      dnew[names(dold)] <- dold
+      dsmp[[ismp]][[iloc]] <- dnew
+    }
+    afreq[[iloc]] <- anew
   }
   return(list(dsmp = dsmp, afreq = afreq))
 }
