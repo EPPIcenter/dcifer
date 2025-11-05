@@ -202,8 +202,8 @@ the names are not required, and the order of loci and alleles is assumed
 to be the same for sample data and allele frequencies. If
 <code>afreq</code> contains “extra” alleles that are not listed in
 <code>dsmp</code>, these alleles are added to <code>dsmp</code>. If
-<code>dsmp</code> has alleles not included in <code>afreq</code>, they
-are added to <code>afreq</code> and assigned a small probability
+<code>dsmp</code> has alleles not included in <code>afreq</code> or
+listed with a frequency of 0, they are assigned a small probability
 (optional <code>minfreq</code> argument) with subsequent
 renormalization.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">

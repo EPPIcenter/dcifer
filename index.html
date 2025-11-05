@@ -180,7 +180,7 @@
 </tr>
 </tbody>
 </table>
-<p>In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function <code>matchAfreq</code> performs the checking and provides updated matching sample data and allele frequencies. For that procedure, loci and alleles in both lists (<code>dsmp</code> and <code>afreq</code>) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If <code>afreq</code> contains “extra” alleles that are not listed in <code>dsmp</code>, these alleles are added to <code>dsmp</code>. If <code>dsmp</code> has alleles not included in <code>afreq</code>, they are added to <code>afreq</code> and assigned a small probability (optional <code>minfreq</code> argument) with subsequent renormalization.</p>
+<p>In that case, after the frequencies are read in, they need to be checked against the the existing data object to make sure that all the loci and alleles are in the same order. Function <code>matchAfreq</code> performs the checking and provides updated matching sample data and allele frequencies. For that procedure, loci and alleles in both lists (<code>dsmp</code> and <code>afreq</code>) have to be named; otherwise the names are not required, and the order of loci and alleles is assumed to be the same for sample data and allele frequencies. If <code>afreq</code> contains “extra” alleles that are not listed in <code>dsmp</code>, these alleles are added to <code>dsmp</code>. If <code>dsmp</code> has alleles not included in <code>afreq</code> or listed with a frequency of 0, they are assigned a small probability (optional <code>minfreq</code> argument) with subsequent renormalization.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">afile</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MozAfreq.csv"</span>, package <span class="op">=</span> <span class="st">"dcifer"</span><span class="op">)</span></span>
 <span><span class="va">afreq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/format.html">readAfreq</a></span><span class="op">(</span><span class="va">afile</span>, lvar <span class="op">=</span> <span class="st">"locus"</span>, avar <span class="op">=</span> <span class="st">"allele"</span>, fvar <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span> </span></code></pre></div>
@@ -403,7 +403,8 @@
 </div>
 <div id="ref-tessema2022sensitive" class="csl-entry">
 <div class="csl-left-margin">2. </div>
-<div class="csl-right-inline">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M, Chen A, Aydemir O, et al. <a href="https://doi.org/10.1093/infdis/jiaa527" class="external-link">Sensitive, highly multiplexed sequencing of microhaplotypes from the Plasmodium falciparum heterozygome</a>. The Journal of infectious diseases. 2022;225(7):1227–37. </div>
+<div class="csl-right-inline">
+<span class="nocase">Tessema SK, Hathaway NJ, Teyssier NB, Murphy M, Chen A, Aydemir O, et al.</span> <a href="https://doi.org/10.1093/infdis/jiaa527" class="external-link">Sensitive, highly multiplexed sequencing of microhaplotypes from the Plasmodium falciparum heterozygome</a>. The Journal of infectious diseases. 2022;225(7):1227–37. </div>
 </div>
 </div>
 </div>
