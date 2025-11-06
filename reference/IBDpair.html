@@ -34,7 +34,7 @@ along with an optional support curve and inference."><meta property="og:image" c
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Relatedness Between Two Samples</h1>
-      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/main/R/ibd.R" class="external-link"><code>R/ibd.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/v1.4.0/R/ibd.R" class="external-link"><code>R/ibd.R</code></a></small>
       <div class="d-none name"><code>IBDpair.Rd</code></div>
     </div>
 
@@ -263,11 +263,11 @@ strains and <code><a href="IBDdat.html">ibdDat</a></code> for processing multi-s
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu">ibdPair</span><span class="op">(</span><span class="va">pair</span>, <span class="va">coip</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="fl">1</span>, mnewton <span class="op">=</span> <span class="cn">TRUE</span>,  tol <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.002   0.000   0.002 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.002   0.000   0.003 </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu">ibdPair</span><span class="op">(</span><span class="va">pair</span>, <span class="va">coip</span>, <span class="va">afreq</span>, M <span class="op">=</span> <span class="fl">1</span>, mnewton <span class="op">=</span> <span class="cn">FALSE</span>, nr  <span class="op">=</span> <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    user  system elapsed </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   0.072   0.011   0.082 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   0.067   0.010   0.076 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
