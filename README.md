@@ -218,7 +218,7 @@ plotRel(dmat, sig = t(sig), draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE,
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
-![](man/figures/README-unnamed-chunk-27-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
 
 For the sorted samples:
 
@@ -235,7 +235,7 @@ plotRel(dmat, sig = mixMat(sig, sig), draw_diag = TRUE, idlab = TRUE,
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 ```
 
-![](man/figures/README-unnamed-chunk-28-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
 
 When the number of samples is large, individual pairs can be hard to
 see. To make relatedness structure more visible, significantly related
@@ -255,7 +255,7 @@ plotRel(dmat, sig = sigsym, draw_diag = TRUE, border_sig = NA, lwd_sig = 2.5)
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # more amplification
 ```
 
-![](man/figures/README-unnamed-chunk-29-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -294,7 +294,7 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE, draw_diag = TRUE,
         col_diag = "gray45", border_diag = "white")
 ```
 
-![](man/figures/README-unnamed-chunk-30-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-18-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -318,7 +318,7 @@ par(mar = c(1, 0, 2, 3))
 plotColorbar()
 ```
 
-![](man/figures/README-unnamed-chunk-31-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -344,7 +344,7 @@ ncol <- 301
 lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ```
 
-![](man/figures/README-unnamed-chunk-32-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -416,8 +416,8 @@ coii <-  coi[isig[i, ]]
 
 res1 <- ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE,  
                 reval = revals[[M1[i]]])
-#> Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, : Single
-#> value for rnull provided; used as a sum
+#> Warning in ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE, :
+#> Single value for rnull provided; used as a sum
 res2 <- ibdPair(pair, coii, afreq, M = M2[i], pval = TRUE, equalr = TRUE,  
                 confreg = TRUE, llik = TRUE, reval = revals[[1]])
 
@@ -454,7 +454,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
-![](man/figures/README-unnamed-chunk-37-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-25-1.png)<!-- -->
 
 ``` r
 par(pardef)
