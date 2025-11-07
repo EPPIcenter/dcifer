@@ -36,7 +36,7 @@ of a hypothesis testing. The plot follows a matrix layout."><meta property="og:i
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Plot Relatedness Estimates</h1>
-      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/v1.4.0/R/plot.R" class="external-link"><code>R/plot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/EPPIcenter/dcifer/blob/main/R/plot.R" class="external-link"><code>R/plot.R</code></a></small>
       <div class="d-none name"><code>plotRel.Rd</code></div>
     </div>
 
@@ -51,7 +51,7 @@ of a hypothesis testing. The plot follows a matrix layout.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotRel</span><span class="op">(</span></span>
 <span>  <span class="va">r</span>,</span>
 <span>  rlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  isig <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sig <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  col <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">101</span>, <span class="st">"YlGnBu"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  draw_diag <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -86,15 +86,15 @@ of a hypothesis testing. The plot follows a matrix layout.</p>
 be calculated from <code>r</code>.</p></dd>
 
 
-<dt id="arg-isig">isig<a class="anchor" aria-label="anchor" href="#arg-isig"></a></dt>
-<dd><p>a matrix with two columns providing indices of relatedness matrix
-entries to be outlined ("significant" sample pairs). Takes precedence over
-<code>alpha</code>.</p></dd>
+<dt id="arg-sig">sig<a class="anchor" aria-label="anchor" href="#arg-sig"></a></dt>
+<dd><p>a logical matrix specifying which entries of the relatedness
+matrix should be outlined or "amplified" (made larger). <code>sig</code> takes
+precedence over <code>alpha</code>.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>significance level for hypothesis testing; determines
-relatedness matrix entries to be outlined. Ignored if <code>isig</code> is not
+relatedness matrix entries to be outlined. Ignored if <code>sig</code> is not
 <code>NULL</code>.</p></dd>
 
 
@@ -115,7 +115,8 @@ if <code>draw_diag = FALSE</code>.</p></dd>
 
 <dt id="arg-border-sig-lwd-sig">border_sig, lwd_sig<a class="anchor" aria-label="anchor" href="#arg-border-sig-lwd-sig"></a></dt>
 <dd><p>the color and the line width for outlining entries
-specified by <code>isig</code> or <code>alpha</code>.</p></dd>
+specified by <code>sig</code> or <code>alpha</code>. If <code>border_sig</code> is <code>NA</code>,
+these entries will be "amplified", their size controlled by <code>lwd_sig</code>.</p></dd>
 
 
 <dt id="arg-xlab-ylab">xlab, ylab<a class="anchor" aria-label="anchor" href="#arg-xlab-ylab"></a></dt>
@@ -156,7 +157,8 @@ perpendicular to the axes.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="plotColorbar.html">plotColorbar</a></code> for a colorbar.</p></div>
+    <div class="dont-index"><p><code><a href="plotColorbar.html">plotColorbar</a></code> for a colorbar and <code><a href="mixMat.html">mixMat</a></code>
+for combining square matrces.</p></div>
     </div>
 
     <div class="section level2">
@@ -167,8 +169,7 @@ perpendicular to the axes.</p></dd>
 <span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">dres</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># draw log of p-values in the upper triangle</span></span></span>
-<span class="r-in"><span><span class="va">pmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dres</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dres</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pmat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">pmat</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">dres</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">pmat</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">pmat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">dres</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pmat</span><span class="op">[</span><span class="va">pmat</span> <span class="op">==</span> <span class="op">-</span><span class="cn">Inf</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">pmat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">pmat</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">pmat</span>, rlim <span class="op">=</span> <span class="cn">NULL</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">101</span>, <span class="st">"PuRd"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>        add <span class="op">=</span> <span class="cn">TRUE</span>, col_diag <span class="op">=</span> <span class="st">"slategray2"</span>, border_diag <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
@@ -176,18 +177,19 @@ perpendicular to the axes.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># symmetric matrix, outline significant in upper triangle, display sample ID</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dmat</span> <span class="op">&lt;-</span> <span class="va">dres</span><span class="op">[</span>, , <span class="st">"estimate"</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">dmat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="va">dmat</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dmat</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lower.tri.html" class="external-link">upper.tri</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">dmat</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">isig</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">dres</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">0.05</span>, arr.ind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">col_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plum4"</span>, <span class="st">"lightblue4"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">26</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">dmat</span>, isig <span class="op">=</span> <span class="va">isig</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">1</span><span class="op">]</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, idlab <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>        col_id <span class="op">=</span> <span class="va">col_id</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dmat</span>  <span class="op">&lt;-</span> <span class="va">dres</span><span class="op">[</span>, , <span class="st">"estimate"</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">dmats</span> <span class="op">&lt;-</span> <span class="fu"><a href="mixMat.html">mixMat</a></span><span class="op">(</span><span class="va">dmat</span>, <span class="va">dmat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sig</span> <span class="op">&lt;-</span> <span class="va">dres</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">0.05</span></span></span>
+<span class="r-in"><span><span class="va">col_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orchid4"</span>, <span class="st">"cadetblue4"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">26</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">dmats</span>, sig <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">sig</span><span class="op">)</span>, border_sig <span class="op">=</span> <span class="st">"magenta2"</span>, draw_diag <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        idlab <span class="op">=</span> <span class="cn">TRUE</span>, col_id <span class="op">=</span> <span class="va">col_id</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fl">26</span>, h <span class="op">=</span> <span class="fl">26</span>, col <span class="op">=</span> <span class="st">"gray45"</span>, lty <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotRel-2.png" alt="" width="691" height="691"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># rotated sample ID labels on all sides</span></span></span>
+<span class="r-in"><span><span class="co"># rotate sample ID labels on all sides, increase size for significant pairs</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">dmat</span>, isig <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">isig</span>, <span class="va">isig</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, border_sig <span class="op">=</span> <span class="st">"magenta2"</span>,</span></span>
+<span class="r-in"><span><span class="va">sig</span> <span class="op">&lt;-</span> <span class="va">dres</span><span class="op">[</span>, , <span class="st">"p_value"</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">0.01</span></span></span>
+<span class="r-in"><span><span class="fu">plotRel</span><span class="op">(</span><span class="va">dmats</span>, sig <span class="op">=</span> <span class="fu"><a href="mixMat.html">mixMat</a></span><span class="op">(</span><span class="va">sig</span>, <span class="va">sig</span><span class="op">)</span>, border_sig <span class="op">=</span> <span class="cn">NA</span>, lwd_sig <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>        draw_diag <span class="op">=</span> <span class="cn">TRUE</span>, idlab <span class="op">=</span> <span class="cn">TRUE</span>, side_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, col_id <span class="op">=</span> <span class="va">col_id</span>,</span></span>
 <span class="r-in"><span>        srt_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">55</span>, <span class="fl">25</span>, <span class="fl">65</span>, <span class="op">-</span><span class="fl">35</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotRel-3.png" alt="" width="691" height="691"></span>
