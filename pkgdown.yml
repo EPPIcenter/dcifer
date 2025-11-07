@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   vigArticle: vigArticle.html
   vignetteDcifer: vignetteDcifer.html
-last_built: 2025-11-07T08:32Z
+last_built: 2025-11-07T10:08Z
 urls:
   reference: https://eppicenter.github.io/dcifer/reference
   article: https://eppicenter.github.io/dcifer/articles
