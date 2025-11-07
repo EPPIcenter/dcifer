@@ -73,5 +73,6 @@ par(parstart)
 
 }
 \seealso{
-\code{\link{plotRel}} for plotting relatedness estimates.
+\code{\link{plotRel}} and \code{\link{mixMat}} for plotting
+relatedness estimates.
 }

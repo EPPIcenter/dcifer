@@ -9,11 +9,11 @@
 #'   \code{\link{ibdDat}}.
 #' @param rlim the range of values for colors. If \code{NULL} or \code{NA}, will
 #'   be calculated from \code{r}.
-#' @param isig a matrix with two columns providing indices of relatedness matrix
-#'   entries to be outlined ("significant" sample pairs). Takes precedence over
-#'   \code{alpha}.
+#' @param sig a logical matrix specifying which entries of the relatedness
+#'   matrix should be outlined or "amplified" (made larger). \code{sig} takes
+#'   precedence over \code{alpha}.
 #' @param alpha significance level for hypothesis testing; determines
-#'   relatedness matrix entries to be outlined. Ignored if \code{isig} is not
+#'   relatedness matrix entries to be outlined. Ignored if \code{sig} is not
 #'   \code{NULL}.
 #' @param col the colors for the range of relatedness values.
 #' @param draw_diag a logical value specifying if diagonal cells should be
@@ -22,7 +22,8 @@
 #'   the border, and the line width for the border of diagonal entries. Ignored
 #'   if \code{draw_diag = FALSE}.
 #' @param border_sig,lwd_sig the color and the line width for outlining entries
-#'   specified by \code{isig} or \code{alpha}.
+#'   specified by \code{sig} or \code{alpha}. If \code{border_sig} is \code{NA},
+#'   these entries will be "amplified", their size controlled by \code{lwd_sig}.
 #' @param xlab,ylab axis labels.
 #' @param add a logical value specifying if the graphics should be added to the
 #'   existing plot (useful for triangular matrices).
@@ -43,33 +44,34 @@
 #' plotRel(dres, alpha = 0.05, draw_diag = TRUE)
 #'
 #' # draw log of p-values in the upper triangle
-#' pmat <- matrix(NA, nrow(dres), ncol(dres))
-#' pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
+#' pmat <- t(log(dres[, , "p_value"]))
 #' pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 #' plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "PuRd"),
 #'         add = TRUE, col_diag = "slategray2", border_diag = 1)
 #'
 #' # symmetric matrix, outline significant in upper triangle, display sample ID
 #' par(mar = c(3, 3, 0.5, 0.5))
-#' dmat <- dres[, , "estimate"]
-#' dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]
-#' isig <- which(dres[, , "p_value"] <= 0.05, arr.ind = TRUE)
-#' col_id <- rep(c("plum4", "lightblue4"), each = 26)
-#' plotRel(dmat, isig = isig[, 2:1], draw_diag = TRUE, idlab = TRUE,
-#'         col_id = col_id)
+#' dmat  <- dres[, , "estimate"]
+#' dmats <- mixMat(dmat, dmat)
+#' sig <- dres[, , "p_value"] <= 0.05
+#' col_id <- rep(c("orchid4", "cadetblue4"), each = 26)
+#' plotRel(dmats, sig = t(sig), border_sig = "magenta2", draw_diag = TRUE,
+#'         idlab = TRUE, col_id = col_id)
 #' abline(v = 26, h = 26, col = "gray45", lty = 5)
 #'
-#' # rotated sample ID labels on all sides
+#' # rotate sample ID labels on all sides, increase size for significant pairs
 #' par(mar = c(3, 3, 3, 3))
-#' plotRel(dmat, isig = rbind(isig, isig[, 2:1]), border_sig = "magenta2",
+#' sig <- dres[, , "p_value"] <= 0.01
+#' plotRel(dmats, sig = mixMat(sig, sig), border_sig = NA, lwd_sig = 5,
 #'         draw_diag = TRUE, idlab = TRUE, side_id = 1:4, col_id = col_id,
 #'         srt_id = c(-55, 25, 65, -35))
 #' par(parstart)
 #'
-#' @seealso \code{\link{plotColorbar}} for a colorbar.
+#' @seealso \code{\link{plotColorbar}} for a colorbar and \code{\link{mixMat}}
+#'   for combining square matrces.
 #' @export
 #'
-plotRel <- function(r, rlim = c(0, 1), isig = NULL, alpha = NULL,
+plotRel <- function(r, rlim = c(0, 1), sig = NULL, alpha = NULL,
                     col = grDevices::hcl.colors(101, "YlGnBu", rev = TRUE),
                     draw_diag = FALSE, col_diag = "gray", border_diag = NA,
                     lwd_diag = 0.5, border_sig = "orangered2", lwd_sig = 1.5,
@@ -101,6 +103,26 @@ plotRel <- function(r, rlim = c(0, 1), isig = NULL, alpha = NULL,
                         lend = 2)
     }
   }
+
+  # outlined or amplified (order randomized)
+  if (is.null(sig) && !is.null(alpha)) {
+    sig <- r[, , "p_value"] <= alpha
+  }
+  if (!is.null(sig)) {
+    jrand <- sample(1:nx)
+    for (j in jrand) {
+      irand <- sample(1:ny)
+      for (i in irand) {
+        colij <- if (is.na(border_sig)) col[z[i, j] + 1] else border_sig
+        if (!is.na(sig[i, j]) && sig[i, j]) {
+          graphics::lines(c(j - 1, j)[c(1, 2, 2, 1, 1)],
+                          c(i - 1, i)[c(1, 1, 2, 2, 1)],
+                          col = colij, lwd = lwd_sig, ljoin = 1, lend = 2)
+        }
+      }
+    }
+  }
+
   if (draw_diag) {                            # to overlay borders
     for (i in 1:nxy) {
       graphics::polygon(c(i - 1, i)[c(1, 2, 2, 1, 1)],  # in case transparent
@@ -113,18 +135,7 @@ plotRel <- function(r, rlim = c(0, 1), isig = NULL, alpha = NULL,
                         ljoin = 1, lend = 2)
     }
   }
-  if (!is.null(isig) || !is.null(alpha)) {
-    if (is.null(isig)) {
-      isig <- which(r[, , "p_value"] <= alpha, arr.ind = TRUE)
-    }
-    for (irow in 1:nrow(isig)) {
-      xs <- isig[irow, 2]
-      ys <- isig[irow, 1]
-      graphics::lines(c(xs - 1, xs)[c(1, 2, 2, 1, 1)],
-                      c(ys - 1, ys)[c(1, 1, 2, 2, 1)],
-                      col = border_sig, lwd = lwd_sig, ljoin = 1, lend = 2)
-    }
-  }
+
   if (idlab) {
     cc <- graphics::par("usr")
     cc <- (cc + c(c(-1, 1)*diff(cc[1:2]),
@@ -140,7 +151,7 @@ plotRel <- function(r, rlim = c(0, 1), isig = NULL, alpha = NULL,
         xc <- cc[side_id[i]]
       }
       if (is.null(srt_id) || (side_id[i] %in% c(1, 3) && srt_id[i] == 90) ||
-                             (side_id[i] %in% c(2, 4) && srt_id[i] == 0)) {
+          (side_id[i] %in% c(2, 4) && srt_id[i] == 0)) {
         graphics::mtext(labs, side_id[i], line = 0, at = at, col = col_id,
                         cex = cex_id, las = 2)
       } else {
@@ -204,7 +215,8 @@ adjID <- function(s, srt) {
 #' plotColorbar(rlim = rlim, at = c(0.2, 0.4, 0.6, 0.8), horiz = TRUE)
 #' par(parstart)
 #'
-#' @seealso \code{\link{plotRel}} for plotting relatedness estimates.
+#' @seealso \code{\link{plotRel}} and \code{\link{mixMat}} for plotting
+#'   relatedness estimates.
 #' @export
 #'
 plotColorbar <- function(rlim = c(0, 1), by = 0.1, at = NULL, horiz = FALSE,
@@ -264,4 +276,29 @@ plotColorbar <- function(rlim = c(0, 1), by = 0.1, at = NULL, horiz = FALSE,
   graphics::mtext(labtck, side, line = 0.3, at = at, las = 1, cex = 0.8)
   graphics::mtext(expression(widehat(r)), 3, line = 0.2, cex = 1.0)
 }
+
+#' Combine two matrices
+#'
+#' Creates a single matrix from two lower or upper triangular matrices.
+#'
+#' @param mat1,mat2 square matrices of the same dimensions.
+#' @param lower a logical value indicating if the resulting matrix should be comprised of lower triangular matrices.
+#' @return A square matrix.
+#'
+#' @examples
+#' x <- matrix(1:16, 4)
+#' y <- matrix(101:116, 4)
+#' x[upper.tri(x, diag = TRUE)] <- NA
+#' mixMat(x, y)
+#'
+#' @seealso \code{\link{plotRel}} and \code{\link{plotColorbar}} for plotting
+#'   relatedness estimates.
+#' @export
+#'
+mixMat <- function(mat1, mat2, lower = TRUE) {
+  itri <- if (lower) upper.tri(mat1) else lower.tri(mat1)
+  mat1[itri] <- t(mat2)[itri]
+  return(mat1)
+}
+
 

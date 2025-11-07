@@ -7,7 +7,7 @@
 plotRel(
   r,
   rlim = c(0, 1),
-  isig = NULL,
+  sig = NULL,
   alpha = NULL,
   col = grDevices::hcl.colors(101, "YlGnBu", rev = TRUE),
   draw_diag = FALSE,
@@ -34,12 +34,12 @@ plotRel(
 \item{rlim}{the range of values for colors. If \code{NULL} or \code{NA}, will
 be calculated from \code{r}.}
 
-\item{isig}{a matrix with two columns providing indices of relatedness matrix
-entries to be outlined ("significant" sample pairs). Takes precedence over
-\code{alpha}.}
+\item{sig}{a logical matrix specifying which entries of the relatedness
+matrix should be outlined or "amplified" (made larger). \code{sig} takes
+precedence over \code{alpha}.}
 
 \item{alpha}{significance level for hypothesis testing; determines
-relatedness matrix entries to be outlined. Ignored if \code{isig} is not
+relatedness matrix entries to be outlined. Ignored if \code{sig} is not
 \code{NULL}.}
 
 \item{col}{the colors for the range of relatedness values.}
@@ -52,7 +52,8 @@ the border, and the line width for the border of diagonal entries. Ignored
 if \code{draw_diag = FALSE}.}
 
 \item{border_sig, lwd_sig}{the color and the line width for outlining entries
-specified by \code{isig} or \code{alpha}.}
+specified by \code{sig} or \code{alpha}. If \code{border_sig} is \code{NA},
+these entries will be "amplified", their size controlled by \code{lwd_sig}.}
 
 \item{xlab, ylab}{axis labels.}
 
@@ -87,30 +88,31 @@ par(mar = c(0.5, 0.5, 0.5, 0.5))
 plotRel(dres, alpha = 0.05, draw_diag = TRUE)
 
 # draw log of p-values in the upper triangle
-pmat <- matrix(NA, nrow(dres), ncol(dres))
-pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
+pmat <- t(log(dres[, , "p_value"]))
 pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "PuRd"),
         add = TRUE, col_diag = "slategray2", border_diag = 1)
 
 # symmetric matrix, outline significant in upper triangle, display sample ID
 par(mar = c(3, 3, 0.5, 0.5))
-dmat <- dres[, , "estimate"]
-dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]
-isig <- which(dres[, , "p_value"] <= 0.05, arr.ind = TRUE)
-col_id <- rep(c("plum4", "lightblue4"), each = 26)
-plotRel(dmat, isig = isig[, 2:1], draw_diag = TRUE, idlab = TRUE,
-        col_id = col_id)
+dmat  <- dres[, , "estimate"]
+dmats <- mixMat(dmat, dmat)
+sig <- dres[, , "p_value"] <= 0.05
+col_id <- rep(c("orchid4", "cadetblue4"), each = 26)
+plotRel(dmats, sig = t(sig), border_sig = "magenta2", draw_diag = TRUE,
+        idlab = TRUE, col_id = col_id)
 abline(v = 26, h = 26, col = "gray45", lty = 5)
 
-# rotated sample ID labels on all sides
+# rotate sample ID labels on all sides, increase size for significant pairs
 par(mar = c(3, 3, 3, 3))
-plotRel(dmat, isig = rbind(isig, isig[, 2:1]), border_sig = "magenta2",
+sig <- dres[, , "p_value"] <= 0.01
+plotRel(dmats, sig = mixMat(sig, sig), border_sig = NA, lwd_sig = 5,
         draw_diag = TRUE, idlab = TRUE, side_id = 1:4, col_id = col_id,
         srt_id = c(-55, 25, 65, -35))
 par(parstart)
 
 }
 \seealso{
-\code{\link{plotColorbar}} for a colorbar.
+\code{\link{plotColorbar}} for a colorbar and \code{\link{mixMat}}
+for combining square matrces.
 }

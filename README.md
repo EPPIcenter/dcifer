@@ -211,14 +211,14 @@ par(mar = c(3, 3, 1, 1))
 alpha <- 0.05                          # significance level                    
 dmat <- dres0[, , "estimate"]
 # create symmetric matrix
-dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]  
-# determine significant, reverse columns for upper triangle
-isig <- which(dres0[, , "p_value"] <= alpha, arr.ind = TRUE)[, 2:1] 
-plotRel(dmat, isig = isig, draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE, 
+dmat <- mixMat(dmat, dmat)
+# determine significant, highlight them in the upper triangle
+sig <- dres0[, , "p_value"] <= alpha
+plotRel(dmat, sig = t(sig), draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE, 
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
-![](man/figures/README-unnamed-chunk-15-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-27-1.png)<!-- -->
 
 For the sorted samples:
 
@@ -226,16 +226,40 @@ For the sorted samples:
 par(mar = c(1, 3, 3, 1))
 nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
-isig  <- which(dres[, , "p_value"] <= alpha, arr.ind = TRUE)
 dmat  <- dres[, , "estimate"]
-dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))] 
-col_id <- rep(c("plum4", "lightblue4"), nsite)
-plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
-        idlab = TRUE, side_id = c(2, 3), col_id = col_id, srt_id = c(25, 65))
+dmat  <- mixMat(dmat, dmat)
+sig   <- dres[, , "p_value"] <= alpha
+col_id <- rep(c("orchid4", "cadetblue4"), nsite)
+plotRel(dmat, sig = mixMat(sig, sig), draw_diag = TRUE, idlab = TRUE, 
+        side_id = c(2, 3), col_id = col_id, srt_id = c(25, 65))
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 ```
 
-![](man/figures/README-unnamed-chunk-16-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-28-1.png)<!-- -->
+
+When the number of samples is large, individual pairs can be hard to
+see. To make relatedness structure more visible, significantly related
+pairs can be “amplified”, or made larger:
+
+``` r
+par(mfrow = c(1, 4), mar = c(0.5, 0.5, 0.5, 0.5))
+sig_hi <- dres_hi[, , "p_value"] <= alpha
+sigsym <- mixMat(sig_hi, sig_hi)
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, lwd_sig = 0)  
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # no highlighting
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, lwd_sig = 2)  
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # outline
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, border_sig = NA, lwd_sig = 1.5)
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # amplification
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, border_sig = NA, lwd_sig = 2.5)
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # more amplification
+```
+
+![](man/figures/README-unnamed-chunk-29-1.png)<!-- -->
+
+``` r
+par(pardef)
+```
 
 For these symmetric distance measures, one of the triangles can be used
 to display other relevant information, such as p-values, geographic
@@ -247,11 +271,10 @@ par(mfrow = c(1, 2), mar = c(1, 0, 1, 0.2))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("p-values", 3, 0.2)
 # p-values for upper triangle
-pmat <- matrix(NA, length(dsmp), length(dsmp))
-pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
+pmat <- t(log(dres[, , "p_value"]))
 pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "Red-Purple"), 
-        sig = FALSE, add = TRUE, col_diag = "white", border_diag = "gray45")
+        add = TRUE, col_diag = "white", border_diag = "gray45")
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 
 # number of non-missing loci for upper triangle
@@ -267,11 +290,11 @@ par(mar = c(1, 0.2, 1, 0))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("number of loci", 3, 0.2)
 coln <- hcl.colors(diff(nrng)*2.4, "Purple-Blue", rev = TRUE)[1:(diff(nrng) + 1)]
-plotRel(nmat, rlim = NA, col = coln, add = TRUE, 
-        draw_diag = TRUE, col_diag = "gray45", border_diag = "white")
+plotRel(nmat, rlim = NA, col = coln, add = TRUE, draw_diag = TRUE, 
+        col_diag = "gray45", border_diag = "white")
 ```
 
-![](man/figures/README-unnamed-chunk-17-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -285,8 +308,8 @@ significance level $\alpha = 0.05$):
 ``` r
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
-isig_hi <- which(dres_hi[, , "p_value"] <= alpha, arr.ind = TRUE)
-plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig_hi[, 2:1]))
+sig_hi <- dres_hi[, , "p_value"] <= alpha  #*** out here, not in vignette!!!
+plotRel(dmat, sig = mixMat(sig, sig_hi), draw_diag = TRUE)
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 mtext(provinces, side = 3, at = atclin, line = 0.2)
@@ -295,7 +318,7 @@ par(mar = c(1, 0, 2, 3))
 plotColorbar()
 ```
 
-![](man/figures/README-unnamed-chunk-18-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-31-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -321,7 +344,7 @@ ncol <- 301
 lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ```
 
-![](man/figures/README-unnamed-chunk-19-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-32-1.png)<!-- -->
 
 ``` r
 par(pardef)
@@ -344,12 +367,14 @@ revals <- mapply(generateReval, 1:5, nr = c(1e3, 1e2, 32, 16, 12))
 ```
 
 ``` r
-sig1 <- sig2 <- vector("list", nrow(isig))
-for (i in 1:nrow(isig)) {
+isig <- which(sig, arr.ind = TRUE)
+nsig <- nrow(isig)
+sig1 <- sig2 <- vector("list", nsig)
+for (i in 1:nsig) {
   sig1[[i]] <- ibdEstM(dsmp[isig[i, ]], coi[isig[i, ]], afreq, Mmax = 5, 
                        equalr = FALSE, reval = revals)
 }
-for (i in 1:nrow(isig)) {
+for (i in 1:nsig) {
   sig2[[i]] <- ibdEstM(dsmp[isig[i, ]], coi[isig[i, ]], afreq, equalr = TRUE)
 }
 M1      <- sapply(sig1, function(r) sum(r > 0))  
@@ -367,11 +392,11 @@ Create a list of significant pairs:
 
 ``` r
 samples <- names(dsmp)
-sig <- as.data.frame(isig, row.names = FALSE)
-sig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
-sig[c("M1", "M2")]           <- list(M1, M2)
-sig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
-head(sig)
+dfsig <- as.data.frame(isig, row.names = FALSE)
+dfsig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
+dfsig[c("M1", "M2")]           <- list(M1, M2)
+dfsig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
+head(dfsig)
 #>   row col        id1        id2 M1 M2 rtotal1 rtotal2
 #> 1  14   2 8025874706 8025874271  1  1   0.411   0.411
 #> 2  52   2 8034209790 8025874271  1  1   0.133   0.133
@@ -429,7 +454,7 @@ text(mean(CI), yCI + 0.05*diff(llrng), "confidence interval", col = cols[3])
 text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ```
 
-![](man/figures/README-unnamed-chunk-24-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-37-1.png)<!-- -->
 
 ``` r
 par(pardef)

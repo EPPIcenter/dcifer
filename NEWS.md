@@ -1,3 +1,10 @@
+# dcifer 1.5.0
+
+- New: a function `mixMat()` that combines two triangular matrices into one square matrix (useful for plotting).
+-  Changes to `plotRel()` function:
+  * Highlighted (statistically significant) entries are now specified by a logical square matrix 
+  * These entries can be either outlined in a different color or "amplified" (made larger than other entries), which is useful for large datasets
+
 # dcifer 1.4.0
 
 - Added: one-sided (one-tailed) tests for functions `ibdPair()`, `ibdDat()`, and `ibdEstM()`. The argument `side` indicates if a one- or two-sided test is performed and the side for the one-sided test. 

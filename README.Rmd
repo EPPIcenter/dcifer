@@ -158,10 +158,10 @@ par(mar = c(3, 3, 1, 1))
 alpha <- 0.05                          # significance level                    
 dmat <- dres0[, , "estimate"]
 # create symmetric matrix
-dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))]  
-# determine significant, reverse columns for upper triangle
-isig <- which(dres0[, , "p_value"] <= alpha, arr.ind = TRUE)[, 2:1] 
-plotRel(dmat, isig = isig, draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE, 
+dmat <- mixMat(dmat, dmat)
+# determine significant, highlight them in the upper triangle
+sig <- dres0[, , "p_value"] <= alpha
+plotRel(dmat, sig = t(sig), draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE, 
         col_id = c(3:4)[factor(meta$province)]) 
 ```
 
@@ -171,13 +171,30 @@ For the sorted samples:
 par(mar = c(1, 3, 3, 1))
 nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
-isig  <- which(dres[, , "p_value"] <= alpha, arr.ind = TRUE)
 dmat  <- dres[, , "estimate"]
-dmat[upper.tri(dmat)] <- t(dmat)[upper.tri(t(dmat))] 
-col_id <- rep(c("plum4", "lightblue4"), nsite)
-plotRel(dmat, isig = rbind(isig, isig[, 2:1]), draw_diag = TRUE, alpha = alpha,
-        idlab = TRUE, side_id = c(2, 3), col_id = col_id, srt_id = c(25, 65))
+dmat  <- mixMat(dmat, dmat)
+sig   <- dres[, , "p_value"] <= alpha
+col_id <- rep(c("orchid4", "cadetblue4"), nsite)
+plotRel(dmat, sig = mixMat(sig, sig), draw_diag = TRUE, idlab = TRUE, 
+        side_id = c(2, 3), col_id = col_id, srt_id = c(25, 65))
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
+```
+
+When the number of samples is large, individual pairs can be hard to see. To make relatedness structure more visible, significantly related pairs can be "amplified", or made larger:
+
+```{r, fig.height = 1.75}  
+par(mfrow = c(1, 4), mar = c(0.5, 0.5, 0.5, 0.5))
+sig_hi <- dres_hi[, , "p_value"] <= alpha
+sigsym <- mixMat(sig_hi, sig_hi)
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, lwd_sig = 0)  
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # no highlighting
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, lwd_sig = 2)  
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # outline
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, border_sig = NA, lwd_sig = 1.5)
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # amplification
+plotRel(dmat, sig = sigsym, draw_diag = TRUE, border_sig = NA, lwd_sig = 2.5)
+abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # more amplification
+par(pardef)
 ```
 
 For these symmetric distance measures, one of the triangles can be used to display other relevant information, such as p-values, geographic distance, or a number of non-missing loci between two samples. For that, use `add = TRUE`. 
@@ -187,11 +204,10 @@ par(mfrow = c(1, 2), mar = c(1, 0, 1, 0.2))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("p-values", 3, 0.2)
 # p-values for upper triangle
-pmat <- matrix(NA, length(dsmp), length(dsmp))
-pmat[upper.tri(pmat)] <- t(log(dres[, , "p_value"]))[upper.tri(pmat)]
+pmat <- t(log(dres[, , "p_value"]))
 pmat[pmat == -Inf] <- min(pmat[is.finite(pmat)])
 plotRel(pmat, rlim = NULL, draw_diag = TRUE, col = hcl.colors(101, "Red-Purple"), 
-        sig = FALSE, add = TRUE, col_diag = "white", border_diag = "gray45")
+        add = TRUE, col_diag = "white", border_diag = "gray45")
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 
 # number of non-missing loci for upper triangle
@@ -207,8 +223,8 @@ par(mar = c(1, 0.2, 1, 0))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("number of loci", 3, 0.2)
 coln <- hcl.colors(diff(nrng)*2.4, "Purple-Blue", rev = TRUE)[1:(diff(nrng) + 1)]
-plotRel(nmat, rlim = NA, col = coln, add = TRUE, 
-        draw_diag = TRUE, col_diag = "gray45", border_diag = "white")
+plotRel(nmat, rlim = NA, col = coln, add = TRUE, draw_diag = TRUE, 
+        col_diag = "gray45", border_diag = "white")
 par(pardef)
 ```
 
@@ -217,8 +233,8 @@ For reference, add a colorbar legend to the plot. It can be placed beside the ma
 ```{r, fig.width = 6.7, fig.height = 6}
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
-isig_hi <- which(dres_hi[, , "p_value"] <= alpha, arr.ind = TRUE)
-plotRel(dmat, draw_diag = TRUE, isig = rbind(isig, isig_hi[, 2:1]))
+sig_hi <- dres_hi[, , "p_value"] <= alpha  #*** out here, not in vignette!!!
+plotRel(dmat, sig = mixMat(sig, sig_hi), draw_diag = TRUE)
 atclin <- cumsum(nsite) - nsite/2
 abline(v = atsep, h = atsep, col = "gray45", lty = 5)
 mtext(provinces, side = 3, at = atclin, line = 0.2)
@@ -256,12 +272,14 @@ Examine pairs that are determined to be significantly related at the significanc
 revals <- mapply(generateReval, 1:5, nr = c(1e3, 1e2, 32, 16, 12))
 ```
 ```{r}
-sig1 <- sig2 <- vector("list", nrow(isig))
-for (i in 1:nrow(isig)) {
+isig <- which(sig, arr.ind = TRUE)
+nsig <- nrow(isig)
+sig1 <- sig2 <- vector("list", nsig)
+for (i in 1:nsig) {
   sig1[[i]] <- ibdEstM(dsmp[isig[i, ]], coi[isig[i, ]], afreq, Mmax = 5, 
                        equalr = FALSE, reval = revals)
 }
-for (i in 1:nrow(isig)) {
+for (i in 1:nsig) {
   sig2[[i]] <- ibdEstM(dsmp[isig[i, ]], coi[isig[i, ]], afreq, equalr = TRUE)
 }
 M1      <- sapply(sig1, function(r) sum(r > 0))  
@@ -276,11 +294,11 @@ cor(rtotal1, rtotal2)
 Create a list of significant pairs:
 ```{r}
 samples <- names(dsmp)
-sig <- as.data.frame(isig, row.names = FALSE)
-sig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
-sig[c("M1", "M2")]           <- list(M1, M2)
-sig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
-head(sig)
+dfsig <- as.data.frame(isig, row.names = FALSE)
+dfsig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
+dfsig[c("M1", "M2")]           <- list(M1, M2)
+dfsig[c("rtotal1", "rtotal2")] <- list(round(rtotal1, 3), round(rtotal2, 3))
+head(dfsig)
 ```
 
 For full control, we can use the function `ibdPair` for any two samples and explore the outputs:
