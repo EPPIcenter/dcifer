@@ -202,6 +202,7 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   } else {
     if (all(llikr == 0)) {             # missing data
       rhat <- NA
+      imax <- 1
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
