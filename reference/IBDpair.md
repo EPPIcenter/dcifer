@@ -227,9 +227,9 @@ ibdPair(pair, coip, afreq, M = 1, rhat = FALSE, pval = FALSE, llik = TRUE,
 system.time(
   ibdPair(pair, coip, afreq, M = 1, mnewton = TRUE,  tol = 1e-5))
 #>    user  system elapsed 
-#>   0.002   0.000   0.002 
+#>   0.003   0.000   0.002 
 system.time(
   ibdPair(pair, coip, afreq, M = 1, mnewton = FALSE, nr  = 1e5))
 #>    user  system elapsed 
-#>   0.070   0.011   0.082 
+#>   0.068   0.009   0.077 
 ```
