@@ -10,6 +10,7 @@ microhaplotype data from two health facilities in Maputo and Inhambane
 provinces of Mozambique \[2\].
 
 ``` r
+
 library(dcifer)
 pardef <- par(no.readonly = TRUE)
 ```
@@ -32,6 +33,7 @@ The name of the file is the first argument to the function that reads
 and reformats the data:
 
 ``` r
+
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
@@ -55,10 +57,12 @@ str(dsmp, list.len = 2)
 Or, to reformat an R data frame (`dlong`) containing the same dataset:
 
 ``` r
+
 dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 ```
 
 ``` r
+
 # optionally, extract location information
 meta <- unique(read.csv(sfile)[c("sampleID", "province")])
 meta <- meta[match(names(dsmp), meta$sampleID), ]  # order samples as in dsmp
@@ -69,6 +73,7 @@ first ranking loci of a sample by the number of detected alleles, and
 then using a locus with a prescribed rank (`lrank`) to determine COI:
 
 ``` r
+
 lrank <- 2
 coi   <- getCOI(dsmp, lrank = lrank)
 ```
@@ -76,6 +81,7 @@ coi   <- getCOI(dsmp, lrank = lrank)
 Finally, estimate population allele frequencies, adjusting for COI:
 
 ``` r
+
 afreq <- calcAfreq(dsmp, coi, tol = 1e-5) 
 str(afreq, list.len = 2)
 ```
@@ -111,16 +117,19 @@ are assigned a small probability (optional `minfreq` argument) with
 subsequent renormalization.
 
 ``` r
+
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
 afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq") 
 ```
 
 ``` r
+
 # alternatively, if allele frequencies are provided in an R data frame (aflong):
 afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
 ```
 
 ``` r
+
 da_upd <- matchAfreq(dsmp, afreq2, minfreq = 1/sum(coi)/10)
 dsmp2  <- da_upd$dsmp
 afreq2 <- da_upd$afreq
@@ -137,6 +146,7 @@ in more detail.
 Optionally, sort samples by clinic or geographic location:
 
 ``` r
+
 provinces <- c("Maputo", "Inhambane")
 nsite     <- table(meta$province)[provinces]
 ord       <- order(factor(meta$province, levels = provinces))
@@ -145,6 +155,7 @@ coi  <- coi[ ord]
 ```
 
 ``` r
+
 dres <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0, 
                alpha = 0.05, nr = 1e3)     
 ```
@@ -152,6 +163,7 @@ dres <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0,
 Look at the results for a single pair of samples:
 
 ``` r
+
 dres[9, 5, ]  
 ```
 
@@ -169,6 +181,7 @@ Display the results with sample ID’s written on the margins. Label
 colors correspond to locations (health facilities):
 
 ``` r
+
 par(mar = c(3, 3, 1, 1))
 nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
@@ -193,6 +206,7 @@ distance, or a number of non-missing loci between two samples. For that,
 use `add = TRUE`.
 
 ``` r
+
 par(mfrow = c(1, 2), mar = c(1, 0, 1, 0.2))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("p-values", 3, 0.2)
@@ -223,6 +237,7 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE,
 ![](vigArticle_files/figure-html/unnamed-chunk-14-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
@@ -230,6 +245,7 @@ For reference, add a colorbar legend to the plot. It can be placed
 beside the main plot:
 
 ``` r
+
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
 plotRel(dmat, sig = mixMat(sig, sig), draw_diag = TRUE)
@@ -244,6 +260,7 @@ plotColorbar()
 ![](vigArticle_files/figure-html/unnamed-chunk-15-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
@@ -252,6 +269,7 @@ triangular matrix. In the example below, we specify horizontal colorbar
 and provide custom tick mark locations:
 
 ``` r
+
 # horizontal colorbar 
 par(mar = c(1, 1, 1, 3))
 border_sig <- "darkviolet"
@@ -270,6 +288,7 @@ lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ![](vigArticle_files/figure-html/unnamed-chunk-16-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
@@ -284,11 +303,13 @@ r_M\\ (faster method) and without the constraint. In addition, we look
 at the estimates \\\hat{r}\_{total}\\ of overall relatedness.
 
 ``` r
+
 # First, create a grid of r values to evaluate over
 revals <- mapply(generateReval, 1:5, nr = c(1e3, 1e2, 32, 16, 12))
 ```
 
 ``` r
+
 isig <- which(sig, arr.ind = TRUE)
 nsig <- nrow(isig)
 sig1 <- sig2 <- vector("list", nsig)
@@ -310,6 +331,7 @@ cor(M1, M2)
     > [1] 0.9486851
 
 ``` r
+
 cor(rtotal1, rtotal2) 
 ```
 
@@ -318,6 +340,7 @@ cor(rtotal1, rtotal2)
 Create a list of significant pairs:
 
 ``` r
+
 samples <- names(dsmp)
 dfsig <- as.data.frame(isig, row.names = FALSE)
 dfsig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
@@ -338,6 +361,7 @@ For full control, we can use the function `ibdPair` for any two samples
 and explore the outputs:
 
 ``` r
+
 i <- 18                              
 pair <- dsmp[isig[i, ]]
 coii <-  coi[isig[i, ]]
@@ -350,6 +374,7 @@ res1 <- ibdPair(pair, coii, afreq, M = M1[i], pval = TRUE, equalr = FALSE,
     > Single value for rnull provided; used as a sum
 
 ``` r
+
 res2 <- ibdPair(pair, coii, afreq, M = M2[i], pval = TRUE, equalr = TRUE,  
                 confreg = TRUE, llik = TRUE, reval = revals[[1]])
 
@@ -359,6 +384,7 @@ res1$rhat                              # estimate with equalr = FALSE
     > [1] 0.31 1.00
 
 ``` r
+
 rep(res2$rhat, M2[i])                  # estimate with equalr = TRUE
 ```
 
@@ -369,6 +395,7 @@ parameter if we use `equalr = TRUE`), which provides the basis for
 statistical inference:
 
 ``` r
+
 CI     <- range(res2$confreg)
 llikCI <- max(res2$llik) - qchisq(1 - alpha, df = 1)/2
 llrng  <- range(res2$llik[is.finite(res2$llik)])
@@ -394,6 +421,7 @@ text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ![](vigArticle_files/figure-html/unnamed-chunk-21-1.png)
 
 ``` r
+
 par(pardef)
 ```
 

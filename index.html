@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dcifer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
 </h2>
 <p>Dcifer relatedness estimation requires sample data in a specific format as well as estimates of complexity of infection (COI) and population allele frequencies. Here is an example of some preparation steps using Mozambique dataset. First, read in original data stored in a <code>.csv</code> file in a long format.</p>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>sampleID</th>
 <th>locus</th>
 <th>allele</th>
@@ -92,21 +92,21 @@
 <th>province</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>8025874217</td>
 <td>t1</td>
 <td>HB3.0</td>
 <td>Inhassoro</td>
 <td>Inhambane</td>
 </tr>
-<tr class="even">
+<tr>
 <td>8025874217</td>
 <td>t1</td>
 <td>D10–D6–FCR3–V1-S.0</td>
 <td>Inhassoro</td>
 <td>Inhambane</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>8025874217</td>
 <td>t20</td>
 <td>U659.0</td>
@@ -157,23 +157,23 @@
 <span><span class="co">#&gt;   [list output truncated]</span></span></code></pre></div>
 <p>In some situations, population allele frequencies might be estimated from a different (e.g. larger) dataset and provided separately (e.g. in a <code>.csv</code> file or R data frame):</p>
 <table class="table">
-<thead><tr class="header">
+<thead><tr>
 <th>locus</th>
 <th>allele</th>
 <th>freq</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>t1</td>
 <td>D10–D6–FCR3–V1-S.0</td>
 <td>0.44377920</td>
 </tr>
-<tr class="even">
+<tr>
 <td>t1</td>
 <td>HB3.0</td>
 <td>0.27713450</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>t1</td>
 <td>t1.0</td>
 <td>0.09375438</td>
@@ -330,7 +330,7 @@
 <div class="section level2">
 <h2 id="further-analysis-of-related-samples">Further analysis of related samples<a class="anchor" aria-label="anchor" href="#further-analysis-of-related-samples"></a>
 </h2>
-<p>Examine pairs that are determined to be significantly related at the significance level <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> more closely by allowing multiple pairs of strains to be related between two infections. Using <code>ibdEstM</code>, we also estimate the number of positively related pairs <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">M'</annotation></semantics></math> of strains and compare results yielded by a constrained model assuming <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mn>1</mn></msub><mo>=</mo><mi>…</mi><mo>=</mo><msub><mi>r</mi><mi>M</mi></msub></mrow><annotation encoding="application/x-tex">r_1 = \dotso = r_M</annotation></semantics></math> (faster method) and without the constraint. In addition, we look at the estimates <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>r</mi><mo accent="true">̂</mo></mover><mrow><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">\hat{r}_{total}</annotation></semantics></math> of overall relatedness.</p>
+<p>Examine pairs that are determined to be significantly related at the significance level <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> more closely by allowing multiple pairs of strains to be related between two infections. Using <code>ibdEstM</code>, we also estimate the number of positively related pairs <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>M</mi><mo>′</mo></msup><annotation encoding="application/x-tex">M'</annotation></semantics></math> of strains and compare results yielded by a constrained model assuming <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mn>1</mn></msub><mo>=</mo><mi>…</mi><mo>=</mo><msub><mi>r</mi><mi>M</mi></msub></mrow><annotation encoding="application/x-tex">r_1 = \dotso = r_M</annotation></semantics></math> (faster method) and without the constraint. In addition, we look at the estimates <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>r</mi><mo accent="true">̂</mo></mover><mrow><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">\hat{r}_{total}</annotation></semantics></math> of overall relatedness.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First, create a grid of r values to evaluate over</span></span>
 <span><span class="va">revals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">generateReval</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, nr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e3</span>, <span class="fl">1e2</span>, <span class="fl">32</span>, <span class="fl">16</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>

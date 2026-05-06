@@ -11,13 +11,13 @@ Source:
 [`DESCRIPTION`](https://github.com/EPPIcenter/dcifer/blob/main/DESCRIPTION)
 
 Gerlovina I (2026). *dcifer: Genetic Relatedness Between Polyclonal
-Infections*. R package version 1.5.1,
+Infections*. R package version 1.5.2,
 <https://github.com/EPPIcenter/dcifer>.
 
     @Manual{,
       title = {dcifer: Genetic Relatedness Between Polyclonal Infections},
       author = {Inna Gerlovina},
       year = {2026},
-      note = {R package version 1.5.1},
+      note = {R package version 1.5.2},
       url = {https://github.com/EPPIcenter/dcifer},
     }

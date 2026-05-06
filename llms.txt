@@ -16,12 +16,14 @@ You can install the released version of dcifer from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
+
 install.packages("dcifer")
 ```
 
 and the development version from [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("EPPIcenter/dcifer")
 # or, to include a vignette:
@@ -29,6 +31,7 @@ remotes::install_github("EPPIcenter/dcifer", build_vignettes = TRUE)
 ```
 
 ``` r
+
 library(dcifer)
 help(package = "dcifer")
 vignette(package = "dcifer", "vignetteDcifer")
@@ -53,6 +56,7 @@ The name of the file is the first argument to the function that reads
 and reformats the data:
 
 ``` r
+
 sfile <- system.file("extdata", "MozParagon.csv", package = "dcifer")
 dsmp <- readDat(sfile, svar = "sampleID", lvar = "locus", avar = "allele")
 str(dsmp, list.len = 2)
@@ -75,10 +79,12 @@ str(dsmp, list.len = 2)
 Or, to reformat an R data frame (`dlong`) containing the same dataset:
 
 ``` r
+
 dsmp <- formatDat(dlong, svar = "sampleID", lvar = "locus", avar = "allele")
 ```
 
 ``` r
+
 # optionally, extract location information
 meta <- unique(read.csv(sfile)[c("sampleID", "province")])
 meta <- meta[match(names(dsmp), meta$sampleID), ]  # order samples as in dsmp
@@ -89,6 +95,7 @@ first ranking loci of a sample by the number of detected alleles, and
 then using a locus with a prescribed rank (`lrank`) to determine COI:
 
 ``` r
+
 lrank <- 2
 coi   <- getCOI(dsmp, lrank = lrank)
 ```
@@ -96,6 +103,7 @@ coi   <- getCOI(dsmp, lrank = lrank)
 Finally, estimate population allele frequencies, adjusting for COI:
 
 ``` r
+
 afreq <- calcAfreq(dsmp, coi, tol = 1e-5) 
 str(afreq, list.len = 2)
 #> List of 87
@@ -130,16 +138,19 @@ are assigned a small probability (optional `minfreq` argument) with
 subsequent renormalization.
 
 ``` r
+
 afile  <- system.file("extdata", "MozAfreq.csv", package = "dcifer")
 afreq2 <- readAfreq(afile, lvar = "locus", avar = "allele", fvar = "freq") 
 ```
 
 ``` r
+
 # alternatively, if allele frequencies are provided in an R data frame (aflong):
 afreq2 <- formatAfreq(aflong, lvar = "locus", avar = "allele", fvar = "freq")
 ```
 
 ``` r
+
 da_upd <- matchAfreq(dsmp, afreq2, minfreq = 1/sum(coi)/10)
 dsmp2  <- da_upd$dsmp
 afreq2 <- da_upd$afreq
@@ -147,17 +158,18 @@ afreq2 <- da_upd$afreq
 
 ## Estimate relatedness
 
-As a first step in relatedness estimation, we set $M = 1$ (only one pair
-of strains between two infections can be related) and test the
-hypothesis that infections are unrelated ($H_{0}\!:r = 0$). This is done
-with `ibdDat` function. Then we explore significantly related pairs in
-more detail.
+As a first step in relatedness estimation, we set $`M = 1`$ (only one
+pair of strains between two infections can be related) and test the
+hypothesis that infections are unrelated ($`H_0\!: r = 0`$). This is
+done with `ibdDat` function. Then we explore significantly related pairs
+in more detail.
 
 For the purposes of demonstration, we first estimate relatedness and
 display results using `dsmp` as created previously where samples are not
 sorted by location.
 
 ``` r
+
 dres0 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0, 
                 alpha = 0.05, nr = 1e3)  
 ```
@@ -165,6 +177,7 @@ dres0 <- ibdDat(dsmp, coi, afreq, pval = TRUE, confint = TRUE, rnull = 0,
 Look at the results for a single pair of samples:
 
 ``` r
+
 dres0[17, 10, ]  
 #>   estimate    p_value   CI_lower   CI_upper 
 #> 0.31000000 0.06255194 0.00000000 0.67900000
@@ -174,6 +187,7 @@ Alternatively, we may want to first sort samples by clinic or geographic
 location:
 
 ``` r
+
 provinces <- c("Maputo", "Inhambane")
 nsite     <- table(meta$province)[provinces]
 ord       <- order(factor(meta$province, levels = provinces))
@@ -182,14 +196,16 @@ coi  <- coi[ ord]
 ```
 
 ``` r
+
 dres <- ibdDat(dsmp, coi, afreq)     
 ```
 
 To test different hypotheses, we can use `rnull` and `side` arguments.
 For example, to test whether pairwise relatedness is higher than 0.2
-($H_{0}:r \leq 0.2$) and obtain one-tailed p-values:
+($`H_0: r \leq 0.2`$) and obtain one-tailed p-values:
 
 ``` r
+
 dres_hi <- ibdDat(dsmp, coi, afreq, rnull = 0.2, side = "right")
 ```
 
@@ -204,6 +220,7 @@ Display the results for unsorted samples, with sample ID’s written on
 the margins. Label colors correspond to locations (health facilities):
 
 ``` r
+
 par(mar = c(3, 3, 1, 1))
 alpha <- 0.05                          # significance level                    
 dmat <- dres0[, , "estimate"]
@@ -220,6 +237,7 @@ plotRel(dmat, sig = t(sig), draw_diag = TRUE, lwd_diag = 0.5, idlab = TRUE,
 For the sorted samples:
 
 ``` r
+
 par(mar = c(1, 3, 3, 1))
 nsmp  <- length(dsmp)
 atsep <- cumsum(nsite)[-length(nsite)]
@@ -239,6 +257,7 @@ see. To make relatedness structure more visible, significantly related
 pairs can be “amplified”, or made larger:
 
 ``` r
+
 par(mfrow = c(1, 4), mar = c(0.5, 0.5, 0.5, 0.5))
 sig_hi <- dres_hi[, , "p_value"] <= alpha
 sigsym <- mixMat(sig_hi, sig_hi)
@@ -255,6 +274,7 @@ abline(v = atsep, h = atsep, col = "gray45", lty = 5)       # more amplification
 ![](reference/figures/README-unnamed-chunk-17-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
@@ -264,6 +284,7 @@ distance, or a number of non-missing loci between two samples. For that,
 use `add = TRUE`.
 
 ``` r
+
 par(mfrow = c(1, 2), mar = c(1, 0, 1, 0.2))
 plotRel(dres, draw_diag = TRUE, alpha = alpha)
 mtext("p-values", 3, 0.2)
@@ -294,15 +315,17 @@ plotRel(nmat, rlim = NA, col = coln, add = TRUE, draw_diag = TRUE,
 ![](reference/figures/README-unnamed-chunk-18-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
 For reference, add a colorbar legend to the plot. It can be placed
 beside the main plot. For the upper matrix, we outline the pairs for
-which relatedness is significantly higher than $0.2$ (at the same
-significance level $\alpha = 0.05$):
+which relatedness is significantly higher than $`0.2`$ (at the same
+significance level $`\alpha = 0.05`$):
 
 ``` r
+
 layout(matrix(1:2, 1), width = c(7, 1))
 par(mar = c(1, 1, 2, 1))
 sig_hi <- dres_hi[, , "p_value"] <= alpha  #*** out here, not in vignette!!!
@@ -318,6 +341,7 @@ plotColorbar()
 ![](reference/figures/README-unnamed-chunk-19-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
@@ -326,6 +350,7 @@ triangular matrix. In the example below, we specify horizontal colorbar
 and provide custom tick mark locations:
 
 ``` r
+
 # horizontal colorbar 
 par(mar = c(1, 1, 1, 3))
 border_sig <- "darkviolet"
@@ -344,26 +369,29 @@ lines(c(0, ncol, ncol, 0, 0), c(0, 0, 1, 1, 0), col = "gray")
 ![](reference/figures/README-unnamed-chunk-20-1.png)
 
 ``` r
+
 par(pardef)
 ```
 
 ## Further analysis of related samples
 
 Examine pairs that are determined to be significantly related at the
-significance level $\alpha$ more closely by allowing multiple pairs of
+significance level $`\alpha`$ more closely by allowing multiple pairs of
 strains to be related between two infections. Using `ibdEstM`, we also
-estimate the number of positively related pairs $M\prime$ of strains and
+estimate the number of positively related pairs $`M'`$ of strains and
 compare results yielded by a constrained model assuming
-$r_{1} = \ldots = r_{M}$ (faster method) and without the constraint. In
-addition, we look at the estimates ${\widehat{r}}_{total}$ of overall
+$`r_1 = \dotso = r_M`$ (faster method) and without the constraint. In
+addition, we look at the estimates $`\hat{r}_{total}`$ of overall
 relatedness.
 
 ``` r
+
 # First, create a grid of r values to evaluate over
 revals <- mapply(generateReval, 1:5, nr = c(1e3, 1e2, 32, 16, 12))
 ```
 
 ``` r
+
 isig <- which(sig, arr.ind = TRUE)
 nsig <- nrow(isig)
 sig1 <- sig2 <- vector("list", nsig)
@@ -388,6 +416,7 @@ cor(rtotal1, rtotal2)
 Create a list of significant pairs:
 
 ``` r
+
 samples <- names(dsmp)
 dfsig <- as.data.frame(isig, row.names = FALSE)
 dfsig[c("id1", "id2")]         <- list(samples[isig[, 1]], samples[isig[, 2]])
@@ -407,6 +436,7 @@ For full control, we can use the function `ibdPair` for any two samples
 and explore the outputs:
 
 ``` r
+
 i <- 18                              
 pair <- dsmp[isig[i, ]]
 coii <-  coi[isig[i, ]]
@@ -429,6 +459,7 @@ parameter if we use `equalr = TRUE`), which provides the basis for
 statistical inference:
 
 ``` r
+
 CI     <- range(res2$confreg)
 llikCI <- max(res2$llik) - qchisq(1 - alpha, df = 1)/2
 llrng  <- range(res2$llik[is.finite(res2$llik)])
@@ -454,6 +485,7 @@ text(res2$rhat - 0.025, yLR, "MLE", col = cols[3], srt = 90)
 ![](reference/figures/README-unnamed-chunk-25-1.png)
 
 ``` r
+
 par(pardef)
 ```
 

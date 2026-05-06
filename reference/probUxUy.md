@@ -116,5 +116,5 @@ llikt <- probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj,
 
 # M = 1, mnewton = TRUE
 probUxUy(Ux, Uy, coi[1], coi[2], aft, M, logj, factj, mnewton = TRUE)
-#> [1] 2.017199e-06 2.254247e-06
+#> [1] 8.797259e-06 1.028395e-05
 ```
