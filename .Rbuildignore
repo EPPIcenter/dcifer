@@ -10,3 +10,5 @@
 
 ^docs$
 ^vignettes/vigArticle\.Rmd$
+^\.positai$
+^\.claude$

@@ -202,7 +202,6 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   } else {
     if (all(llikr == 0)) {             # missing data
       rhat <- NA
-      imax <- 1
     } else {
       imax <- which.max(llikr)         # which(llikr == max(llikr))
       rhat <- reval[, imax]            # rowMeans(reval[, imax, drop = FALSE])
@@ -213,6 +212,14 @@ ibdPair <- function(pair, coi, afreq, M, rhat = TRUE, pval = FALSE,
   }
 
   res <- list(rhat = rhat)
+  if (is.na(rhat[1])) {
+    if (pval)    res$pval    <- NA
+    if (confreg) res$confreg <- NA     # alternatively: reval
+    if (llik)    res$llik    <- llikr
+    if (maxllik) res$maxllik <- 0
+    return(res)
+  }
+
   if (pval) {
     if (mnewton) {
       lrs <- lrsP01(rhat, rnull, p01)

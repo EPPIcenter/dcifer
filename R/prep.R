@@ -129,8 +129,8 @@ formatAfreq <- function(aflong, lvar, avar, fvar) {
 #' @export
 #'
 matchAfreq <- function(dsmp, afreq, minfreq = 1e-4) {
-  nloc  <- length(afreq)
   afreq <- afreq[names(dsmp[[1]])]
+  nloc  <- length(afreq)
   for (iloc in 1:nloc) {
     aold <- afreq[[iloc]]
     alleles <- union(names(aold), names(dsmp[[1]][[iloc]]))
