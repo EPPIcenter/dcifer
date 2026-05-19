@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/EPPIcenter/dcifer/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/EPPIcenter/dcifer/blob/v1.5.2/DESCRIPTION)
 
 Gerlovina I (2026). *dcifer: Genetic Relatedness Between Polyclonal
 Infections*. R package version 1.5.2,

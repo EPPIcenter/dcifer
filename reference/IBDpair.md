@@ -231,5 +231,5 @@ system.time(
 system.time(
   ibdPair(pair, coip, afreq, M = 1, mnewton = FALSE, nr  = 1e5))
 #>    user  system elapsed 
-#>   0.060   0.013   0.073 
+#>   0.051   0.007   0.059 
 ```
